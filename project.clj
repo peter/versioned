@@ -10,9 +10,6 @@
                  [cheshire "5.5.0"]
                  [metosin/scjsv "0.2.0"]
                  [clj-time "0.11.0"]
-                 [org.clojure/tools.nrepl "0.2.11"]
-                 [com.cemerick/drawbridge "0.0.7"]
-                 [ring-basic-authentication "1.0.5"]
                 ]
   :min-lein-version "2.0.0"
   :uberjar-name "content-api-standalone.jar"
