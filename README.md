@@ -7,10 +7,6 @@ The background of this library is that it is a re-implementation and simplificat
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
 in 2015.
 
-## TODO
-
-* Put locales/sites in config
-
 ## Getting Started Tutorial
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
@@ -70,3 +66,54 @@ curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TO
 # delete
 curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
 ```
+
+## Starting the Server
+
+```
+lein run
+```
+
+## The REPL
+
+```
+lein repl
+```
+
+## Bulk Import
+
+There is a bulk import API that you can use if you need to load larger amounts of data (i.e. migrate from another CMS):
+
+```
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": {"se": "Latest Movies"}, "published_version": 1}, {"title": {"se": "Latest Series"}}]}' http://localhost:5000/v1/bulk_import
+```
+
+## TODO
+
+* Validation
+  * Put all custom properties in the JSON schema under a meta property?
+  * Validate association id references before save
+  * Validate published_version reference before save
+
+* list endpoint
+  * Default sort order id desc
+  * support sort query parameter
+  * support query?
+
+* Use Swagger: https://github.com/metosin/ring-swagger
+
+* Add first_published_at to published-model
+
+* finish API tests (under api-test)
+
+* Put all model specs in the app object. Memoize model-spec lookup
+
+* get endpoint
+  * which fields to include (cms needs more fields than www, compare ommit/disabled in contentful CMS)
+
+* validation
+  * unique constraint
+  * deal with mongo errors?
+
+* Scheduler that publishes and unpulishes documents based on publish_at/unpublish_at
+
+* comply more with jsonapi.org
