@@ -15,6 +15,8 @@ in 2015.
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
 
+There is an [example app](https://github.com/peter/content-api-example) that you can use as a starting point or you can proceed by trying out this library directly with the instructions below.
+
 Get the source:
 
 ```bash
