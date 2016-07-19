@@ -2,7 +2,7 @@
   (:require [content-api.model-api :as model-api]
             [content-api.json-api :as json-api]
             [content-api.crud-api-opts :refer [list-opts get-opts]]
-            [content-api.crud-api-attributes :refer [invalid-attributes create-attributes update-attributes]]
+            [content-api.crud-api-attributes :refer [read-attributes invalid-attributes create-attributes update-attributes]]
             [content-api.crud-api-audit :refer [save-changelog]]
             [content-api.logger :as logger]
             [content-api.util.core :as u]))
@@ -19,13 +19,15 @@
 
   (list [this app request]
     (let [opts (list-opts request)
-          docs (model-api/find app model-spec {} opts)]
-      (json-api/response docs)))
+          docs (model-api/find app model-spec {} opts)
+          read-docs (map (partial read-attributes model-spec) docs)]
+      (json-api/response read-docs)))
 
   (get [this app request]
     (let [doc (model-api/find-one app model-spec (json-api/id request) (get-opts request))]
       (if doc
-        (json-api/response (json-api/json-doc model-spec doc))
+        (json-api/response (->> (read-attributes model-spec doc)
+                                (json-api/json-doc model-spec)))
         (json-api/missing-response))))
 
   (create [this app request]
@@ -34,7 +36,6 @@
         (let [attributes (->> (json-api/attributes model-spec request)
                               (create-attributes model-spec request))
               doc (model-api/create app model-spec attributes)]
-          (println "pm debug create" (:type model-spec) (json-api/attributes model-spec request) (:params request))
           (logger/debug app "crud-api create" (:type model-spec) "attributes:" attributes "doc:" doc " meta:" (meta doc))
           (save-changelog (:database app) request model-spec :create doc)
           (json-api/response doc))

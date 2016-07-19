@@ -11,7 +11,7 @@
   (let [schema-attrs (schema-attributes schema)]
     (filter #(api-writable? (% schema-attrs)) (keys schema-attrs))))
 
-(defn api-writable-attributes [attributes schema]
+(defn api-writable-attributes [schema attributes]
   (select-keys attributes (api-writable-attribute-keys schema)))
 
 (defn api-readable? [attribute-schema]
@@ -21,7 +21,7 @@
   (let [schema-attrs (schema-attributes schema)]
     (filter #(api-readable? (% schema-attrs)) (keys schema-attrs))))
 
-(defn api-readable-attributes [attributes schema]
+(defn api-readable-attributes [schema attributes]
   (select-keys attributes (api-readable-attribute-keys schema)))
 
 (defn translated-attribute

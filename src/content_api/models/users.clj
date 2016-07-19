@@ -1,20 +1,23 @@
 (ns content-api.models.users
   (:require [content-api.model-spec :refer [generate-spec]]
+            [content-api.model-includes.id-model :refer [id-spec]]
             [content-api.model-api :as model-api]
             [content-api.util.core :as u]
             [content-api.util.encrypt :as encrypt]
             [content-api.util.date :as date]))
 
 (defn spec [config]
-  (generate-spec {
+  (generate-spec
+    (id-spec)
+    {
     :type :users
     :schema {
       :type "object"
       :properties {
         :name {:type "string"}
         :email {:type "string"}
-        :password {:type "string"}
-        :access_token {:type "string"}
+        :password {:type "string" :api_readable false}
+        :access_token {:type "string" :api_readable false}
         :access_token_created_at {:type "string" :format "date-time"}
       }
       :additionalProperties false
@@ -23,7 +26,9 @@
     :indexes [
       {:fields [:email] :unique true}
       {:fields [:access_token] :unique true}
-    ]}))
+    ]
+    :routes [:list :get]
+}))
 
 (defn authenticate [user password]
   (and user (encrypt/check password (:password user))))

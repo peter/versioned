@@ -89,8 +89,10 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
+* Put all custom properties in the JSON schema under a meta property?
+  (def custom-property-keys #{:api_readable :api_writable :versioned :translated})
+
 * Validation
-  * Put all custom properties in the JSON schema under a meta property?
   * Validate association id references before save
   * Validate published_version reference before save
 

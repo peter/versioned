@@ -32,5 +32,5 @@
       :else
         value)))
 
-(defn coerce-attribute-types [attributes schema]
+(defn coerce-attribute-types [schema attributes]
   (safe-coerce-map coerce-value attributes schema))
