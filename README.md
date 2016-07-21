@@ -79,6 +79,12 @@ lein run
 lein repl
 ```
 
+## Running Tests
+
+```
+lein midje
+```
+
 ## Bulk Import
 
 There is a bulk import API that you can use if you need to load larger amounts of data (i.e. migrate from another CMS):

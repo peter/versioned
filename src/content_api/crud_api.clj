@@ -1,4 +1,5 @@
 (ns content-api.crud-api
+  (:refer-clojure :exclude [list get update])
   (:require [content-api.model-api :as model-api]
             [content-api.json-api :as json-api]
             [content-api.crud-api-opts :refer [list-opts get-opts]]

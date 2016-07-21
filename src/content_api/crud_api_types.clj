@@ -27,7 +27,7 @@
         (d/parse-datetime value)
       (= type "array")
         (u/compact (map (partial coerce-value attribute-schema attribute) value))
-      (and (= type "object") (:properies attribute-schema))
+      (and (= type "object") (:properties attribute-schema))
         (safe-coerce-map coerce-value value attribute-schema)
       :else
         value)))
