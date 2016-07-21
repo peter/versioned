@@ -79,10 +79,19 @@ lein run
 lein repl
 ```
 
-## Running Tests
+## Running Unit Tests
 
 ```
 lein midje
+```
+
+## Running API Tests
+
+Start the server with the example models (see instructions above), then run the tests:
+
+```
+export TOKEN=<admin-user-token>
+jsonapitest test/api/*.js
 ```
 
 ## Bulk Import
