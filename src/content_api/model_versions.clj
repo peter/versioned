@@ -3,7 +3,7 @@
             [content-api.model-support :as model-support]))
 
 (defn versioned-attribute? [attribute-schema]
-  (get attribute-schema :versioned true))
+  (get-in attribute-schema [:meta :versioned] true))
 
 (defn versioned-attributes [schema]
   (filter #(versioned-attribute? (% (:properties schema)))

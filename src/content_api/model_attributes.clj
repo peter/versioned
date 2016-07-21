@@ -2,10 +2,10 @@
   (:require [content-api.model-schema :refer [schema-attributes]]
             [clojure.string :as str]))
 
-(def custom-property-keys #{:api_readable :api_writable :versioned :translated})
+(def custom-property-keys #{:meta})
 
 (defn api-writable? [attribute-schema]
-  (get attribute-schema :api_writable true))
+  (get-in attribute-schema [:meta :api_writable] true))
 
 (defn api-writable-attribute-keys [schema]
   (let [schema-attrs (schema-attributes schema)]
@@ -15,7 +15,7 @@
   (select-keys attributes (api-writable-attribute-keys schema)))
 
 (defn api-readable? [attribute-schema]
-  (get attribute-schema :api_readable true))
+  (get-in attribute-schema [:meta :api_readable] true))
 
 (defn api-readable-attribute-keys [schema]
   (let [schema-attrs (schema-attributes schema)]
@@ -26,12 +26,14 @@
 
 (defn translated-attribute
   ([locales custom-properties]
-    (let [pattern (str "^" (str/join "|" locales) "$")
+    (let [pattern (str "^(" (str/join "|" locales) ")$")
           default-properties {:type "string"}
           properties (merge default-properties custom-properties)]
       {
         :type "object"
-        :translated true
+        :meta {
+          :translated true
+        }
         :patternProperties {
           pattern properties
         }

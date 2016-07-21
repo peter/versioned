@@ -41,7 +41,7 @@
 (def versioned-schema {
   :type "object"
   :properties {
-    :version {:type "integer" :minimum 1 :api_writable false}
+    :version {:type "integer" :minimum 1 :meta {:api_writable false}}
   }
   :required [:version]
 })
