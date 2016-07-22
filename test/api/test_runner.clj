@@ -1,8 +1,13 @@
 (ns api.test-runner
   (:require [content-api :as content-api]
             [content-api.util.json :as json]
+            [content-api.crud-api-attributes :refer [create-attributes read-attributes]]
+            [content-api.model-api :as model-api]
+            [content-api.model-validations :refer [model-errors]]
             [me.raynes.conch :as sh]
+            [monger.db :refer [drop-db]]
             [content-api.util.file :as file]
+            [content-api.util.core :as u]
             [content-api.controllers.sessions :as sessions]
             [clojure.string :as str]))
 
@@ -38,10 +43,36 @@
     (flatten [(:config paths) (:data-tmp paths) suites])))
 
 (defn clear-db [context]
-  context)
+  (let [db (get-in context [:system :database :db])]
+    (drop-db db)
+    context))
+
+(defn save-doc [app model-spec request doc]
+  (let [attributes (create-attributes model-spec request doc)
+        saved-doc (model-api/create app model-spec attributes)
+        errors (model-errors saved-doc)
+        result (merge doc (read-attributes model-spec saved-doc))]
+    (if errors
+        (throw (Exception. (str "Could not save doc to db doc: " doc " errors: " errors)))
+        result)))
+
+(defn save-model [context model data]
+  (let [app (get-in context [:system :app])
+        model-spec (get-in app [:models model])
+        admin-user (get-in context [:data :users :admin])
+        request {:user admin-user}]
+    (u/map-values (partial save-doc app model-spec request) data)))
 
 (defn save-db [context]
-  context)
+  (let [model? (set (keys (get-in context [:system :app :models])))
+        data (reduce
+                (fn [result [k v]]
+                  (assoc result k (if (model? k)
+                                      (save-model context k v)
+                                      v)))
+                {}
+                (:data context))]
+    (assoc context :data data)))
 
 (defn restore-db [context]
   (log "restore-db")
@@ -51,20 +82,21 @@
 
 (defn start-server [context]
   (log "start-server")
-  (let [system (content-api/-main :models (:models context)
+  (let [system (content-api/-main :env "test"
+                                  :models (:models context)
                                   :sites (:sites context)
                                   :locales (:locales context))]
     (assoc context :system system)))
 
 (defn log-in-user [context]
   (log "log-in-user")
-  (let [params (get-in context [:data :users :admin])
+  (let [params (select-keys (get-in context [:data :users :admin]) [:email :password])
         app (get-in context [:system :app])
         response (sessions/create app {:params params})
         auth-header (get-in response [:headers "Authorization"])]
     (if auth-header
       (assoc-in context [:data :headers :admin] {"Authorization" auth-header})
-      (throw (.Exception (str "Could not log in user" params "response: " response))))))
+      (throw (Exception. (str "Could not log in user " params " response: " response))))))
 
 (defn write-data-tmp-file [context]
   (let [path (get-in context [:paths :data-tmp])
@@ -81,8 +113,8 @@
   (let [context (new-context)]
     (log "Starting with context" context)
     (-> context
-        (restore-db)
         (start-server)
+        (restore-db)
         (log-in-user)
         (write-data-tmp-file)
         (run-tests))))

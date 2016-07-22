@@ -3,8 +3,8 @@
             [content-api.util.core :as u]
             [com.stuartsierra.component :as component]))
 
-(defn- get-env []
-  (or (System/getenv "ENV") "development"))
+(defn- get-env [config]
+  (or (:env config) (System/getenv "ENV") "development"))
 
 (defn- default-config [env] {
   :require-read-auth true
@@ -37,7 +37,7 @@
   (u/compact (into {} (map #(vector % (env-value % defaults)) (keys defaults)))))
 
 (defn- get-config [config]
-  (let [defaults (default-config (get-env))]
+  (let [defaults (default-config (get-env config))]
     (u/deep-merge defaults (env-config defaults) config)))
 
 ; --------------------------------------------------------

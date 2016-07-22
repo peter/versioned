@@ -6,6 +6,12 @@
             [content-api.util.encrypt :as encrypt]
             [content-api.util.date :as date]))
 
+(defn encrypt-password-callback [doc options]
+  (if (or (= (:action options) :create)
+          (not= (:password doc) (get-in (meta doc) [:existing-doc :password])))
+    (assoc doc :password (encrypt/generate (:password doc)))
+    doc))
+
 (defn spec [config]
   (generate-spec
     (id-spec)
@@ -16,12 +22,17 @@
       :properties {
         :name {:type "string"}
         :email {:type "string"}
-        :password {:type "string" :api_readable false}
-        :access_token {:type "string" :api_readable false}
+        :password {:type "string" :meta {:api_readable false}}
+        :access_token {:type "string" :meta {:api_readable false}}
         :access_token_created_at {:type "string" :format "date-time"}
       }
       :additionalProperties false
       :required [:name :email :password]
+    }
+    :callbacks {
+      :save {
+        :before [encrypt-password-callback]
+      }
     }
     :indexes [
       {:fields [:email] :unique true}
@@ -47,9 +58,7 @@
   (first (model-api/find app (user-model app) query)))
 
 (defn create [app attributes]
-  (let [encrypted-password (encrypt/generate (:password attributes))
-        secured-attributes (assoc attributes :password encrypted-password)]
-    (model-api/create app (user-model app) secured-attributes)))
+  (model-api/create app (user-model app) attributes))
 
 (defn store-token [app user access-token]
   (let [attributes (merge user {:access_token access-token
