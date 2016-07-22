@@ -10,15 +10,5 @@ module.exports = {
         status: 200
       }
     }
-  },
-  data: {
-    headers: {
-      admin: {
-        Authorization: "Bearer: {{$env.TOKEN}}"
-      },
-      invalid: {
-        Authorization: "Bearer: this-is-an-invalid-token"
-      }
-    }
   }
 };

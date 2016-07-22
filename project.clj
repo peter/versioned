@@ -17,4 +17,5 @@
   :target-path "target/%s"
   :profiles {
     :uberjar {:aot :all}
-    :dev {:dependencies [[midje "1.6.3"]]}})
+    :dev {:dependencies [[midje "1.6.3"]
+                         [me.raynes/conch "0.8.0"]]}})

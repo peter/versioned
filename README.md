@@ -90,8 +90,7 @@ lein midje
 Start the server with the example models (see instructions above), then run the tests:
 
 ```
-export TOKEN=<admin-user-token>
-jsonapitest test/api/*.js
+lein run -m api.test-runner
 ```
 
 ## Bulk Import

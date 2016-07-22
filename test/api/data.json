@@ -1,0 +1,21 @@
+{
+  "data": {
+    "users": {
+      "admin": {
+        "name": "Admin User",
+        "email": "admin@example.com",
+        "password": "admin"
+      }
+    },
+    "pages": {
+      "start": {
+        "title": {
+          "se": "Startsida"
+        },
+        "slug": {
+          "se": "startsida"
+        }
+      }
+    }
+  }
+}
