@@ -49,7 +49,8 @@
     context))
 
 (defn save-doc [app model-spec request doc]
-  (let [attributes (create-attributes model-spec request doc)
+  (let [attributes (merge (create-attributes model-spec request doc)
+                          (select-keys doc [:id]))
         saved-doc (model-api/create app model-spec attributes)
         errors (model-errors saved-doc)
         result (merge doc (read-attributes model-spec saved-doc))]

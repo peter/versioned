@@ -6,14 +6,16 @@
     (inc (or (:id (first docs)) 0))))
 
 (defn id-callback [doc options]
-  (let [id (next-id (:app options) (:model-spec options))]
-    (assoc doc :id id)))
+  (if-not (:id doc)
+    (let [id (next-id (:app options) (:model-spec options))]
+      (assoc doc :id id))
+    doc))
 
 (def id-schema {
   :type "object"
   :properties {
-    :_id {:type "string"}
-    :id {:type "integer"}
+    :_id {:type "string" :meta {:api_writable false}}
+    :id {:type "integer" :meta {:api_writable false}}
   }
   :required [:id]
 })

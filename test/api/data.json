@@ -2,6 +2,7 @@
   "data": {
     "users": {
       "admin": {
+        "id": 1,
         "name": "Admin User",
         "email": "admin@example.com",
         "password": "admin"
@@ -9,6 +10,7 @@
     },
     "pages": {
       "start": {
+        "id": 1,
         "title": {
           "se": "Startsida"
         },
