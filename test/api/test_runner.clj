@@ -24,6 +24,7 @@
         sites ["se" "no" "dk" "fi"]
         locales sites
         paths {
+          :jsonapitest (or (System/getenv "JSONAPITEST_PATH") "jsonapitest")
           :config "test/api/config.js"
           :data "test/api/data.json"
           :data-tmp "test/api/data.tmp.json"
@@ -40,7 +41,7 @@
 (defn test-files [context]
   (let [paths (:paths context)
         suites (file/ls (:test-suites paths) :ext ".js")]
-    (flatten [(:config paths) (:data-tmp paths) suites])))
+    (flatten [(:data-tmp paths) (:config paths) suites])))
 
 (defn clear-db [context]
   (let [db (get-in context [:system :database :db])]
@@ -105,7 +106,7 @@
     context))
 
 (defn run-tests [context]
-  (let [test-command (flatten ["jsonapitest" (test-files context) {:out *out*}])]
+  (let [test-command (flatten [(get-in context [:paths :jsonapitest]) (test-files context) {:out *out*}])]
     (log "run-tests" test-command)
     (apply sh/execute test-command)))
 

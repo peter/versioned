@@ -23,7 +23,6 @@ module.exports = {
             it: "can create a page document",
             request: "POST /pages",
             params: {pages: page},
-            headers: "{{headers.admin}}",
             assert: {
               select: "body.data",
               equal_keys: {
@@ -37,7 +36,6 @@ module.exports = {
           {
             it: "can get the created page document",
             request: "GET /pages/{{page_id}}",
-            headers: "{{headers.admin}}",
             assert: {
               select: "body.data.attributes",
               equal_keys: {
@@ -49,7 +47,6 @@ module.exports = {
           {
             it: "can list page documents",
             request: "GET /pages",
-            headers: "{{headers.admin}}",
             assert: {
               select: "body.data",
               contains_keys: {
@@ -61,7 +58,6 @@ module.exports = {
           {
             it: "can update name of page document",
             request: "PUT /pages/{{page_id}}",
-            headers: "{{headers.admin}}",
             params: {
               pages: {title: {se: "Testsida EDIT"}}
             }
@@ -69,7 +65,6 @@ module.exports = {
           {
             it: "can get new name of page document",
             request: "GET /pages/{{page_id}}",
-            headers: "{{headers.admin}}",
             assert: {
               select: "body.data.attributes",
               equal_keys: {
@@ -80,13 +75,11 @@ module.exports = {
           },
           {
             it: "can delete page document",
-            request: "DELETE /pages/{{page_id}}",
-            headers: "{{headers.admin}}",
+            request: "DELETE /pages/{{page_id}}"
           },
           {
             it: "can verify that page document was deleted",
             request: "GET /pages/{{page_id}}",
-            headers: "{{headers.admin}}",
             status: 404
           }
         ]
