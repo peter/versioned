@@ -100,6 +100,11 @@
       (assoc-in context [:data :headers :admin] {"Authorization" auth-header})
       (throw (Exception. (str "Could not log in user " params " response: " response))))))
 
+(defn add-schemas [context]
+  (let [models (get-in context [:system :app :models])
+        schemas (u/map-values :schema models)]
+    (assoc-in context [:data :schema] schemas)))
+
 (defn write-data-tmp-file [context]
   (let [path (get-in context [:paths :data-tmp])
         data (json/generate {:data (:data context)})]
@@ -118,5 +123,6 @@
         (start-server)
         (restore-db)
         (log-in-user)
+        (add-schemas)
         (write-data-tmp-file)
         (run-tests))))

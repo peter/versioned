@@ -27,7 +27,8 @@ module.exports = {
               select: "body.data",
               equal_keys: {
                 title: page.title
-              }
+              },
+              schema: "{{schema.pages}}"
             },
             save: {
               "page_id": "body.data.id"
@@ -41,7 +42,8 @@ module.exports = {
               equal_keys: {
                 id: "{{page_id}}",
                 title: page.title
-              }
+              },
+              schema: "{{schema.pages}}"
             }
           },
           {
