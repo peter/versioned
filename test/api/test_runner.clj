@@ -1,14 +1,14 @@
 (ns api.test-runner
-  (:require [content-api :as content-api]
-            [content-api.util.json :as json]
-            [content-api.crud-api-attributes :refer [create-attributes read-attributes]]
-            [content-api.model-api :as model-api]
-            [content-api.model-validations :refer [model-errors]]
+  (:require [versioned :as versioned]
+            [versioned.util.json :as json]
+            [versioned.crud-api-attributes :refer [create-attributes read-attributes]]
+            [versioned.model-api :as model-api]
+            [versioned.model-validations :refer [model-errors]]
             [me.raynes.conch :as sh]
             [monger.db :refer [drop-db]]
-            [content-api.util.file :as file]
-            [content-api.util.core :as u]
-            [content-api.controllers.sessions :as sessions]
+            [versioned.util.file :as file]
+            [versioned.util.core :as u]
+            [versioned.controllers.sessions :as sessions]
             [clojure.string :as str]))
 
 (defn log [& args]
@@ -18,9 +18,9 @@
   (:data (json/parse (slurp path))))
 
 (defn new-context []
-  (let [models {:sections "content-api.example-models.sections/spec"
-                :pages "content-api.example-models.pages/spec"
-                :widgets "content-api.example-models.widgets/spec"}
+  (let [models {:sections "versioned.example-models.sections/spec"
+                :pages "versioned.example-models.pages/spec"
+                :widgets "versioned.example-models.widgets/spec"}
         sites ["se" "no" "dk" "fi"]
         locales sites
         paths {
@@ -84,7 +84,7 @@
 
 (defn start-server [context]
   (log "start-server")
-  (let [system (content-api/-main :env "test"
+  (let [system (versioned/-main :env "test"
                                   :models (:models context)
                                   :sites (:sites context)
                                   :locales (:locales context))]

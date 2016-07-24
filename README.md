@@ -1,6 +1,6 @@
-# Content API
+# Versioned
 
-A clojure library that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog,
+A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog,
 and a model API with before/after callbacks on create/update/delete operations.
 
 The background of this library is that it is a re-implementation and simplification of the
@@ -11,13 +11,13 @@ in 2015.
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
 
-There is an [example app](https://github.com/peter/content-api-example) that you can use as a starting point or you can proceed by trying out this library directly with the instructions below.
+There is an [example app](https://github.com/peter/versioned-example) that you can use as a starting point or you can proceed by trying out this library directly with the instructions below.
 
 Get the source:
 
 ```bash
-git clone git@github.com:peter/content-api.git
-cd content-api
+git clone git@github.com:peter/versioned.git
+cd versioned
 ```
 
 Start the system in the REPL with a few example models:
@@ -25,18 +25,18 @@ Start the system in the REPL with a few example models:
 ```
 lein repl
 (def models {
-  :sections "content-api.example-models.sections/spec"
-  :pages "content-api.example-models.pages/spec"
-  :widgets "content-api.example-models.widgets/spec"})
+  :sections "versioned.example-models.sections/spec"
+  :pages "versioned.example-models.pages/spec"
+  :widgets "versioned.example-models.widgets/spec"})
 (def sites ["se" "no" "dk" "fi"])
-(require 'content-api)
-(def system (content-api/-main :models models :sites sites :locales sites))
+(require 'versioned)
+(def system (versioned/-main :models models :sites sites :locales sites))
 ```
 
 Create an admin user:
 
 ```
-(require '[content-api.models.users :as users])
+(require '[versioned.models.users :as users])
 (users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
 ```
 

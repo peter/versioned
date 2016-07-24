@@ -1,4 +1,4 @@
-(defproject content-api "0.1.0-SNAPSHOT"
+(defproject versioned "0.1.0-SNAPSHOT"
   :description "CMS REST API based on MongoDB"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
@@ -12,8 +12,8 @@
                  [clj-time "0.11.0"]
                 ]
   :min-lein-version "2.0.0"
-  :uberjar-name "content-api-standalone.jar"
-  :main ^:skip-aot content-api
+  :uberjar-name "versioned-standalone.jar"
+  :main ^:skip-aot versioned
   :target-path "target/%s"
   :profiles {
     :uberjar {:aot :all}
