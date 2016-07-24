@@ -52,7 +52,7 @@ Basic CRUD workflow:
 
 ```bash
 # create
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"sections": {"title": {"se": "My Section"}, "slug": {"se": "my-section"}}}' http://localhost:5000/v1/sections
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section"}, "slug": {"se": "my-section"}}}}' http://localhost:5000/v1/sections
 
 # get
 curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
@@ -61,7 +61,7 @@ curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
 curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections
 
 # update
-curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"sections": {"title": {"se": "My Section EDIT"}}}' http://localhost:5000/v1/sections/1
+curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section EDIT"}}}}' http://localhost:5000/v1/sections/1
 
 # delete
 curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1

@@ -9,7 +9,7 @@
   (get-in request [:params :id]))
 
 (defn attributes [model-spec request]
-  (get-in request [:params (:type model-spec)]))
+  (get-in request [:params :data :attributes]))
 
 (defn with-attrs [model-spec doc]
   (let [id ((model-support/id-attribute model-spec) doc)]
@@ -22,7 +22,7 @@
 (defn relationship-docs [model-spec docs]
   {:data (map #(with-attrs model-spec %) docs)})
 
-(defn json-doc [model-spec doc]
+(defn resource [model-spec doc]
   (let [id ((model-support/id-attribute model-spec) doc)
         relationships (not-empty (u/map-values (partial relationship-docs model-spec)
                                                (or (:relationships (meta doc)) {})))]
@@ -37,7 +37,7 @@
   ([data status] {:body {:data data} :status status})
   ([data] (data-response data 200)))
 
-(defn no-update-response [data]
+(defn no-update-response []
   {:status 204})
 
 (defn missing-response []
@@ -46,8 +46,14 @@
 (defn invalid-attributes-response [invalids]
   (error-response [{:type "invalid_attributes" :attributes invalids}]))
 
-(defn response [doc]
+(defn doc-response [model-spec doc]
+  (let [errors (model-errors doc)
+        data (resource model-spec doc)]
   (cond
-    (= (model-errors doc) model-not-updated) (no-update-response doc)
-    (model-errors doc) (error-response (model-errors doc))
-    :else (data-response doc)))
+    (= errors model-not-updated) (no-update-response)
+    errors (error-response errors)
+    :else (data-response data))))
+
+(defn docs-response [model-spec docs]
+  (let [data (map (partial resource model-spec) docs)]
+    (data-response data)))

@@ -11,6 +11,17 @@ var page = {
   }
 };
 
+var resourceSchema = {
+  type: "object",
+  properties: {
+    id: {type: "string"},
+    type: {enum: ["pages"]},
+    attributes: {type: "object"}
+  },
+  additionalProperties: false,
+  required: ["id", "type", "attributes"]
+};
+
 module.exports = {
   suite: {
     name: "CRUD",
@@ -22,16 +33,22 @@ module.exports = {
           {
             it: "can create a page document",
             request: "POST /pages",
-            params: {pages: page},
-            assert: {
-              select: "body.data",
-              equal_keys: {
-                title: page.title
+            params: {data: {attributes: page}},
+            assert: [
+              {
+                select: "body.data.attributes",
+                equal_keys: {
+                  title: page.title
+                },
+                schema: "{{schema.pages}}"
               },
-              schema: "{{schema.pages}}"
-            },
+              {
+                select: "body.data",
+                schema: resourceSchema
+              }
+            ],
             save: {
-              "page_id": "body.data.id"
+              "page_id": "body.data.attributes.id"
             }
           },
           {
@@ -49,19 +66,37 @@ module.exports = {
           {
             it: "can list page documents",
             request: "GET /pages",
-            assert: {
-              select: "body.data",
-              contains_keys: {
-                id: "{{page_id}}",
-                title: page.title
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  id: "{{page_id}}",
+                  title: page.title
+                },
+                schema: "{{schema.pages}}"
+              },
+              {
+                select: "body.data",
+                schema: {
+                  type: "array",
+                  items: resourceSchema
+                }
               }
-            }
+            ]
           },
           {
             it: "can update name of page document",
             request: "PUT /pages/{{page_id}}",
             params: {
-              pages: {title: {se: "Testsida EDIT"}}
+              data: {attributes: {title: {se: "Testsida EDIT"}}}
+            },
+            assert: {
+              select: "body.data.attributes",
+              equal_keys: {
+                id: "{{page_id}}",
+                title: {se: "Testsida EDIT"}
+              },
+              schema: "{{schema.pages}}"
             }
           },
           {
@@ -72,7 +107,8 @@ module.exports = {
               equal_keys: {
                 id: "{{page_id}}",
                 title: {se: "Testsida EDIT"}
-              }
+              },
+              schema: "{{schema.pages}}"
             }
           },
           {
