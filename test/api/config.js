@@ -2,6 +2,7 @@
 
 module.exports = {
   config: {
+    log_path: "test/api/log",
     defaults: {
       api_call: {
         request: {

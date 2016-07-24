@@ -10,3 +10,4 @@ pom.xml.asc
 .hgignore
 .hg/
 test/api/data.tmp.json
+test/api/log

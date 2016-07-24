@@ -16,12 +16,14 @@
         },
         "slug": {
           "se": "startsida"
-        }
+        },
+        "widgets_ids": [1, 2]
       }
     },
     "widgets": {
       "welcome": {
         "id": 1,
+        "published_version": 1,
         "title": {
           "se": "Välkommen"
         }
