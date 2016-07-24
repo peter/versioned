@@ -18,6 +18,20 @@
           "se": "startsida"
         }
       }
+    },
+    "widgets": {
+      "welcome": {
+        "id": 1,
+        "title": {
+          "se": "Välkommen"
+        }
+      },
+      "latest": {
+        "id": 2,
+        "title": {
+          "se": "Senaste"
+        }
+      }
     }
   }
 }
