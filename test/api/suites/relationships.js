@@ -47,10 +47,7 @@ module.exports = {
             request: "PUT /pages/{{page_id}}",
             params: {data: {attributes: {
               widgets_ids: [1, 2, 9999999]
-            }}},
-            save: {
-              "page_id": "body.data.attributes.id"
-            }
+            }}}
           },
           {
             it: "can get the created page document with two widgets relationships",
@@ -78,7 +75,25 @@ module.exports = {
                 equal: [1, 2]
               }
             ]
-          }
+          },
+          {
+            it: "can re-order the widgets",
+            request: "PUT /pages/{{page_id}}",
+            params: {data: {attributes: {
+              widgets_ids: [2, 9999999, 1]
+            }}},
+            save: {
+              "page_id": "body.data.attributes.id"
+            }
+          },
+          {
+            it: "can get the page with the re-ordered widgets",
+            request: "GET /pages/{{page_id}}?relationships=1",
+            assert: {
+              select: "body.data.relationships.widgets.data.attributes.id",
+              equal: [2, 1]
+            }
+          },
         ]
       }
     ]

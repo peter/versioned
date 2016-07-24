@@ -67,7 +67,7 @@
         find-opts (:find_opts spec)
         docs (and (not-empty ids) (db/find (:database app) coll query find-opts))
         docs-by-id (group-by field docs)
-        ordered-docs (u/compact (map #(first (docs-by-id %)) ids))] ; FIXME: too slow?
+        ordered-docs (u/compact (map #(first (docs-by-id %)) ids))]
     (with-published-versions app ordered-docs spec model query opts)))
 
 ; Example: (i.e. ActiveRecord belongs_to)
