@@ -133,6 +133,27 @@ module.exports = {
               }
             }
           },
+          {
+            it: "cannot update the page with unchanged attributes",
+            request: "PUT /pages/{{page_id}}",
+            params: {
+              data: {attributes: {
+                title: {se: "Versions page EDIT"},
+                widgets_ids: [1]
+              }}
+            },
+            status: 204
+          },
+          {
+            it: "can verify that no new version was created",
+            request: "GET /pages/{{page_id}}?relationships=1",
+            assert: [
+              {
+                select: "body.data.relationships.versions.data",
+                size: 2
+              },
+            ]
+          },
         ]
       }
     ]
