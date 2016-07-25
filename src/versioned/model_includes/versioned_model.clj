@@ -70,8 +70,7 @@
       :to_model nil
       :to_field id-attribute
       :find_opts {
-        :per-page 20
-        :fields [:id :type :title :widgets_ids :version :published_version :created_at :created_by]
+        :per-page 5
         :sort (array-map :version -1)
       }
   }})

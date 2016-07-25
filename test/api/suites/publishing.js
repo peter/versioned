@@ -51,6 +51,26 @@ module.exports = {
               equal: [1]
             }
           },
+          {
+            it: "can unpublish the page by setting published_version = null",
+            request: "PUT /pages/{{page_id}}",
+            params: {data: {attributes: {published_version: null}}}
+          },
+          {
+            it: "can get the unpublished page",
+            request: "GET /pages/{{page_id}}?relationships=1",
+            assert: {
+              select: "body.data.attributes",
+              equal_keys: {
+                published_version: null
+              }
+            }
+          },
+          {
+            it: "cannot get published version of page as it's no longer published",
+            request: "GET /pages/{{page_id}}?relationships=1&published=1",
+            status: 404
+          },
         ]
       }
     ]
