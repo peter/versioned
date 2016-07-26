@@ -98,16 +98,16 @@ As an example of how the `callbacks` property works, take a look at the callback
 })
 ```
 
-## Starting the Server
-
-```
-lein run
-```
-
-## Starting the REPL
+## Starting the Server with the Example Models
 
 ```
 lein repl
+(def models {:sections "versioned.example-models.sections/spec"
+             :pages "versioned.example-models.pages/spec"
+             :widgets "versioned.example-models.widgets/spec"})             
+(def sites ["se" "no" "dk" "fi"])
+(require 'versioned)
+(def system (versioned/-main :models models :sites sites :locales sites))
 ```
 
 ## Running Unit Tests
