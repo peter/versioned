@@ -1,7 +1,6 @@
 # Versioned
 
-A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog,
-and a model API with before/after callbacks on create/update/delete operations.
+A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, and a model API with before/after callbacks on create/update/delete operations.
 
 The background of this library is that it is a re-implementation and simplification of the
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
@@ -9,62 +8,94 @@ in 2015.
 
 ## Getting Started Tutorial
 
-First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
-
-There is an [example app](https://github.com/peter/versioned-example) that you can use as a starting point or you can proceed by trying out this library directly with the instructions below.
-
-Get the source:
-
-```bash
-git clone git@github.com:peter/versioned.git
-cd versioned
-```
-
-Start the system in the REPL with a few example models:
+First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed. This framework is available
+via the following Leiningen dependency:
 
 ```
-lein repl
-(def models {
-  :sections "versioned.example-models.sections/spec"
-  :pages "versioned.example-models.pages/spec"
-  :widgets "versioned.example-models.widgets/spec"})
-(def sites ["se" "no" "dk" "fi"])
-(require 'versioned)
-(def system (versioned/-main :models models :sites sites :locales sites))
+[versioned "0.1.0-SNAPSHOT"]
 ```
 
-Create an admin user:
+Check out [versioned-example](https://github.com/peter/versioned-example) to get a feeling for what a simple app based on this framework might look like.
 
+## Models
+
+Models (i.e. resources, content types) are at the heart of the Versioned framework and they are the blueprints for your
+application. Take a look at this example pages model:
+
+```clojure
+(ns my-app.models.pages
+  (:require [versioned.model-spec :refer [generate-spec]]
+            [versioned.model-includes.content-base-model :refer [content-base-spec]]))
+
+(def model-type :pages)
+
+(defn spec [config]
+  (generate-spec
+    (content-base-spec model-type)
+    {
+    :type model-type
+    :schema {
+      :type "object"
+      :properties {
+        :title {:type "string"}
+        :description {:type "string"}
+        :widgets_ids {
+          :type "array"
+          :items {
+            :type "integer"
+          }
+        }
+      }
+      :additionalProperties false
+      :required [:title]
+    }
+    :relationships {
+      :widgets {}
+    }
+    :indexes [
+      {:fields [:title] :unique true}
+    ]
+  }))
 ```
-(require '[versioned.models.users :as users])
-(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
-```
 
-Now, in a different terminal, log in:
+The `spec` function is invoked by the framework and should return a map that serves as a specification for the model. The following properties are part of a model specification:
 
-```bash
-curl -i -X POST -H 'Content-Type: application/json' -d '{"email": "admin@example.com", "password": "admin"}' http://localhost:5000/v1/login
+* `:type` - the name of the model in URLs and the Mongodb collection name
+* `:schema` - a JSON schema that is used to validate documents before they are saved to the
+ database.
+* `:callbacks` - functions to invoke `before` or `after` `update`, `create`, or `delete`.
+* `:relationships` - associations to other models (the `widgets` relationship above corresponds
+ to the `widgets_ids` property)
+* `indexes` - a list of indexes that should be created in Mongodb for the collection
+* `routes` - an optional array of endpoints to expose in the API for the model. The default routes inherited from `content-base-model` are all the REST routes, i.e. [:list :get :create :update :delete]
 
-export TOKEN=<token in header response above>
-```
+The `pages` model above "inherits" from the `content-base-model` that provides the following features:
 
-Basic CRUD workflow:
+* `id-model` - an integer sequential id field (i.e. like a primary key in a relational database - used instead of the Mongodb `_id` field which is a 24 character hexadecimal UUID)
+* `typed-model` - adds a type field to MongoDB documents that is simply the type of the model
+* `audited-model` - adds `created_at`, `created_by`, `updated_at`, `updated_by` fields
+* `versioned-model` - adds a `version` field that increments on updates and saves each version in a separate MongoDB collection
+* `published-model` - adds the fields `published_version`, `publish_at`, and `unpublish_at`. The `published_version` field points out the version that is currently published. If it's not set then the document is not published.
+* `validated-spec` - adds a callback that validates the document against the model schema before create and update.
+* `routed-model` - sets the `:routes` property of the model to [:list :get :create :update :delete] so that all REST endpoints are exposed via the API
 
-```bash
-# create
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section"}, "slug": {"se": "my-section"}}}}' http://localhost:5000/v1/sections
+As an example of how the `callbacks` property works, take a look at the callbacks added by `audited-model`:
 
-# get
-curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
+```clojure
+(defn audit-create-callback [doc options]
+  (assoc doc :created_at (d/now)))
 
-# list
-curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections
+(defn audit-update-callback [doc options]
+  (assoc doc :updated_at (d/now)))
 
-# update
-curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section EDIT"}}}}' http://localhost:5000/v1/sections/1
-
-# delete
-curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
+(def audited-callbacks {
+  :create {
+    :before [audit-create-callback]
+  }
+  :update {
+    :before [audit-update-callback]
+  }
+})
 ```
 
 ## Starting the Server
@@ -73,7 +104,7 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sec
 lein run
 ```
 
-## The REPL
+## Starting the REPL
 
 ```
 lein repl
@@ -86,8 +117,6 @@ lein midje
 ```
 
 ## Running API Tests
-
-Start the server with the example models (see instructions above), then run the tests:
 
 ```
 lein run -m api.test-runner
@@ -103,32 +132,20 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Implement API tests (relationships, validation, versions)
+* Use Swagger: https://github.com/metosin/ring-swagger
+
+* Check compliance with jsonapi.org
 
 * Validation
   * Validate association id references before save
   * Validate published_version reference before save
-
-* list endpoint
-  * Default sort order id desc
-  * support sort query parameter
-  * support query?
-
-* Use Swagger: https://github.com/metosin/ring-swagger
-
-* Add first_published_at to published-model
-
-* finish API tests (under api-test)
-
-* Put all model specs in the app object. Memoize model-spec lookup
-
-* get endpoint
-  * which fields to include (cms needs more fields than www, compare ommit/disabled in contentful CMS)
-
-* validation
   * unique constraint
   * deal with mongo errors?
 
-* Scheduler that publishes and unpulishes documents based on publish_at/unpublish_at
+* list endpoint
+  * support sort query parameter
+  * support query?
 
-* comply more with jsonapi.org
+* Add first_published_at to published-model
+
+* Scheduler that publishes and unpulishes documents based on publish_at/unpublish_at
