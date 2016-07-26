@@ -66,8 +66,8 @@ The `spec` function is invoked by the framework and should return a map that ser
 * `:callbacks` - functions to invoke `before` or `after` `update`, `create`, or `delete`.
 * `:relationships` - associations to other models (the `widgets` relationship above corresponds
  to the `widgets_ids` property)
-* `indexes` - a list of indexes that should be created in Mongodb for the collection
-* `routes` - an optional array of endpoints to expose in the API for the model. The default routes inherited from `content-base-model` are all the REST routes, i.e. [:list :get :create :update :delete]
+* `:indexes` - a list of indexes that should be created in Mongodb for the collection
+* `:routes` - an optional array of endpoints to expose in the API for the model. The default routes inherited from `content-base-model` are all the REST routes, i.e. [:list :get :create :update :delete]
 
 The `pages` model above "inherits" from the `content-base-model` that provides the following features:
 
