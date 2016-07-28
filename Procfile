@@ -1,1 +1,1 @@
-web: java  -cp target/uberjar/versioned-standalone.jar clojure.main -m versioned
+web: java  -cp target/uberjar/versioned-standalone.jar clojure.main -m versioned.example.app
