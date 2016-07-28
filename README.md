@@ -110,6 +110,16 @@ lein repl
 (def system (versioned/-main :models models :sites sites :locales sites))
 ```
 
+## Creating an Admin User
+
+```
+lein repl
+(require 'versioned)
+(def system (versioned/-main))
+(require '[versioned.models.users :as users])
+(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
+```
+
 ## Running Unit Tests
 
 ```
