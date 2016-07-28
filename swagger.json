@@ -3,7 +3,7 @@
     "info": {
         "title": "Versioned API",
         "description": "A REST CMS API based on MongoDB",
-        "version": "1.0.0"
+        "version": "0.2.0"
     },
     "host": "versioned.herokuapp.com",
     "schemes": [

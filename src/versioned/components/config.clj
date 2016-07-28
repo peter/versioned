@@ -38,7 +38,7 @@
 
 (defn- get-config [config]
   (let [defaults (default-config (get-env config))]
-    (u/deep-merge defaults (env-config defaults) config)))
+    (u/deep-merge defaults config (env-config defaults))))
 
 ; --------------------------------------------------------
 ; Component
