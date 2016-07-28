@@ -1,0 +1,169 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Versioned API",
+        "description": "A REST CMS API based on MongoDB",
+        "version": "1.0.0"
+    },
+    "host": "versioned.herokuapp.com",
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/v1",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "summary": "Login",
+                "description": "Log in user with email/password and get token",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "email": {"type": "string"},
+                            "password": {"type": "string"}
+                          },
+                          "required": ["email", "password"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful login"
+                    },
+                    "401": {
+                        "description": "Failed login"
+                    }
+                }
+            }
+        },
+        "/bulk_import": {
+            "post": {
+                "summary": "Bulk Import",
+                "description": "Import data, i.e. from another CMS",
+                "parameters": [
+                    {"$ref": "#/parameters/auth"},
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "model": {"$ref": "#/definitions/model_param"},
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          },
+                          "required": ["model", "data"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful import"
+                    },
+                    "422": {
+                        "description": "Import errors"
+                    }
+                }
+            }
+        },
+        "/pages": {
+          "get": {
+            "summary": "List pages",
+            "parameters": [
+              {"$ref": "#/parameters/auth"}
+            ],
+            "responses": {
+              "200": {
+                  "description": "List of pages"
+              }
+            }
+          },
+          "post": {
+            "summary": "Create page",
+            "parameters": [
+              {"$ref": "#/parameters/auth"}
+            ],
+            "responses": {
+              "200": {
+                  "description": "Success"
+              },
+              "422": {
+                  "description": "Validation errors"
+              }
+            }
+          }
+        },
+        "/pages/{id}": {
+          "parameters": [
+            {"$ref": "#/parameters/auth"},
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "get": {
+            "summary": "Get page",
+            "parameters": [
+              {"$ref": "#/parameters/auth"}
+            ],
+            "responses": {
+              "200": {
+                  "description": "Success"
+              }
+            }
+          },
+          "put": {
+            "summary": "Update page",
+            "parameters": [
+              {"$ref": "#/parameters/auth"}
+            ],
+            "responses": {
+              "200": {
+                  "description": "Success"
+              },
+              "422": {
+                  "description": "Validation errors"
+              }
+            }
+          },
+          "delete": {
+            "summary": "Delete page",
+            "parameters": [
+              {"$ref": "#/parameters/auth"}
+            ],
+            "responses": {
+              "200": {
+                  "description": "Success"
+              }
+            }
+          }
+        }
+    },
+    "definitions": {
+      "model_param": {
+        "enum": ["users", "sections", "pages", "widgets"]
+      }
+    },
+    "parameters": {
+      "auth": {
+        "name": "Authorization",
+        "in": "header",
+        "required": true,
+        "type": "string"
+      }
+    }
+}

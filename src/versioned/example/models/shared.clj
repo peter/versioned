@@ -1,4 +1,4 @@
-(ns versioned.example-models.shared
+(ns versioned.example.models.shared
   (:require [clojure.string :as str]))
 
 (def crud-routes [:list :get :create :update :delete])

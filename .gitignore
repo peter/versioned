@@ -11,3 +11,4 @@ pom.xml.asc
 .hg/
 test/api/data.tmp.json
 test/api/log
+npm-debug.log

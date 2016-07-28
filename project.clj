@@ -13,7 +13,7 @@
                 ]
   :min-lein-version "2.0.0"
   :uberjar-name "versioned-standalone.jar"
-  :main ^:skip-aot versioned
+  :main ^:skip-aot versioned.example.app
   :target-path "target/%s"
   :profiles {
     :uberjar {:aot :all}

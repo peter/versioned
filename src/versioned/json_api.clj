@@ -5,6 +5,8 @@
 
 ; Inspired by http://jsonapi.org
 
+(def error-status 422)
+
 (defn id [request]
   (get-in request [:params :id]))
 
@@ -31,7 +33,7 @@
     }))))
 
 (defn error-response [errors]
-  {:body {:errors errors} :status 422})
+  {:body {:errors errors} :status error-status})
 
 (defn data-response
   ([data status] {:body {:data data} :status status})

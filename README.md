@@ -98,18 +98,6 @@ As an example of how the `callbacks` property works, take a look at the callback
 })
 ```
 
-## Starting the Server with the Example Models
-
-```
-lein repl
-(def models {:sections "versioned.example-models.sections/spec"
-             :pages "versioned.example-models.pages/spec"
-             :widgets "versioned.example-models.widgets/spec"})             
-(def sites ["se" "no" "dk" "fi"])
-(require 'versioned)
-(def system (versioned/-main :models models :sites sites :locales sites))
-```
-
 ## Creating an Admin User
 
 ```
@@ -118,6 +106,22 @@ lein repl
 (def system (versioned/-main))
 (require '[versioned.models.users :as users])
 (users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
+```
+
+## Starting the Server with the Example Models
+
+From the command line:
+
+```
+lein run
+```
+
+From the REPL:
+
+```
+lein repl
+(require 'versioned.example.app)
+(def system (versioned.example.app/-main))
 ```
 
 ## Running Unit Tests
