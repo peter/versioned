@@ -1,4 +1,4 @@
-(defproject versioned "0.1.0-SNAPSHOT"
+(defproject versioned "0.2.0"
   :description "CMS REST API based on MongoDB"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
