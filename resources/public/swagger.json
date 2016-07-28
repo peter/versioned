@@ -107,7 +107,7 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "attributes": {"$ref": "#/definitions/users"}
+                        "attributes": {"$ref": "#/definitions/users_write"}
                       },
                       "required": ["attributes"]
                     }
@@ -144,7 +144,24 @@
             "tags": ["pages"],
             "summary": "Update page",
             "parameters": [
-              {"$ref": "#/parameters/auth"}
+              {
+                "name": "body",
+                "in": "body",
+                "required": true,
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "attributes": {"$ref": "#/definitions/users_write"}
+                      },
+                      "required": ["attributes"]
+                    }
+                  },
+                  "required": ["data"]
+                }
+              }
             ],
             "responses": {
               "200": {
@@ -170,7 +187,7 @@
       "model_param": {
         "enum": ["users", "sections", "pages", "widgets"]
       },
-      "users": {
+      "users_write": {
         "type" : "object",
         "properties" : {
           "description" : {
