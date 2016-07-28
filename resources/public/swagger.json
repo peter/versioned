@@ -16,6 +16,7 @@
     "paths": {
         "/login": {
             "post": {
+                "tags": ["login"],
                 "summary": "Login",
                 "description": "Log in user with email/password and get token",
                 "parameters": [
@@ -45,6 +46,7 @@
         },
         "/bulk_import": {
             "post": {
+                "tags": ["import"],
                 "summary": "Bulk Import",
                 "description": "Import data, i.e. from another CMS",
                 "parameters": [
@@ -79,11 +81,12 @@
             }
         },
         "/pages": {
+          "parameters": [
+            {"$ref": "#/parameters/auth"}
+          ],
           "get": {
+            "tags": ["pages"],
             "summary": "List pages",
-            "parameters": [
-              {"$ref": "#/parameters/auth"}
-            ],
             "responses": {
               "200": {
                   "description": "List of pages"
@@ -91,9 +94,27 @@
             }
           },
           "post": {
+            "tags": ["pages"],
             "summary": "Create page",
             "parameters": [
-              {"$ref": "#/parameters/auth"}
+              {
+                "name": "body",
+                "in": "body",
+                "required": true,
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "attributes": {"$ref": "#/definitions/users"}
+                      },
+                      "required": ["attributes"]
+                    }
+                  },
+                  "required": ["data"]
+                }
+              }
             ],
             "responses": {
               "200": {
@@ -108,18 +129,11 @@
         "/pages/{id}": {
           "parameters": [
             {"$ref": "#/parameters/auth"},
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "type": "integer"
-            }
+            {"$ref": "#/parameters/id"}
           ],
           "get": {
+            "tags": ["pages"],
             "summary": "Get page",
-            "parameters": [
-              {"$ref": "#/parameters/auth"}
-            ],
             "responses": {
               "200": {
                   "description": "Success"
@@ -127,6 +141,7 @@
             }
           },
           "put": {
+            "tags": ["pages"],
             "summary": "Update page",
             "parameters": [
               {"$ref": "#/parameters/auth"}
@@ -141,10 +156,8 @@
             }
           },
           "delete": {
+            "tags": ["pages"],
             "summary": "Delete page",
-            "parameters": [
-              {"$ref": "#/parameters/auth"}
-            ],
             "responses": {
               "200": {
                   "description": "Success"
@@ -156,6 +169,47 @@
     "definitions": {
       "model_param": {
         "enum": ["users", "sections", "pages", "widgets"]
+      },
+      "users": {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "object",
+            "additionalProperties": {
+                "type" : "string"
+            }
+          },
+          "published_version" : {
+            "type" : "integer",
+            "minimum" : 1
+          },
+          "slug" : {
+            "type" : "object",
+            "additionalProperties": {
+                "type" : "string"
+            }
+          },
+          "sites" : {
+            "type" : "array",
+            "items" : {
+              "enum" : [ "se", "no", "dk", "fi" ]
+            }
+          },
+          "title" : {
+            "type" : "object",
+            "additionalProperties": {
+                "type" : "string"
+            }
+          },
+          "widgets_ids" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer"
+            }
+          }
+        },
+        "required" : ["title"],
+        "additionalProperties" : false
       }
     },
     "parameters": {
@@ -164,6 +218,12 @@
         "in": "header",
         "required": true,
         "type": "string"
+      },
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "type": "integer"
       }
     }
 }
