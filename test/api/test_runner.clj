@@ -18,9 +18,9 @@
   (:data (json/parse (slurp path))))
 
 (defn new-context []
-  (let [models {:sections "versioned.example-models.sections/spec"
-                :pages "versioned.example-models.pages/spec"
-                :widgets "versioned.example-models.widgets/spec"}
+  (let [models {:sections "versioned.example.models.sections/spec"
+                :pages "versioned.example.models.pages/spec"
+                :widgets "versioned.example.models.widgets/spec"}
         sites ["se" "no" "dk" "fi"]
         locales sites
         paths {

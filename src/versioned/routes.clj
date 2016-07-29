@@ -45,6 +45,7 @@
   (let [api-prefix (get-in app [:config :api-prefix])]
     (flatten [
       {:methods #{:get} :path "/" :handler "home/index"}
+      {:methods #{:get} :path "/swagger.json" :handler "swagger/index"}
       {:methods #{:post} :path (str api-prefix "/login") :handler "sessions/create"}
       {:methods #{:post} :path (str api-prefix "/bulk_import") :handler "bulk-import/create"}
       (model-routes (:models app) api-prefix)

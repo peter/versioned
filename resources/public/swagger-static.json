@@ -58,7 +58,9 @@
                         "schema": {
                           "type": "object",
                           "properties": {
-                            "model": {"$ref": "#/definitions/model_param"},
+                            "model": {
+                              "enum": ["users", "sections", "pages", "widgets"]
+                            },
                             "data": {
                               "type": "array",
                               "items": {
@@ -184,9 +186,6 @@
         }
     },
     "definitions": {
-      "model_param": {
-        "enum": ["users", "sections", "pages", "widgets"]
-      },
       "users_write": {
         "type" : "object",
         "properties" : {

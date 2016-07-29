@@ -1,4 +1,5 @@
-(ns versioned.model-schema)
+(ns versioned.model-schema
+  (require [versioned.util.core :as u]))
 
 (defn schema-attributes [schema]
   (or (:properties schema)
@@ -14,3 +15,8 @@
   (cond
     (= (:format schema) "date-time") "date"
     :else (:type schema)))
+
+(defn restricted-schema [schema allowed-properties]
+  (let [properties (select-keys (:properties schema) allowed-properties)
+        required (if (:required schema) (filter (set allowed-properties) (:required schema)))]
+    (merge schema (u/compact {:properties properties :required required}))))

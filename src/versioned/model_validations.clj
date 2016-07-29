@@ -1,7 +1,7 @@
 (ns versioned.model-validations
   (:require [clojure.string :as str]
             [versioned.util.core :as u]
-            [versioned.model-attributes :refer [custom-property-keys]]
+            [versioned.model-attributes :refer [without-custom-keys]]
             [versioned.util.schema :refer [validate-schema]]))
 
 (defn with-model-errors [doc errors]
@@ -12,12 +12,6 @@
   (:errors (meta doc)))
 
 (def model-not-updated [{:type "unchanged"}])
-
-(defn without-custom-keys
-  "Drop custom property keys when validating to avoid validator warnings"
-  [schema]
-  (assoc schema :properties
-                (u/map-values #(apply dissoc % custom-property-keys) (:properties schema))))
 
 (defn validate-model-schema [schema doc]
   (validate-schema (without-custom-keys schema) doc))

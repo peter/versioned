@@ -1,18 +1,21 @@
 (ns versioned.middleware.auth
   (:require [versioned.util.auth :refer [parse-token]]
             [versioned.logger :as logger]
+            [clojure.string :as str]
             [versioned.models.users :as users]))
 
 (def unauthorized-response {
   :status 401
   :body "Unauthorized"})
 
-(def write-methods #{:post :put :patch})
+(def write-method? #{:post :put :patch})
 
 (defn auth-required? [app request]
-  (and (or (write-methods (:request-method request))
-           (get-in app [:config :require-read-auth]))
-       (not= "/v1/login" (:uri request))))
+  (let [api-prefix (get-in app [:config :api-prefix])]
+    (or (write-method? (:request-method request))
+        (and (get-in app [:config :require-read-auth])
+             (str/starts-with? (:uri request) api-prefix)
+             (not= (str api-prefix "/login") (:uri request))))))
 
 (defn require-auth [request handler app]
   (let [access-token (parse-token (:headers request))
