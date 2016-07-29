@@ -1,5 +1,8 @@
 (ns versioned.controllers.swagger
-  (require [versioned.model-attributes :refer [api-writable-schema api-readable-schema without-custom-keys]]))
+  (require [versioned.model-attributes :refer [api-writable-schema
+                                               api-readable-schema
+                                               without-custom-keys]]
+           [versioned.util.core :as u]))
 
 (defn login-paths [app]
   {
@@ -79,111 +82,123 @@
 
 (defn model-paths [app model]
   (let [name (name (:type model))
-        write-schema (str "#/definitions/" name "_write")]
-    {
-      (str "/" name) {
-        "parameters" [
-          {"$ref" "#/parameters/auth"}
-        ],
-        "get" {
-          "tags" [name],
-          "summary" (str "List " name),
-          "responses" {
-            "200" {
-                "description" (str "List of " name)
-            }
-          }
-        },
-        "post" {
-          "tags" [name],
-          "summary" (str "Create " name),
-          "parameters" [
-            {
-              "name" "body",
-              "in" "body",
-              "required" true,
-              "schema" {
-                "type" "object",
-                "properties" {
-                  "data" {
-                    "type" "object",
-                    "properties" {
-                      "attributes" {"$ref" write-schema}
-                    },
-                    "required" ["attributes"]
-                  }
-                },
-                "required" ["data"]
+        write-schema (str "#/definitions/" name "_write")
+        routes (set (or (:routes model) []))
+        list-key (str "/" name)
+        list-paths (not-empty (u/compact {
+          "get" (if (routes :list) {
+            "tags" [name],
+            "summary" (str "List " name),
+            "parameters" [
+              {"$ref" "#/parameters/auth"}
+            ],
+            "responses" {
+              "200" {
+                  "description" (str "List of " name)
               }
             }
-          ],
-          "responses" {
-            "200" {
-                "description" "Success"
-            },
-            "422" {
-                "description" "Validation errors"
-            }
-          }
-        }
-      },
-      (str "/" name "/{id}") {
-        "parameters" [
-          {"$ref" "#/parameters/auth"},
-          {"$ref" "#/parameters/id"}
-        ],
-        "get" {
-          "tags" [name],
-          "summary" (str "Get " name),
-          "responses" {
-            "200" {
-                "description" "Success"
-            }
-          }
-        },
-        "put" {
-          "tags" [name],
-          "summary" (str "Update " name),
-          "parameters" [
-            {
-              "name" "body",
-              "in" "body",
-              "required" true,
-              "schema" {
-                "type" "object",
-                "properties" {
-                  "data" {
-                    "type" "object",
-                    "properties" {
-                      "attributes" {"$ref" write-schema}
-                    },
-                    "required" ["attributes"]
-                  }
-                },
-                "required" ["data"]
+          })
+          "post" (if (routes :create) {
+            "tags" [name],
+            "summary" (str "Create " name),
+            "parameters" [
+              {"$ref" "#/parameters/auth"},
+              {
+                "name" "body",
+                "in" "body",
+                "required" true,
+                "schema" {
+                  "type" "object",
+                  "properties" {
+                    "data" {
+                      "type" "object",
+                      "properties" {
+                        "attributes" {"$ref" write-schema}
+                      },
+                      "required" ["attributes"]
+                    }
+                  },
+                  "required" ["data"]
+                }
+              }
+            ]
+            "responses" {
+              "200" {
+                  "description" "Success"
+              },
+              "422" {
+                  "description" "Validation errors"
               }
             }
-          ],
-          "responses" {
-            "200" {
-                "description" "Success"
-            },
-            "422" {
-                "description" "Validation errors"
+          })
+        }))
+        id-key (str "/" name "/{id}")
+        id-paths (not-empty (u/compact {
+          "get" (if (routes :get) {
+            "tags" [name],
+            "summary" (str "Get " name),
+            "parameters" [
+              {"$ref" "#/parameters/auth"},
+              {"$ref" "#/parameters/id"}
+            ],
+            "responses" {
+              "200" {
+                  "description" "Success"
+              }
             }
-          }
-        },
-        "delete" {
-          "tags" [name],
-          "summary" (str "Delete " name),
-          "responses" {
-            "200" {
-                "description" "Success"
+          })
+          "put" (if (routes :update) {
+            "tags" [name],
+            "summary" (str "Update " name),
+            "parameters" [
+              {"$ref" "#/parameters/auth"},
+              {"$ref" "#/parameters/id"},
+              {
+                "name" "body",
+                "in" "body",
+                "required" true,
+                "schema" {
+                  "type" "object",
+                  "properties" {
+                    "data" {
+                      "type" "object",
+                      "properties" {
+                        "attributes" {"$ref" write-schema}
+                      },
+                      "required" ["attributes"]
+                    }
+                  },
+                  "required" ["data"]
+                }
+              }
+            ]
+            "responses" {
+              "200" {
+                  "description" "Success"
+              },
+              "422" {
+                  "description" "Validation errors"
+              }
             }
-          }
-        }
-      }
-    }))
+          })
+          "delete" (if (routes :delete) {
+            "tags" [name],
+            "summary" (str "Delete " name),
+            "parameters" [
+              {"$ref" "#/parameters/auth"},
+              {"$ref" "#/parameters/id"}
+            ],
+            "responses" {
+              "200" {
+                  "description" "Success"
+              }
+            }
+          })
+        }))]
+    (u/compact {
+      list-key list-paths
+      id-key id-paths
+    })))
 
 
 (defn paths [app]

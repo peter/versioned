@@ -23,8 +23,8 @@
         :name {:type "string"}
         :email {:type "string"}
         :password {:type "string" :meta {:api_readable false}}
-        :access_token {:type "string" :meta {:api_readable false}}
-        :access_token_created_at {:type "string" :format "date-time"}
+        :access_token {:type "string" :meta {:api_writable false :api_readable false}}
+        :access_token_created_at {:type "string" :format "date-time" :meta {:api_writable false}}
       }
       :additionalProperties false
       :required [:name :email :password]
