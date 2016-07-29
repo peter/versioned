@@ -52,7 +52,7 @@
                       "type" "object"
                       "properties" {
                         "model" {
-                          "enum" ["users" "sections" "pages" "widgets"]
+                          "enum" (keys (:models app))
                         }
                         "data" {
                           "type" "array"
@@ -78,7 +78,113 @@
   })
 
 (defn model-paths [app model]
-  {})
+  (let [name (name (:type model))
+        write-schema (str "#/definitions/" name "_write")]
+    {
+      (str "/" name) {
+        "parameters" [
+          {"$ref" "#/parameters/auth"}
+        ],
+        "get" {
+          "tags" [name],
+          "summary" (str "List " name),
+          "responses" {
+            "200" {
+                "description" (str "List of " name)
+            }
+          }
+        },
+        "post" {
+          "tags" [name],
+          "summary" (str "Create " name),
+          "parameters" [
+            {
+              "name" "body",
+              "in" "body",
+              "required" true,
+              "schema" {
+                "type" "object",
+                "properties" {
+                  "data" {
+                    "type" "object",
+                    "properties" {
+                      "attributes" {"$ref" write-schema}
+                    },
+                    "required" ["attributes"]
+                  }
+                },
+                "required" ["data"]
+              }
+            }
+          ],
+          "responses" {
+            "200" {
+                "description" "Success"
+            },
+            "422" {
+                "description" "Validation errors"
+            }
+          }
+        }
+      },
+      (str "/" name "/{id}") {
+        "parameters" [
+          {"$ref" "#/parameters/auth"},
+          {"$ref" "#/parameters/id"}
+        ],
+        "get" {
+          "tags" [name],
+          "summary" (str "Get " name),
+          "responses" {
+            "200" {
+                "description" "Success"
+            }
+          }
+        },
+        "put" {
+          "tags" [name],
+          "summary" (str "Update " name),
+          "parameters" [
+            {
+              "name" "body",
+              "in" "body",
+              "required" true,
+              "schema" {
+                "type" "object",
+                "properties" {
+                  "data" {
+                    "type" "object",
+                    "properties" {
+                      "attributes" {"$ref" write-schema}
+                    },
+                    "required" ["attributes"]
+                  }
+                },
+                "required" ["data"]
+              }
+            }
+          ],
+          "responses" {
+            "200" {
+                "description" "Success"
+            },
+            "422" {
+                "description" "Validation errors"
+            }
+          }
+        },
+        "delete" {
+          "tags" [name],
+          "summary" (str "Delete " name),
+          "responses" {
+            "200" {
+                "description" "Success"
+            }
+          }
+        }
+      }
+    }))
+
 
 (defn paths [app]
   (let [endpoints [(login-paths app) (import-paths app)]
