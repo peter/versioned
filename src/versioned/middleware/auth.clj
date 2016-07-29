@@ -12,10 +12,10 @@
 
 (defn auth-required? [app request]
   (let [api-prefix (get-in app [:config :api-prefix])]
-    (or (write-method? (:request-method request))
+    (if (write-method? (:request-method request))
+        (not= (str api-prefix "/login") (:uri request))
         (and (get-in app [:config :require-read-auth])
-             (str/starts-with? (:uri request) api-prefix)
-             (not= (str api-prefix "/login") (:uri request))))))
+             (str/starts-with? (:uri request) api-prefix)))))
 
 (defn require-auth [request handler app]
   (let [access-token (parse-token (:headers request))

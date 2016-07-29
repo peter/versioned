@@ -40,7 +40,7 @@
         (let [attributes (->> (json-api/attributes model-spec request)
                               (create-attributes model-spec request))
               doc (model-api/create app model-spec attributes)]
-          (logger/debug app "crud-api create" (:type model-spec) "attributes:" attributes "doc:" doc " meta:" (meta doc))
+          (logger/debug app "crud-api create" (:type model-spec) "attributes:" attributes "doc:" doc "meta:" (meta doc))
           (save-changelog (:database app) request model-spec :create doc)
           (doc-response model-spec doc))
         (json-api/invalid-attributes-response invalids))))
@@ -53,7 +53,7 @@
             (let [attributes (->> (json-api/attributes model-spec request)
                                   (update-attributes model-spec request))
                   doc (model-api/update app model-spec attributes)]
-              (logger/debug app "crud-api update " (:type model-spec) " doc:" doc " meta:" (meta doc))
+              (logger/debug app "crud-api update" (:type model-spec) "doc:" doc "meta:" (meta doc))
               (save-changelog (:database app) request model-spec :update doc)
               (doc-response model-spec doc))
             (json-api/missing-response)))
@@ -63,7 +63,7 @@
     (let [existing-doc (model-api/find-one app model-spec (json-api/id request))]
       (if existing-doc
         (let [doc (model-api/delete app model-spec existing-doc)]
-          (logger/debug app "crud-api delete " (:type model-spec) " doc:" doc " meta:" (meta doc))
+          (logger/debug app "crud-api delete" (:type model-spec) "doc:" doc "meta:" (meta doc))
           (save-changelog (:database app) request model-spec :delete doc)
           (json-api/data-response {}))
         (json-api/missing-response)))))
