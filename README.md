@@ -1,10 +1,14 @@
 # Versioned
 
-A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, and a model API with before/after callbacks on create/update/delete operations.
+A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, Swagger documentation, Heroku deployment, and a model API with before/after callbacks on create/update/delete operations.
 
 The background of this library is that it is a re-implementation and simplification of the
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
 in 2015.
+
+## Demo
+
+There is an online demo of this API at [versioned.herokuapp.com](https://versioned.herokuapp.com).
 
 ## Getting Started Tutorial
 
@@ -146,7 +150,7 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Use Swagger: https://github.com/metosin/ring-swagger
+* Add read schema to Swagger responses for get/list
 
 * Check compliance with jsonapi.org
 
