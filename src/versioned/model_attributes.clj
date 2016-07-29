@@ -36,21 +36,3 @@
 
 (defn api-readable-schema [schema]
   (restricted-schema schema (api-readable-attribute-keys schema)))
-
-(defn translated-attribute
-  ([locales custom-schema]
-    ; NOTE: could use JSON schema patternProperties with (str "^(" (str/join "|" locales) ")$") here,
-    ;       but patternProperties is currently not allowed by Swagger.
-    (let [default-attribute-schema {:type "string"}
-          attribute-schema (merge default-attribute-schema custom-schema)
-          properties (reduce #(assoc %1 %2 attribute-schema) {} locales)]
-      {
-        :type "object"
-        :meta {
-          :translated true
-        }
-        :properties properties
-        :additionalProperties false
-      }))
-    ([locales]
-      (translated-attribute locales {})))

@@ -1,6 +1,5 @@
 (ns versioned.example.models.pages
-  (:require [versioned.example.models.shared :refer [set-sites-callback sites-schema]]
-            [versioned.model-attributes :refer [translated-attribute]]
+  (:require [versioned.example.models.shared :refer [set-sites-callback sites-schema translated-attribute]]
             [versioned.model-spec :refer [generate-spec]]
             [versioned.model-includes.content-base-model :refer [content-base-spec]]))
 
