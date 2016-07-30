@@ -15,6 +15,11 @@
   :uberjar-name "versioned-standalone.jar"
   :main ^:skip-aot versioned.example.app
   :target-path "target/%s"
+  :aliases {
+    "unit-test" ["midje"]
+    "api-test" ["run" "-m" "api.test-runner"]
+    "test" ["do" "midje" ["run" "-m" "api.test-runner"]]
+  }
   :profiles {
     :uberjar {:aot :all}
     :dev {:dependencies [[midje "1.6.3"]

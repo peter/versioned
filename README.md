@@ -132,6 +132,12 @@ lein repl
 (def system (versioned.example.app/-main))
 ```
 
+## Running All Tests
+
+```
+lein test
+```
+
 ## Running Unit Tests
 
 ```
