@@ -10,6 +10,10 @@ in 2015.
 
 There is an online demo of this API at [versioned.herokuapp.com](https://versioned.herokuapp.com).
 
+## Maturity
+
+This framework is a work in progress and has not been used in production yet.
+
 ## Getting Started Tutorial
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed. This framework is available
@@ -151,6 +155,8 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 ## TODO
 
 * Add read schema to Swagger responses for get/list
+
+* Validate swagger.json as part of tests
 
 * Check compliance with jsonapi.org
 

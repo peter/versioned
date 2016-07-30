@@ -80,8 +80,24 @@
     }
   })
 
+(defn data-schema [attributes-schema]
+  {
+    "type" "object",
+    "properties" {
+      "data" {
+        "type" "object",
+        "properties" {
+          "attributes" {"$ref" attributes-schema}
+        },
+        "required" ["attributes"]
+      }
+    },
+    "required" ["data"]
+  })
+
 (defn model-paths [app model]
   (let [name (name (:type model))
+        read-schema (str "#/definitions/" name "_read")
         write-schema (str "#/definitions/" name "_write")
         routes (set (or (:routes model) []))
         list-key (str "/" name)
@@ -94,7 +110,23 @@
             ],
             "responses" {
               "200" {
-                  "description" (str "List of " name)
+                "description" (str "List of " name)
+                "schema" {
+                  "type" "object"
+                  "properties" {
+                    "data" {
+                      "type" "array"
+                      "items" {
+                        "type" "object"
+                        "properties" {
+                          "attributes" {"$ref" read-schema}
+                        }
+                        "required" ["attributes"]
+                      }
+                    }
+                  }
+                  "required" ["data"]
+                }
               }
             }
           })
@@ -107,19 +139,7 @@
                 "name" "body",
                 "in" "body",
                 "required" true,
-                "schema" {
-                  "type" "object",
-                  "properties" {
-                    "data" {
-                      "type" "object",
-                      "properties" {
-                        "attributes" {"$ref" write-schema}
-                      },
-                      "required" ["attributes"]
-                    }
-                  },
-                  "required" ["data"]
-                }
+                "schema" (data-schema write-schema)
               }
             ]
             "responses" {
@@ -143,7 +163,8 @@
             ],
             "responses" {
               "200" {
-                  "description" "Success"
+                "description" "Success"
+                "schema" (data-schema read-schema)
               }
             }
           })
@@ -157,19 +178,7 @@
                 "name" "body",
                 "in" "body",
                 "required" true,
-                "schema" {
-                  "type" "object",
-                  "properties" {
-                    "data" {
-                      "type" "object",
-                      "properties" {
-                        "attributes" {"$ref" write-schema}
-                      },
-                      "required" ["attributes"]
-                    }
-                  },
-                  "required" ["data"]
-                }
+                "schema" (data-schema write-schema)
               }
             ]
             "responses" {
@@ -234,19 +243,23 @@
       }
     })
 
+(defn version [app]
+  (-> "project.clj" slurp read-string (nth 2)))
+
+; NOTE: see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 (defn swagger [app]
   {
       :swagger "2.0"
       :info {
           :title "Versioned API"
           :description "A REST CMS API based on MongoDB"
-          :version "0.2.0"
+          :version (version app)
       }
-      :host "versioned.herokuapp.com"
-      :schemes [
-          "https"
-      ],
-      :basePath "/v1"
+      ; :host "versioned.herokuapp.com"
+      ; :schemes [
+      ;     "https"
+      ; ],
+      :basePath (get-in app [:config :api-prefix])
       :produces [
           "application/json"
       ]

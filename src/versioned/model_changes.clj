@@ -1,5 +1,4 @@
-(ns versioned.model-changes
-  (:require [versioned.model-attributes :refer [api-writable?]]))
+(ns versioned.model-changes)
 
 (defn changed-value? [from-value to-value]
   (not= from-value to-value))
