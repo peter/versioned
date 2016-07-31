@@ -15,7 +15,8 @@
     (if (write-method? (:request-method request))
         (not= (str api-prefix "/login") (:uri request))
         (and (get-in app [:config :require-read-auth])
-             (str/starts-with? (:uri request) api-prefix)))))
+             (str/starts-with? (:uri request) api-prefix)
+             (not= (str api-prefix "/swagger.json") (:uri request))))))
 
 (defn require-auth [request handler app]
   (let [access-token (parse-token (:headers request))
