@@ -160,17 +160,13 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Add read schema to Swagger responses for get/list
-
-* Validate swagger.json as part of tests
-
-* Check compliance with jsonapi.org
-
 * Validation
   * Validate association id references before save
   * Validate published_version reference before save
   * unique constraint
   * deal with mongo errors?
+
+* Better compliance with jsonapi.org?
 
 * list endpoint
   * support sort query parameter
