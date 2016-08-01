@@ -2,12 +2,15 @@
   (require [versioned.model-attributes :refer [api-writable-schema
                                                api-readable-schema
                                                without-custom-keys]]
+           [versioned.swagger.paths.api-docs :as api-docs-paths]
            [versioned.swagger.paths.login :as login-paths]
            [versioned.swagger.paths.import :as import-paths]
            [versioned.swagger.paths.model :as model-paths]))
 
 (defn- paths [app]
-  (let [endpoints [(login-paths/swagger app) (import-paths/swagger app)]
+  (let [endpoints [(api-docs-paths/swagger app)
+                   (login-paths/swagger app)
+                   (import-paths/swagger app)]
         models (map (partial model-paths/swagger app) (vals (:models app)))
         all (concat endpoints models)]
     (apply merge all)))
