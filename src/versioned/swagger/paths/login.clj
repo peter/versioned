@@ -6,6 +6,8 @@
       "post" {
         "tags" ["login"],
         "summary" "Login",
+        "x-auth-required" false
+        "x-handler" "sessions/create"
         "description" "Log in user with email/password and get token",
         "parameters" [
             {

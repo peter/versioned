@@ -1,6 +1,7 @@
 (ns versioned.middleware.auth
   (:require [versioned.util.auth :refer [parse-token]]
             [versioned.logger :as logger]
+            [versioned.routes :refer [route-requires-auth?]]
             [clojure.string :as str]
             [versioned.models.users :as users]))
 
@@ -11,12 +12,9 @@
 (def write-method? #{:post :put :patch})
 
 (defn auth-required? [app request]
-  (let [api-prefix (get-in app [:config :api-prefix])]
-    (if (write-method? (:request-method request))
-        (not= (str api-prefix "/login") (:uri request))
-        (and (get-in app [:config :require-read-auth])
-             (str/starts-with? (:uri request) api-prefix)
-             (not= (str api-prefix "/swagger.json") (:uri request))))))
+  (and (route-requires-auth? app request)
+       (or (write-method? (:request-method request))
+           (get-in app [:config :require-read-auth]))))
 
 (defn require-auth [request handler app]
   (let [access-token (parse-token (:headers request))
@@ -27,7 +25,6 @@
           (handler (assoc request :user user)))
       (do (logger/debug app "versioned.middleware.auth/require-auth failure user: " user " token: " access-token)
           unauthorized-response))))
-
 
 (defn wrap-auth [handler app]
   (fn [request]

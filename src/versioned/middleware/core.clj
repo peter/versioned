@@ -5,7 +5,8 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.reload :refer [wrap-reload]]
             [versioned.middleware.cors :refer [wrap-cors]]
-            [versioned.middleware.auth :refer [wrap-auth]]))
+            [versioned.middleware.auth :refer [wrap-auth]]
+            [versioned.middleware.routes :refer [wrap-route-match]]))
 
 (defn development-middleware [handler env]
   (if (= env "development")
@@ -23,5 +24,6 @@
       (wrap-auth app)
       (wrap-cors)
       (development-middleware (:env app))
+      (wrap-route-match app)
       (wrap-resource "public")
   ))

@@ -1,7 +1,7 @@
 (ns versioned.router.params
   (:require [clojure.string :as str]))
 
-(def name-pattern #":([a-z0-9-]+)")
+(def name-pattern #"\{([a-zA-Z0-9_-]+)\}")
 
 (defn param-names [path]
   (map (comp keyword second) (re-seq name-pattern path)))

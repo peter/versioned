@@ -1,5 +1,6 @@
 (ns versioned.routes
   (:require [versioned.util.core :as u]
+            [versioned.router.core :refer [get-route-match]]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers
@@ -28,28 +29,30 @@
 
 (def crud-actions [:list :get :create :update :delete])
 
-(defn- crud-routes [model & {:keys [actions api-prefix]
-                             :or {actions crud-actions}}]
-  (vals (select-keys {
-    :list {:methods #{:get} :path (str api-prefix "/" (name model)) :handler (str (name model) "/api:list")}
-    :get {:methods #{:get} :path (str api-prefix "/" (name model) "/:id") :handler (str (name model) "/api:get")}
-    :create {:methods #{:post} :path (str api-prefix "/" (name model)) :handler (str (name model) "/api:create")}
-    :update {:methods #{:patch :put} :path (str api-prefix "/" (name model) "/:id") :handler (str (name model) "/api:update")}
-    :delete {:methods #{:delete} :path (str api-prefix "/" (name model) "/:id") :handler (str (name model) "/api:delete")}
-  } actions)))
+(defn route-requires-auth? [app request]
+  (let [route-match (get-route-match app request)]
+    (if route-match
+      (get-in route-match [:route :swagger "x-auth-required"] true)
+      false)))
 
-(defn- model-routes [models api-prefix]
-  (map #(crud-routes (:type %) :actions (:routes %) :api-prefix api-prefix) (filter :routes (vals models))))
+(defn prefixed-path [api-prefix path spec]
+  (let [prefix? (get spec "x-api-prefix" true)]
+    (if prefix?
+      (str api-prefix path)
+      path)))
+
+(defn routes-for-path [api-prefix [path methods]]
+  (map (fn [[method spec]]
+         {:methods #{(keyword method)}
+          :path (prefixed-path api-prefix path spec)
+          :swagger spec
+          :handler (get spec "x-handler")})
+        methods))
 
 (defn routes [app]
-  (let [api-prefix (get-in app [:config :api-prefix])]
-    (flatten [
-      {:methods #{:get} :path "/" :handler "home/index"}
-      {:methods #{:get} :path (str api-prefix "/swagger.json") :handler "swagger/index"}
-      {:methods #{:post} :path (str api-prefix "/login") :handler "sessions/create"}
-      {:methods #{:post} :path (str api-prefix "/bulk_import") :handler "bulk-import/create"}
-      (model-routes (:models app) api-prefix)
-    ])))
+  (let [paths (get-in app [:swagger :paths])
+        api-prefix (get-in app [:config :api-prefix])]
+    (flatten (map (partial routes-for-path api-prefix) paths))))
 
 (defn routes-with-handlers [app]
   (map #(assoc % :handler (lookup-handler (:models app) %)) (routes app)))

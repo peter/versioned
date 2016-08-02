@@ -26,6 +26,7 @@
           "get" (if (routes :list) {
             "tags" [name],
             "summary" (str "List " name),
+            "x-handler" (str name "/api:list")
             "parameters" [
               {"$ref" "#/parameters/auth"}
             ],
@@ -54,6 +55,7 @@
           "post" (if (routes :create) {
             "tags" [name],
             "summary" (str "Create " name),
+            "x-handler" (str name "/api:create")
             "parameters" [
               {"$ref" "#/parameters/auth"},
               {
@@ -78,6 +80,7 @@
           "get" (if (routes :get) {
             "tags" [name],
             "summary" (str "Get " name),
+            "x-handler" (str name "/api:get")
             "parameters" [
               {"$ref" "#/parameters/auth"},
               {"$ref" "#/parameters/id"}
@@ -92,6 +95,7 @@
           "put" (if (routes :update) {
             "tags" [name],
             "summary" (str "Update " name),
+            "x-handler" (str name "/api:update")
             "parameters" [
               {"$ref" "#/parameters/auth"},
               {"$ref" "#/parameters/id"},
@@ -114,6 +118,7 @@
           "delete" (if (routes :delete) {
             "tags" [name],
             "summary" (str "Delete " name),
+            "x-handler" (str name "/api:delete")
             "parameters" [
               {"$ref" "#/parameters/auth"},
               {"$ref" "#/parameters/id"}

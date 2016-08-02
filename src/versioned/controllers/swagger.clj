@@ -1,5 +1,4 @@
-(ns versioned.controllers.swagger
-  (:require [versioned.swagger.core :refer [swagger]]))
+(ns versioned.controllers.swagger)
 
 (defn index [app request]
-  {:body (swagger app) :status 200})
+  {:body (:swagger app) :status 200})

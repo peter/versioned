@@ -6,6 +6,7 @@
         "post" {
             "tags" ["import"]
             "summary" "Bulk Import"
+            "x-handler" "bulk-import/create"
             "description" "Import data, i.e. from another CMS"
             "parameters" [
                 {"$ref" "#/parameters/auth"}

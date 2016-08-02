@@ -16,9 +16,13 @@
     (pr-str (:params request)) " "
   )))
 
-(defn create-handler [app routes]
+(defn get-route-match [app request]
+  (or (:route-match request)
+      (m/find-match (:routes app) request)))
+
+(defn create-handler [app]
   (fn [request]
-    (let [match (m/find-match routes request)
+    (let [match (get-route-match app request)
           handler (if match (get-in match [:route :handler]) missing-handler)
           request-with-params (update-in request [:params] merge (:params match))]
     (when match (log-route-match app request-with-params match))
