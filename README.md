@@ -160,6 +160,8 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
+* Add model list/get endpoint parameters to swagger and use those
+
 * Validation
   * Validate association id references before save
   * Validate published_version reference before save
