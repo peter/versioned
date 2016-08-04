@@ -19,9 +19,7 @@ This framework is a work in progress and has not been used in production yet.
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed. This framework is available
 via the following Leiningen dependency:
 
-```
-[versioned "0.1.0-SNAPSHOT"]
-```
+[![Clojars Project](http://clojars.org/versioned/latest-version.svg)](http://clojars.org/versioned)
 
 Check out [versioned-example](https://github.com/peter/versioned-example) to get a feeling for what a simple app based on this framework might look like.
 
