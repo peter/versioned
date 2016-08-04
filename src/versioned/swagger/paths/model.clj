@@ -44,6 +44,22 @@
           "x-handler" (str name "/api:list")
           "parameters" [
             {"$ref" "#/parameters/auth"}
+            {
+              "name" "page",
+              "description" "Which page to fetch, defaults to 1 (for pagination)"
+              "in" "query",
+              "required" false,
+              "type" "integer",
+              "minimum" 1
+            }
+            {
+              "name" "per-page",
+              "description" "Number of documents to fetch (for pagination)"
+              "in" "query",
+              "required" false,
+              "type" "integer",
+              "minimum" 1
+            }
           ],
           "responses" {
             "200" {
@@ -100,7 +116,29 @@
           "x-handler" (str name "/api:get")
           "parameters" [
             {"$ref" "#/parameters/auth"},
-            {"$ref" "#/parameters/id"}
+            {"$ref" "#/parameters/id"},
+            {
+              "name" "relationships",
+              "description" "Whether to fetch relationships for the document"
+              "in" "query",
+              "required" false,
+              "type" "boolean",
+            }
+            {
+              "name" "version",
+              "description" "Which version of the document to fetch, defaults to the latest version"
+              "in" "query",
+              "required" false,
+              "type" "integer",
+              "minimum" 1
+            }
+            {
+              "name" "published",
+              "description" "Whether to only fetch published version of document and its relationships"
+              "in" "query",
+              "required" false,
+              "type" "boolean",
+            }
           ],
           "responses" {
             "200" {

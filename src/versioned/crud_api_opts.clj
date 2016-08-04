@@ -2,7 +2,6 @@
   (:require [versioned.util.core :as u]
             [versioned.model-support :refer [id-attribute]]))
 
-; TODO: query parameter validation - use type coercion plus json schema
 (defn- pagination [request]
   (->> (select-keys (get-in request [:params]) [:page :per-page])
        (u/map-values u/safe-parse-int)
@@ -17,6 +16,5 @@
   (merge (pagination request)
          (sort model-spec request)))
 
-; TODO: query parameter validation - use type coercion plus json schema
 (defn get-opts [request]
   (select-keys (:params request) [:relationships :version :published]))
