@@ -6,9 +6,9 @@ The background of this library is that it is a re-implementation and simplificat
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
 in 2015.
 
-## Demo
+## Demo and API Doc
 
-There is an online demo of this API at [versioned.herokuapp.com](https://versioned.herokuapp.com).
+There is an online example application with Swagger API documentation at [versioned.herokuapp.com](https://versioned.herokuapp.com).
 
 ## Maturity
 
