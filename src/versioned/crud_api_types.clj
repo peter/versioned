@@ -25,6 +25,10 @@
         nil
       (= type "date")
         (d/parse-datetime value)
+      (and (= type "boolean") (string? value))
+        (u/parse-bool value)
+      (and (= type "integer") (string? value))
+        (u/parse-int value)
       (= type "array")
         (u/compact (map (partial coerce-value attribute-schema attribute) value))
       (and (= type "object") (:properties attribute-schema))

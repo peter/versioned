@@ -7,7 +7,7 @@
 
 (defn child-schema [schema attribute]
   (cond
-    (= (:type schema) "object") (attribute (schema-attributes schema))
+    (= (:type schema) "object") (get (schema-attributes schema) attribute)
     (= (:type schema) "array") (:items schema)
     :else schema))
 

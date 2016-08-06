@@ -3,17 +3,17 @@
 
 (defn- data-schema [attributes-schema]
   {
-    "type" "object",
-    "properties" {
-      "data" {
-        "type" "object",
-        "properties" {
-          "attributes" {"$ref" attributes-schema}
+    :type "object",
+    :properties {
+      :data {
+        :type "object",
+        :properties {
+          :attributes {"$ref" attributes-schema}
         },
-        "required" ["attributes"]
+        :required ["attributes"]
       }
     },
-    "required" ["data"]
+    :required ["data"]
   })
 
 (defn model-name [model]
@@ -38,70 +38,70 @@
 (defn list-paths [app model]
   (let [name (model-name model)]
     (not-empty (u/compact {
-        "get" (if (add-route? model :list) {
-          "tags" [name],
-          "summary" (str "List " name),
-          "x-handler" (str name "/api:list")
-          "parameters" [
+        :get (if (add-route? model :list) {
+          :tags [name],
+          :summary (str "List " name),
+          :x-handler (str name "/api:list")
+          :parameters [
             {"$ref" "#/parameters/auth"}
             {
-              "name" "page",
-              "description" "Which page to fetch, defaults to 1 (for pagination)"
-              "in" "query",
-              "required" false,
-              "type" "integer",
-              "minimum" 1
+              :name "page",
+              :description "Which page to fetch, defaults to 1 (for pagination)"
+              :in "query",
+              :required false,
+              :type "integer",
+              :minimum 1
             }
             {
-              "name" "per-page",
-              "description" "Number of documents to fetch (for pagination)"
-              "in" "query",
-              "required" false,
-              "type" "integer",
-              "minimum" 1
+              :name "per-page",
+              :description "Number of documents to fetch (for pagination)"
+              :in "query",
+              :required false,
+              :type "integer",
+              :minimum 1
             }
           ],
-          "responses" {
+          :responses {
             "200" {
-              "description" (str "List of " name)
-              "schema" {
-                "type" "object"
-                "properties" {
-                  "data" {
-                    "type" "array"
-                    "items" {
-                      "type" "object"
-                      "properties" {
-                        "attributes" {"$ref" (read-schema-ref model)}
+              :description (str "List of " name)
+              :schema {
+                :type "object"
+                :properties {
+                  :data {
+                    :type "array"
+                    :items {
+                      :type "object"
+                      :properties {
+                        :attributes {"$ref" (read-schema-ref model)}
                       }
-                      "required" ["attributes"]
+                      :required ["attributes"]
                     }
                   }
                 }
-                "required" ["data"]
+                :required ["data"]
               }
             }
           }
         })
-        "post" (if (add-route? model :create) {
-          "tags" [name],
-          "summary" (str "Create " name),
-          "x-handler" (str name "/api:create")
-          "parameters" [
+        :post (if (add-route? model :create) {
+          :tags [name],
+          :summary (str "Create " name),
+          :x-handler (str name "/api:create")
+          :parameters [
             {"$ref" "#/parameters/auth"},
             {
-              "name" "body",
-              "in" "body",
-              "required" true,
-              "schema" (write-schema model)
+              :name "body",
+              :in "body",
+              :required true,
+              :schema (write-schema model)
             }
           ]
-          "responses" {
+          :responses {
             "200" {
-                "description" "Success"
+                :description "Success"
             },
             "422" {
-                "description" "Validation errors"
+                :description "Validation errors"
             }
           }
         })
@@ -110,77 +110,77 @@
 (defn id-paths [app model]
   (let [name (model-name model)]
     (not-empty (u/compact {
-        "get" (if (add-route? model :get) {
-          "tags" [name],
-          "summary" (str "Get " name),
-          "x-handler" (str name "/api:get")
-          "parameters" [
+        :get (if (add-route? model :get) {
+          :tags [name],
+          :summary (str "Get " name),
+          :x-handler (str name "/api:get")
+          :parameters [
             {"$ref" "#/parameters/auth"},
             {"$ref" "#/parameters/id"},
             {
-              "name" "relationships",
-              "description" "Whether to fetch relationships for the document"
-              "in" "query",
-              "required" false,
-              "type" "boolean",
+              :name "relationships",
+              :description "Whether to fetch relationships for the document"
+              :in "query",
+              :required false,
+              :type "boolean",
             }
             {
-              "name" "version",
-              "description" "Which version of the document to fetch, defaults to the latest version"
-              "in" "query",
-              "required" false,
-              "type" "integer",
-              "minimum" 1
+              :name "version",
+              :description "Which version of the document to fetch, defaults to the latest version"
+              :in "query",
+              :required false,
+              :type "integer",
+              :minimum 1
             }
             {
-              "name" "published",
-              "description" "Whether to only fetch published version of document and its relationships"
-              "in" "query",
-              "required" false,
-              "type" "boolean",
+              :name "published",
+              :description "Whether to only fetch published version of document and its relationships"
+              :in "query",
+              :required false,
+              :type "boolean",
             }
           ],
-          "responses" {
+          :responses {
             "200" {
-              "description" "Success"
-              "schema" (read-schema model)
+              :description "Success"
+              :schema (read-schema model)
             }
           }
         })
-        "put" (if (add-route? model :update) {
-          "tags" [name],
-          "summary" (str "Update " name),
-          "x-handler" (str name "/api:update")
-          "parameters" [
+        :put (if (add-route? model :update) {
+          :tags [name],
+          :summary (str "Update " name),
+          :x-handler (str name "/api:update")
+          :parameters [
             {"$ref" "#/parameters/auth"},
             {"$ref" "#/parameters/id"},
             {
-              "name" "body",
-              "in" "body",
-              "required" true,
-              "schema" (write-schema model)
+              :name "body",
+              :in "body",
+              :required true,
+              :schema (write-schema model)
             }
           ]
-          "responses" {
+          :responses {
             "200" {
-                "description" "Success"
+                :description "Success"
             },
             "422" {
-                "description" "Validation errors"
+                :description "Validation errors"
             }
           }
         })
-        "delete" (if (add-route? model :delete) {
-          "tags" [name],
-          "summary" (str "Delete " name),
-          "x-handler" (str name "/api:delete")
-          "parameters" [
+        :delete (if (add-route? model :delete) {
+          :tags [name],
+          :summary (str "Delete " name),
+          :x-handler (str name "/api:delete")
+          :parameters [
             {"$ref" "#/parameters/auth"},
             {"$ref" "#/parameters/id"}
           ],
-          "responses" {
+          :responses {
             "200" {
-                "description" "Success"
+                :description "Success"
             }
           }
         })

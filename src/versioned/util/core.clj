@@ -1,5 +1,8 @@
 (ns versioned.util.core
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.walk]))
+
+(def keywordize-keys clojure.walk/keywordize-keys)
 
 (defn blank?
   "returns true if value is nil or empty"

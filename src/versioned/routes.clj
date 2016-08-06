@@ -1,6 +1,6 @@
 (ns versioned.routes
   (:require [versioned.util.core :as u]
-            [versioned.router.core :refer [get-route-match]]
+            [clojure.string :as str]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers
@@ -30,13 +30,18 @@
 (def crud-actions [:list :get :create :update :delete])
 
 (defn route-requires-auth? [app request]
-  (let [route-match (get-route-match app request)]
-    (if route-match
-      (get-in route-match [:route :swagger "x-auth-required"] true)
-      false)))
+  (if (:route request)
+      (get-in request [:route :swagger :x-auth-required] true)
+      false))
+
+(defn absolute-path [path]
+  (if (str/starts-with? "/" (name path))
+      (name path)
+      (str "/" (name path))))
 
 (defn prefixed-path [api-prefix path spec]
-  (let [prefix? (get spec "x-api-prefix" true)]
+  (let [prefix? (get spec :x-api-prefix true)
+        path (absolute-path path)]
     (if prefix?
       (str api-prefix path)
       path)))
@@ -46,7 +51,7 @@
          {:methods #{(keyword method)}
           :path (prefixed-path api-prefix path spec)
           :swagger spec
-          :handler (get spec "x-handler")})
+          :handler (:x-handler spec)})
         methods))
 
 (defn routes [app]

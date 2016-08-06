@@ -6,7 +6,8 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [versioned.middleware.cors :refer [wrap-cors]]
             [versioned.middleware.auth :refer [wrap-auth]]
-            [versioned.middleware.routes :refer [wrap-route-match]]))
+            [versioned.middleware.routes :refer [wrap-route-match]]
+            [versioned.middleware.params-parser :refer [wrap-params-parser]]))
 
 (defn development-middleware [handler env]
   (if (= env "development")
@@ -17,6 +18,7 @@
 ; NOTE: middleware execute execute in reverse order - the last one listed here exeucutes first
 (defn wrap [handler app]
   (-> handler
+      (wrap-params-parser app)
       (wrap-keyword-params)
       (wrap-params {})
       (wrap-json-params {})

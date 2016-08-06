@@ -158,7 +158,9 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Add model list/get endpoint parameters to swagger and use those
+* Extend params-parser middleware to also deal with parameters in path and header?
+
+* Don't keywordize swagger spec as this led to problems with the string path
 
 * Validation
   * Validate association id references before save

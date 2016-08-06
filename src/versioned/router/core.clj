@@ -7,23 +7,17 @@
    :headers {"Content-Type" "text/html"}
    :body "Missing"})
 
-(defn log-route-match [app request match]
+(defn log-route-match [app request]
   (logger/debug app (str
     "route match "
     (:remote-addr request) " "
-    (:request-method request) " " (:uri request) " "
-    (pr-str (:route match)) " "
-    (pr-str (:params request)) " "
+    (:request-method request) " " (:uri request)
+    " path-params: " (pr-str (:path-params request))
+    " query-params: " (pr-str (:query-params request))
   )))
-
-(defn get-route-match [app request]
-  (or (:route-match request)
-      (m/find-match (:routes app) request)))
 
 (defn create-handler [app]
   (fn [request]
-    (let [match (get-route-match app request)
-          handler (if match (get-in match [:route :handler]) missing-handler)
-          request-with-params (update-in request [:params] merge (:params match))]
-    (when match (log-route-match app request-with-params match))
-    (handler app request-with-params))))
+    (let [handler (if (:route request) (get-in request [:route :handler]) missing-handler)]
+    (when (:route request) (log-route-match app request))
+    (handler app request))))

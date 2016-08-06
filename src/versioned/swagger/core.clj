@@ -1,5 +1,6 @@
 (ns versioned.swagger.core
-  (require [versioned.model-attributes :refer [api-writable-schema
+  (require [versioned.util.core :as u]
+           [versioned.model-attributes :refer [api-writable-schema
                                                api-readable-schema
                                                without-custom-keys]]
            [versioned.swagger.paths.api-docs :as api-docs-paths]
@@ -47,7 +48,7 @@
 
 ; NOTE: see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 (defn swagger [app]
-  {
+  (u/keywordize-keys {
       :swagger "2.0"
       :info {
           :title "Versioned API"
@@ -61,4 +62,4 @@
       :paths (paths app)
       :definitions (definitions app)
       :parameters (parameters app)
-  })
+  }))
