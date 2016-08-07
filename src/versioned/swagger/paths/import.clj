@@ -3,40 +3,40 @@
 (defn swagger [app]
   {
     "/bulk_import" {
-        "post" {
-            "tags" ["import"]
-            "summary" "Bulk Import"
-            "x-handler" "bulk-import/create"
-            "description" "Import data, i.e. from another CMS"
-            "parameters" [
+        :post {
+            :tags ["import"]
+            :summary "Bulk Import"
+            :x-handler "bulk-import/create"
+            :description "Import data, i.e. from another CMS"
+            :parameters [
                 {"$ref" "#/parameters/auth"}
                 {
-                    "name" "body"
-                    "in" "body"
-                    "required" true
-                    "schema" {
-                      "type" "object"
-                      "properties" {
-                        "model" {
-                          "enum" (keys (:models app))
+                    :name "body"
+                    :in "body"
+                    :required true
+                    :schema {
+                      :type "object"
+                      :properties {
+                        :model {
+                          :enum (keys (:models app))
                         }
-                        "data" {
-                          "type" "array"
-                          "items" {
-                            "type" "object"
+                        :data {
+                          :type "array"
+                          :items {
+                            :type "object"
                           }
                         }
                       }
-                      "required" ["model" "data"]
+                      :required ["model" "data"]
                     }
                 }
             ]
-            "responses" {
+            :responses {
                 "200" {
-                    "description" "Successful import"
+                    :description "Successful import"
                 }
                 "422" {
-                    "description" "Import errors"
+                    :description "Import errors"
                 }
             }
         }

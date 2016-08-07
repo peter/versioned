@@ -34,17 +34,10 @@
       (get-in request [:route :swagger :x-auth-required] true)
       false))
 
-(defn absolute-path [path]
-  (if (str/starts-with? "/" (name path))
-      (name path)
-      (str "/" (name path))))
-
 (defn prefixed-path [api-prefix path spec]
-  (let [prefix? (get spec :x-api-prefix true)
-        path (absolute-path path)]
-    (if prefix?
+  (if (get spec :x-api-prefix true)
       (str api-prefix path)
-      path)))
+      path))
 
 (defn routes-for-path [api-prefix [path methods]]
   (map (fn [[method spec]]

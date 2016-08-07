@@ -48,7 +48,7 @@
 
 ; NOTE: see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 (defn swagger [app]
-  (u/keywordize-keys {
+  {
       :swagger "2.0"
       :info {
           :title "Versioned API"
@@ -62,4 +62,4 @@
       :paths (paths app)
       :definitions (definitions app)
       :parameters (parameters app)
-  }))
+  })
