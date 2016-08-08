@@ -29,7 +29,10 @@
   (safe-parse-int value))
 
 (defn parse-bool [value]
-  (not (contains? #{nil false "0" "f" "false"} value)))
+  (cond
+    (contains? #{nil false "0" "f" "false"} value) false
+    (contains? #{true "1" "t" "true"} value) true
+    :default value))
 
 (defn load-var [path]
   (let [[m f] (str/split path #"/")
@@ -74,13 +77,16 @@
 
 (defn deep-map-values
   ([f v opts]
-    (cond
-      (map? v) (reduce (fn [altered-map [k mv]]
-                          (assoc altered-map k (deep-map-values f mv opts)))
-                       {}
-                       v)
-      (and (get opts :recurse-on-coll? true) (coll? v)) (map #(deep-map-values f % opts) v)
-      :else (f v)))
+    (let [recurse-if? (get opts :recurse-if? coll?)]
+      (cond
+        (and (map? v) (recurse-if? v))
+          (reduce (fn [altered-map [k mv]]
+                    (assoc altered-map k (deep-map-values f mv opts)))
+                  {}
+                  v)
+        (and (coll? v) (recurse-if? v))
+          (map #(deep-map-values f % opts) v)
+        :else (f v))))
   ([f v]
     (deep-map-values f v {})))
 

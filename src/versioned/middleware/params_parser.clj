@@ -7,14 +7,26 @@
 
 (defn wrap-params-parser [handler app]
   (fn [request]
-    (if (not-empty (parameters-in (get-in request [:route :swagger]) "query"))
-      (let [swagger (get-in request [:route :swagger])
-            schema (parameters-schema (parameters-in swagger "query"))
-            query-params (coerce-attribute-types schema (u/keywordize-keys (:query-params request)))
-            request-with-params (assoc request :query-params query-params
-                                               :params (merge (:params request) query-params))
-            errors (validate-schema schema query-params)]
-        (if errors
+    (let [swagger (get-in request [:route :swagger])
+          parameters (u/compact {
+            :query-params (parameters-in swagger "query")
+            :path-params (parameters-in swagger "path")
+          })]
+    (if (not-empty parameters)
+      (let [in-params (reduce (fn [result [key parameters]]
+                                (let [schema (parameters-schema parameters)
+                                    attributes (u/keywordize-keys (key request))]
+                                  (assoc result key (coerce-attribute-types schema attributes))))
+                              {}
+                              parameters)
+            params (apply merge (:params request) (vals in-params))
+            request-with-params (apply assoc request :params params (flatten (seq in-params)))
+            errors (u/compact (reduce (fn [result [key attributes]]
+                                        (let [schema (parameters-schema (key parameters))]
+                                          (concat result (validate-schema schema attributes))))
+                                      []
+                                      in-params))]
+        (if (not-empty errors)
           (error-response errors)
           (handler request-with-params)))
-      (handler request))))
+      (handler request)))))

@@ -158,9 +158,17 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Extend params-parser middleware to also deal with parameters in path and header?
+* The id parameter should adhere to the schema of the model (from id-attribute)
 
-* Don't keywordize swagger spec as this led to problems with the string path
+* params-parser API test
+
+* Move parse functions to their own namespace
+
+* safe-coerce-value
+
+* Get reload to work again
+
+* Should not allow both version and published params in get endpoint
 
 * Validation
   * Validate association id references before save

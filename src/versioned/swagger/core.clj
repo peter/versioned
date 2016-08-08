@@ -6,7 +6,8 @@
            [versioned.swagger.paths.api-docs :as api-docs-paths]
            [versioned.swagger.paths.login :as login-paths]
            [versioned.swagger.paths.import :as import-paths]
-           [versioned.swagger.paths.model :as model-paths]))
+           [versioned.swagger.paths.model :as model-paths]
+           [versioned.swagger.ref :refer [deep-resolve-ref]]))
 
 (defn- paths [app]
   (let [endpoints [(api-docs-paths/swagger app)
@@ -18,9 +19,9 @@
 
 (defn- definitions [app]
   (reduce (fn [result model]
-            (let [write-key (str (name (:type model)) "_write")
+            (let [write-key (keyword (str (name (:type model)) "_write"))
                   write-schema (without-custom-keys (api-writable-schema (:schema model)))
-                  read-key (str (name (:type model)) "_read")
+                  read-key (keyword (str (name (:type model)) "_read"))
                   read-schema (without-custom-keys (api-readable-schema (:schema model)))]
               (assoc result write-key write-schema
                             read-key read-schema)))
@@ -48,7 +49,7 @@
 
 ; NOTE: see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 (defn swagger [app]
-  {
+  (deep-resolve-ref {
       :swagger "2.0"
       :info {
           :title "Versioned API"
@@ -62,4 +63,4 @@
       :paths (paths app)
       :definitions (definitions app)
       :parameters (parameters app)
-  })
+  }))

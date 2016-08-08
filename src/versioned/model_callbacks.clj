@@ -18,7 +18,7 @@
     (.indexOf sort-keys sort-key)))
 
 (defn sort-callbacks [callbacks]
-  (u/deep-map-values #(sort-by sort-index %) callbacks {:recurse-on-coll? false}))
+  (u/deep-map-values #(sort-by sort-index %) callbacks {:recurse-if? map?}))
 
 (defn- save-callbacks [callbacks]
   {:update (:save callbacks) :create (:save callbacks)})
