@@ -8,6 +8,7 @@
     :sections "versioned.example.models.sections/spec"
     :pages "versioned.example.models.pages/spec"
     :widgets "versioned.example.models.widgets/spec"
+    :articles "versioned.example.models.articles/spec"
   }
   :sites sites
   :locales sites

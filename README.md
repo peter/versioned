@@ -1,6 +1,6 @@
 # Versioned
 
-A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, Swagger documentation, Heroku deployment, and a model API with before/after callbacks on create/update/delete operations.
+A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, [Swagger](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) documentation, Heroku deployment, and a model API with before/after callbacks on create/update/delete operations.
 
 The background of this library is that it is a re-implementation and simplification of the
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
@@ -68,7 +68,7 @@ The `spec` function is invoked by the framework and should return a map that ser
 
 * `:type` - the name of the model in URLs and the Mongodb collection name
 * `:schema` - a JSON schema that is used to validate documents before they are saved to the
- database.
+ database. For reading up on JSON schema I recommend [Understanding JSON Schema](https://spacetelescope.github.io/understanding-json-schema/UnderstandingJSONSchema.pdf).
 * `:callbacks` - functions to invoke `before` or `after` `update`, `create`, or `delete`.
 * `:relationships` - associations to other models (the `widgets` relationship above corresponds
  to the `widgets_ids` property)
@@ -157,8 +157,6 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 ```
 
 ## TODO
-
-* The id parameter should adhere to the schema of the model (from id-attribute)
 
 * params-parser API test
 

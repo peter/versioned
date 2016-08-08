@@ -36,12 +36,6 @@
         :required true
         :type "string"
       }
-      :id {
-        :name "id"
-        :in "path"
-        :required true
-        :type "integer"
-      }
     })
 
 (defn- version [app]

@@ -14,7 +14,7 @@
 (def id-schema {
   :type "object"
   :properties {
-    :_id {:type "string" :meta {:api_writable false}}
+    :_id {:type "string" :pattern "^[a-z0-9]{24}$" :meta {:api_writable false}}
     :id {:type "integer" :meta {:api_writable false}}
   }
   :required [:id]

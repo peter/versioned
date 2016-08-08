@@ -1,5 +1,6 @@
 (ns versioned.swagger.paths.model
-  (:require [versioned.util.core :as u]))
+  (:require [versioned.util.core :as u]
+            [versioned.model-support :refer [id-attribute]]))
 
 (defn- data-schema [attributes-schema]
   {
@@ -34,6 +35,15 @@
 
 (defn write-schema [model]
   (data-schema (write-schema-ref model)))
+
+(defn id-parameter [model]
+  (let [id-attr (id-attribute model)
+        id-schema (dissoc (get-in model [:schema :properties id-attr] {}) :meta)]
+    (merge id-schema {
+      :name "id"
+      :in "path"
+      :required true
+    })))
 
 (defn list-paths [app model]
   (let [name (model-name model)]
@@ -116,7 +126,7 @@
           :x-handler (str name "/api:get")
           :parameters [
             {"$ref" "#/parameters/auth"},
-            {"$ref" "#/parameters/id"},
+            (id-parameter model)
             {
               :name "relationships",
               :description "Whether to fetch relationships for the document"
@@ -153,7 +163,7 @@
           :x-handler (str name "/api:update")
           :parameters [
             {"$ref" "#/parameters/auth"},
-            {"$ref" "#/parameters/id"},
+            (id-parameter model)
             {
               :name "body",
               :in "body",
@@ -176,7 +186,7 @@
           :x-handler (str name "/api:delete")
           :parameters [
             {"$ref" "#/parameters/auth"},
-            {"$ref" "#/parameters/id"}
+            (id-parameter model)
           ],
           :responses {
             "200" {
