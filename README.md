@@ -160,11 +160,11 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 * params-parser API test
 
-* Move parse functions to their own namespace
-
-* safe-coerce-value
+* Move parse functions to their own namespace, safe-coerce-value
 
 * Get reload to work again
+
+* Try clojure spec in Clojure 1.9 for function pre conditions (there are some [good](http://clojure.org/guides/spec) [resources](http://www.lispcast.com/clojure.spec-vs-schema)). For a discussion around typing and schemas in Clojure, I like [this presentation](https://vimeo.com/127299449) by Jessica Kerr.
 
 * Should not allow both version and published params in get endpoint
 

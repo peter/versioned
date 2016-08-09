@@ -32,6 +32,7 @@
     {
       :auth {
         :name "Authorization"
+        :description "User auth header on the format\"Bearer {token}\""
         :in "header"
         :required true
         :type "string"
