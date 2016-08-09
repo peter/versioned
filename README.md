@@ -158,6 +158,8 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
+* Use [clojure.tools.logging](https://github.com/clojure/tools.logging/blob/master/README.md)
+
 * params-parser API test
 
 * Move parse functions to their own namespace, safe-coerce-value
