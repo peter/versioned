@@ -36,6 +36,7 @@
     :models models
     :sites sites
     :locales locales
+    :port 5001
   }))
 
 (defn test-files [context]
@@ -85,9 +86,10 @@
 (defn start-server [context]
   (log "start-server")
   (let [system (versioned/-main :env "test"
-                                  :models (:models context)
-                                  :sites (:sites context)
-                                  :locales (:locales context))]
+                                :port (:port context)
+                                :models (:models context)
+                                :sites (:sites context)
+                                :locales (:locales context))]
     (assoc context :system system)))
 
 (defn log-in-user [context]

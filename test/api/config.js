@@ -6,7 +6,7 @@ module.exports = {
     defaults: {
       api_call: {
         request: {
-          base_url: "http://localhost:5000/v1",
+          base_url: "http://localhost:5001/v1",
           headers: "{{headers.admin}}"
         },
         status: 200

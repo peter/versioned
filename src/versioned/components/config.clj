@@ -3,7 +3,7 @@
             [versioned.util.core :as u]
             [com.stuartsierra.component :as component]))
 
-(defn- get-env [config]
+(defn get-env [config]
   (or (:env config) (System/getenv "ENV") "development"))
 
 (defn- default-config [env] {

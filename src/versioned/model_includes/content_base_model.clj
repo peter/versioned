@@ -5,7 +5,8 @@
             [versioned.model-includes.versioned-model :refer [versioned-spec]]
             [versioned.model-includes.published-model :refer [published-spec]]
             [versioned.model-includes.validated-model :refer [validated-spec]]
-            [versioned.model-includes.routed-model :refer [routed-spec]]))
+            [versioned.model-includes.routed-model :refer [routed-spec]]
+            [versioned.model-includes.compact-model :refer [compact-spec]]))
 
 (defn content-base-spec [type] [
   (id-spec)
@@ -15,4 +16,5 @@
   (published-spec)
   (validated-spec)
   (routed-spec)
+  (compact-spec)
 ])
