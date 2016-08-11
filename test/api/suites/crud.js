@@ -62,6 +62,26 @@ module.exports = {
             }
           },
           {
+            it: "can get the changelog entry for the create",
+            request: "GET /changelog",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  action: "create",
+                  created_by: "{{users.admin.email}}"
+                }
+              },
+              {
+                select: "body.data.0.attributes.doc",
+                equal_keys: {
+                  id: "{{page_id}}",
+                  title: page.title
+                }
+              }
+            ]
+          },
+          {
             it: "can list page documents",
             request: "GET /pages",
             assert: [
@@ -110,6 +130,33 @@ module.exports = {
             }
           },
           {
+            it: "can get the changelog entry for the update",
+            request: "GET /changelog",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  action: "update",
+                  created_by: "{{users.admin.email}}"
+                }
+              },
+              {
+                select: "body.data.0.attributes.doc",
+                equal_keys: {
+                  id: "{{page_id}}",
+                  title: {se: "Testsida EDIT"}
+                }
+              },
+              {
+                select: "body.data.0.attributes.changes.title",
+                equal_keys: {
+                  from: page.title,
+                  to: {se: "Testsida EDIT"}
+                }
+              }
+            ]
+          },
+          {
             it: "can delete page document",
             request: "DELETE /pages/{{page_id}}"
           },
@@ -117,6 +164,26 @@ module.exports = {
             it: "can verify that page document was deleted",
             request: "GET /pages/{{page_id}}",
             status: 404
+          },
+          {
+            it: "can get the changelog entry for the delete",
+            request: "GET /changelog",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  action: "delete",
+                  created_by: "{{users.admin.email}}"
+                }
+              },
+              {
+                select: "body.data.0.attributes.doc",
+                equal_keys: {
+                  id: "{{page_id}}",
+                  title: {se: "Testsida EDIT"}
+                }
+              }
+            ]
           }
         ]
       }

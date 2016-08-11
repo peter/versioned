@@ -27,7 +27,6 @@
   (assoc doc :version (latest-version (:model-spec options) doc)))
 
 (defn create-version-callback [doc options]
-  (println "create-version-callback" (increment-version? (:model-spec options) doc) (versioned-doc (:model-spec options) doc))
   (if (increment-version? (:model-spec options) doc)
     (let [result (db/create (:database options) (versioned-coll doc) (versioned-doc (:model-spec options) doc))]))
   doc)

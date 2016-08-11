@@ -108,8 +108,8 @@ As an example of how the `callbacks` property works, take a look at the callback
 
 ```
 lein repl
-(require 'versioned)
-(def system (versioned/-main))
+(require 'versioned.example.app)
+(def system (versioned.example.app/-main :start-web false))
 (require '[versioned.models.users :as users])
 (users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
 ```
@@ -159,6 +159,9 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 ## TODO
 
 * Use [clojure.tools.logging](https://github.com/clojure/tools.logging/blob/master/README.md)
+
+* The changelog mechanism is fragile in how it interacts with callbacks and the :existing-doc meta field since if any of the callbacks
+  do not retain the meta data then it breaks.
 
 * params-parser API test
 

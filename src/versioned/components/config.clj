@@ -16,6 +16,7 @@
   :start-web true
   :models {
     :users "versioned.models.users/spec"
+    :changelog "versioned.models.changelog/spec"
   }
   :api-prefix "/v1"
 })

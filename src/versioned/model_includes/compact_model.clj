@@ -5,8 +5,9 @@
   (let [compact-property (fn [value]
                              (if (coll? value)
                               (not-empty (u/compact value))
-                              value))]
-    (u/compact (u/map-values compact-property doc))))
+                              value))
+        compact-doc (u/compact (u/map-values compact-property doc))]
+    (with-meta compact-doc (meta doc))))
 
 (def compact-callbacks {
   :save {
