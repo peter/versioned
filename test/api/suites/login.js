@@ -1,5 +1,7 @@
 "use strict";
 
+var assert = require('assert');
+
 module.exports = {
   suite: {
     name: "login",
@@ -24,6 +26,23 @@ module.exports = {
             it: "can log in with valid email and password and get auth token",
             request: "POST /login",
             params: {email: "{{users.admin.email}}", password: "{{users.admin.password}}"},
+            assert: [{
+                select: "body.data.attributes",
+                equal_keys: {
+                  email: "{{users.admin.email}}"
+                }
+              },
+              {
+                select: "body.data.attributes.access_token",
+                equal: /[a-z0-9]{10,}/
+              },
+              {
+                select: "body.data.attributes.password",
+                equal: null
+              },
+              function(body, headers) {
+                assert.equal(headers.authorization, ("Bearer " + body.data.attributes.access_token));
+              }],
             save: {
               "headers.admin.Authorization": "headers.authorization"
             }
