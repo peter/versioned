@@ -64,7 +64,8 @@
         field (:to_field spec)
         ids ((:from_field spec) doc)
         query {field {:$in ids}}
-        find-opts (:find_opts spec)
+        default-find-opts {:per-page (count ids)}
+        find-opts (merge default-find-opts (:find_opts spec))
         docs (and (not-empty ids) (db/find (:database app) coll query find-opts))
         docs-by-id (group-by field docs)
         ordered-docs (u/compact (map #(first (docs-by-id %)) ids))]
