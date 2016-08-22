@@ -1,5 +1,5 @@
 (ns versioned.model-schema
-  (require [versioned.util.core :as u]))
+  (:require [versioned.util.core :as u]))
 
 (defn schema-attributes [schema]
   (or (:properties schema)

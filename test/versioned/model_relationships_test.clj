@@ -1,8 +1,8 @@
 (ns versioned.model-relationships-test
-  (:use midje.sweet)
-  (:require [versioned.model-relationships :refer [relationship-spec]]))
+  (:require [clojure.test :refer :all]
+            [versioned.model-relationships :refer [relationship-spec]]))
 
-(fact "relationship-spec: can default from_coll/from_field/to_coll/to_field for has-many"
+(deftest relationship-spec-can-default-from_coll-from_field-to_coll-to_field-for-has-many
   (let [relationship :widgets
         model-spec {
           :type :pages
@@ -25,9 +25,9 @@
           :to_model :widgets
           :to_field :id
         }]
-    (relationship-spec relationship model-spec) => expected))
+    (is (= (relationship-spec relationship model-spec) expected))))
 
-(fact "relationship-spec: can default from_coll/from_field/to_coll/to_field for has-one"
+(deftest relationship-spec-can-default-from_coll-from_field-to_coll-to_field-for-has-one
   (let [relationship :widgets
         model-spec {
           :type :pages
@@ -50,9 +50,9 @@
           :to_model :widgets
           :to_field :id
         }]
-    (relationship-spec relationship model-spec) => expected))
+    (is (= (relationship-spec relationship model-spec) expected))))
 
-(fact "relationship-spec: can specify from_coll/from_field/to_coll/to_field"
+(deftest relationship-spec-can-specify-from_coll-from_field-to_coll-to_field
   (let [relationship :widgets
         options {
           :from_coll :foobar
@@ -76,4 +76,4 @@
           }
         }
         expected options]
-    (relationship-spec relationship model-spec) => expected))
+    (is (= (relationship-spec relationship model-spec) expected))))

@@ -1,9 +1,9 @@
 (ns versioned.crud-api-types-test
-  (:use midje.sweet)
-  (:require [versioned.crud-api-types :refer [coerce-attribute-types]]
+  (:require [clojure.test :refer :all]
+            [versioned.crud-api-types :refer [coerce-attribute-types]]
             [versioned.util.date :as d]))
 
-(fact "coerce-attribute-types: nullifies blank values in nested attributes"
+(deftest coerce-attribute-types_nullifies-blank-values-in-nested-attributes
   (let [attributes {
           :title "  "
           :item {
@@ -28,9 +28,9 @@
             :values ["foo" "bar"]
           }
         }]
-    (coerce-attribute-types schema attributes) => expected))
+    (is (= (coerce-attribute-types schema attributes) expected))))
 
-(fact "coerce-attribute-types parses dates in nested attributes"
+(deftest coerce-attribute-types_parses-dates-in-nested-attributes
   (let [attributes {
           :title "foobar"
           :created_at "2016-03-24T08:39:42.432+02:00"
@@ -61,4 +61,4 @@
             :dates [(d/parse-datetime "2016-04-24T08:39:42.432+02:00") (d/parse-datetime "2016-05-24T08:39:42.432+02:00")]
           }
         }]
-    (coerce-attribute-types schema attributes) => expected))
+    (is (= (coerce-attribute-types schema attributes) expected))))

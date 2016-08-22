@@ -1,13 +1,13 @@
 (ns versioned.swagger.core
-  (require [versioned.util.core :as u]
-           [versioned.model-attributes :refer [api-writable-schema
-                                               api-readable-schema
-                                               without-custom-keys]]
-           [versioned.swagger.paths.api-docs :as api-docs-paths]
-           [versioned.swagger.paths.login :as login-paths]
-           [versioned.swagger.paths.import :as import-paths]
-           [versioned.swagger.paths.model :as model-paths]
-           [versioned.swagger.ref :refer [deep-resolve-ref]]))
+  (:require [versioned.util.core :as u]
+            [versioned.model-attributes :refer [api-writable-schema
+                                                api-readable-schema
+                                                without-custom-keys]]
+            [versioned.swagger.paths.api-docs :as api-docs-paths]
+            [versioned.swagger.paths.login :as login-paths]
+            [versioned.swagger.paths.import :as import-paths]
+            [versioned.swagger.paths.model :as model-paths]
+            [versioned.swagger.ref :refer [deep-resolve-ref]]))
 
 (defn- paths [app]
   (let [endpoints [(api-docs-paths/swagger app)

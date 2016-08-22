@@ -1,8 +1,8 @@
 (ns versioned.model-spec-test
-  (:use midje.sweet)
-  (:require [versioned.model-spec :as model-spec]))
+  (:require [clojure.test :refer :all]
+            [versioned.model-spec :as model-spec]))
 
-(fact "generate-spec: deep merges schema/callbacks/indexes for specs"
+(deftest generate-spec-deep-merges-schema-callbacks-indexes-for-specs
   (let [spec1 {
           :type "spec1"
           :schema {
@@ -49,4 +49,4 @@
           }
           :indexes [{:fields [:spec1]} {:fields [:spec2]}]
         }]
-  (model-spec/generate-spec spec1 spec2) => expect))
+  (is (= (model-spec/generate-spec spec1 spec2) expect))))

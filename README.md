@@ -179,6 +179,8 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
   * unique constraint
   * deal with mongo errors?
 
+* git rm checkouts/monger as soon as Clojure 1.9 compatible version is available (https://github.com/michaelklishin/monger/issues/142)
+
 * Better compliance with jsonapi.org?
 
 * list endpoint

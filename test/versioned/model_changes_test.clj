@@ -1,14 +1,14 @@
 (ns versioned.model-changes-test
-  (:use midje.sweet)
-  (:require [versioned.model-changes :refer [changed-value? model-changes model-changed?]]))
+  (:require [clojure.test :refer :all]
+            [versioned.model-changes :refer [changed-value? model-changes model-changed?]]))
 
-(fact "changed-value?: returns true if from and to are equal"
-  (changed-value? {:foo 1} {:foo 1}) => false)
+(deftest changed-value?_returns-true-if-from-and-to-are-equal
+  (is (= (changed-value? {:foo 1} {:foo 1}) false)))
 
-(fact "changed-value?: returns false if from and to are not equal"
-  (changed-value? {:foo 1} {:foo 2}) => true)
+(deftest changed-value?_returns-false-if-from-and-to-are-not-equal
+  (is (= (changed-value? {:foo 1} {:foo 2}) true)))
 
-(fact "model-changes: returns from/to values for all changed attributes based on :existing-doc meta"
+(deftest model-changes_returns-from-to-values-for-all-changed-attributes-based-on-existing-doc-meta
   (let [existing-doc {:changed "changed" :removed "removed"}
         new-doc {:changed "changed EDIT" :added "added"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -24,9 +24,9 @@
           :changed {:from "changed" :to "changed EDIT"}
           :removed {:from "removed" :to nil}
           :added {:from nil :to "added"}}]
-    (model-changes model-spec doc) => expected))
+    (is (= (model-changes model-spec doc) expected))))
 
-(fact "model-changed?: with two arguments returns true if there is any change in doc"
+(deftest model-changed-with-two-arguments-returns-true-if-there-is-any-change-in-doc
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -36,9 +36,9 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc) => truthy))
+      (is (model-changed? model-spec doc))))
 
-(fact "model-changed?: with two arguments returns false if there is no change in doc"
+(deftest model-changed-with-two-arguments-returns-false-if-there-is-no-change-in-doc
   (let [existing-doc {:title "title"}
         new-doc {:title "title"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -48,9 +48,9 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc) => falsey))
+      (is (not (model-changed? model-spec doc)))))
 
-(fact "model-changed?: with three arguments returns true if certain argument has changed"
+(deftest model-changed-with-three-arguments-returns-true-if-certain-argument-has-changed
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -60,9 +60,9 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc :title) => truthy))
+      (is (model-changed? model-spec doc :title))))
 
-(fact "model-changed?: with three arguments returns false if certain argument has not changed"
+(deftest model-changed-with-three-arguments-returns-false-if-certain-argument-has-not-changed
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -72,9 +72,9 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc :body) => falsey))
+      (is (not (model-changed? model-spec doc :body)))))
 
-(fact "model-changed?: with five arguments returns true if certain argument has changed from one value to another"
+(deftest model-changed-with-five-arguments-returns-true-if-certain-argument-has-changed-from-one-value-to-another
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -84,9 +84,9 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc :title "title" "title changed") => truthy))
+      (is (model-changed? model-spec doc :title "title" "title changed"))))
 
-(fact "model-changed?: with five arguments returns false if certain argument has not changed from one value to another"
+(deftest model-changed-with-five-arguments-returns-false-if-certain-argument-has-not-changed-from-one-value-to-another
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
         doc (with-meta new-doc {:existing-doc existing-doc})
@@ -96,4 +96,4 @@
             :title {:type "string"}
           }
         }}]
-      (model-changed? model-spec doc :title "title" "title changed different") => falsey))
+      (is (not (model-changed? model-spec doc :title "title" "title changed different")))))

@@ -90,9 +90,6 @@
   ([f v]
     (deep-map-values f v {})))
 
-(defn boolean? [v]
-  (instance? Boolean v))
-
 ; Wrap a function in a nil check, i.e. only execute function if value is not nil
 (defn maybe [f]
   (fn [value]

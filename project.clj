@@ -5,8 +5,10 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo
             :comments "same as Clojure"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha11"]
                  [ring/ring-jetty-adapter "1.4.0"]
+                 ; TODO: git rm checkouts/monger as soon as Clojure 1.9 compatible version is available,
+                 ; see: https://github.com/michaelklishin/monger/issues/142
                  [com.novemberain/monger "3.0.2"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-devel "1.4.0"]
@@ -21,11 +23,13 @@
   :main ^:skip-aot versioned.example.app
   :target-path "target/%s"
   :aliases {
-    "unit-test" ["midje"]
-    "api-test" ["run" "-m" "api.test-runner"]
-    "test" ["do" "midje" ["run" "-m" "api.test-runner"]]
+    "test-api" ["run" "-m" "api.test-runner"]
+    "test-all" ["do" "test" ["run" "-m" "api.test-runner"]]
   }
   :profiles {
     :uberjar {:aot :all}
-    :dev {:dependencies [[midje "1.6.3"]
-                         [me.raynes/conch "0.8.0"]]}})
+    :dev {:dependencies [;[midje "1.9.0-alpha4"]
+                         [me.raynes/conch "0.8.0"]
+                        ]}
+  }
+)

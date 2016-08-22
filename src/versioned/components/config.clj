@@ -11,6 +11,7 @@
   :session-expiry (* 60 60 24 14)
   :log-level (if (= "production" env) "info" "debug")
   :env env
+  :check-specs? (not= "production" env)
   :port 5000
   :mongodb-url (str "mongodb://127.0.0.1/versioned-" env)
   :start-web true
@@ -31,7 +32,7 @@
         default-value (config-key defaults)]
     (cond
       (and value (integer? default-value)) (u/parse-int value)
-      (and value (u/boolean? default-value)) (u/parse-bool value)
+      (and value (boolean? default-value)) (u/parse-bool value)
       :else value)))
 
 (defn- env-config [defaults]

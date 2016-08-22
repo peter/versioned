@@ -1,16 +1,16 @@
 (ns versioned.model-callbacks-test
-  (:use midje.sweet)
-  (:require [versioned.model-callbacks :as model-callbacks]))
+  (:require [clojure.test :refer :all]
+            [versioned.model-callbacks :as model-callbacks]))
 
-(fact "normalize-callbacks: does not touch callbacks without save"
-  (model-callbacks/normalize-callbacks {:create {:before [:foo]} :update {:before [:bar]}}) =>
-    {:create {:before [:foo]} :update {:before [:bar]}})
+(deftest normalize-callbacks_does-not-touch-callbacks-without-save
+  (is (= (model-callbacks/normalize-callbacks {:create {:before [:foo]} :update {:before [:bar]}})
+         {:create {:before [:foo]} :update {:before [:bar]}})))
 
-(fact "normalize-callbacks: merges save callbacks with update/create callbacks"
-  (model-callbacks/normalize-callbacks {:save {:before [:foo]} :update {:before [:bar]}}) =>
-    {:create {:before [:foo]} :update {:before [:foo :bar]}})
+(deftest normalize-callbacks_merges-save-callbacks-with-update-create-callbacks
+  (is (= (model-callbacks/normalize-callbacks {:save {:before [:foo]} :update {:before [:bar]}})
+         {:create {:before [:foo]} :update {:before [:foo :bar]}})))
 
-(fact "invoke-callbacks: invokes callbacks in order with [doc options] and returns the resulting doc"
+(deftest invoke-callbacks_invokes-callbacks-in-order-with-doc-options-and-returns-the-resulting-doc
   (let [callbacks [
           (fn [doc options]
             (assoc (update-in doc [:callback_trail] concat [:first]) :options-received (= (:app options) "the-app")))
@@ -19,10 +19,10 @@
           ]
         doc {:title "foobar"}
         options {:app "the-app"}]
-      (model-callbacks/invoke-callbacks callbacks options doc) =>
-        {:title "foobar changed" :new-attribute true :options-received true :callback_trail [:first :second]}))
+      (is (= (model-callbacks/invoke-callbacks callbacks options doc)
+             {:title "foobar changed" :new-attribute true :options-received true :callback_trail [:first :second]}))))
 
-(fact "with-callbacks: wraps a model fn [app model-spec doc] in a function that invokes callbacks before/after"
+(deftest with-callbacks_wraps-a-model-fn-app-model-spec-doc-in-a-function-that-invokes-callbacks-before-after
   (let [model-fn (fn [app model-spec doc] (update-in doc [:callback_trail] concat [:model]))
         action :create
         callbacks {:create {
@@ -37,5 +37,5 @@
         app {:database "the-database"}
         model-spec {:type :pages :callbacks callbacks}
         doc {:title "foobar"}]
-      (model-fn-with-callbacks app model-spec doc) =>
-        {:title "foobar changed" :new-attribute true :options-received true :callback_trail [:first :model :second]}))
+      (is (= (model-fn-with-callbacks app model-spec doc)
+             {:title "foobar changed" :new-attribute true :options-received true :callback_trail [:first :model :second]}))))
