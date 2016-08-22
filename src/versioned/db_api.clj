@@ -5,10 +5,15 @@
             [monger.collection :as mc]
             [monger.query :as mq]
             [monger.joda-time]
-            [com.stuartsierra.component :as component])
-  (:import [org.bson.types ObjectId]))
+            [com.stuartsierra.component :as component]
+            [clojure.spec :as s])
+  (:import [org.bson.types ObjectId]
+           com.mongodb.DB))
 
 ; Mongo API doc: http://clojuremongodb.info/articles/getting_started.html
+
+(s/def ::db #(instance? com.mongodb.DB %))
+(s/def ::database (s/keys :req-un [::db]))
 
 (defn connect [uri]
   (mg/connect-via-uri uri))

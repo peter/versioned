@@ -1,10 +1,14 @@
 (ns versioned.components.config
   (:require [clojure.string :as str]
             [versioned.util.core :as u]
-            [com.stuartsierra.component :as component]))
+            [versioned.model-spec :as model-spec]
+            [com.stuartsierra.component :as component]
+            [clojure.spec :as s]))
 
 (defn get-env [config]
   (or (:env config) (System/getenv "ENV") "development"))
+
+(s/def ::models (s/map-of keyword? ::model-spec/model))
 
 (defn- default-config [env] {
   :require-read-auth true

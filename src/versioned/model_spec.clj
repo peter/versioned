@@ -3,7 +3,8 @@
             [versioned.util.core :as u]
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
-            [versioned.util.schema :refer [validate-schema]]))
+            [versioned.util.schema :refer [validate-schema]]
+            [clojure.spec :as s]))
 
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (defn merge-schemas [& schemas]
@@ -14,6 +15,17 @@
       :required required)))
 
 (def empty-callback {:before [] :after []})
+
+; TODO: this spec is a duplicate of the JSON schema below
+(s/def ::type keyword?)
+(s/def ::schema map?)
+(s/def ::callbacks map?)
+(s/def ::relationships map?)
+(s/def ::indexes (s/coll-of map?))
+; TODO: duplicate of routes/crud-actions
+(s/def ::routes (s/coll-of #{:list :get :create :update :delete} :distinct true))
+(s/def ::model (s/keys :req-un [::type ::schema]
+                       :opt-un [::callbacks ::relationships ::indexes ::routes]))
 
 (def spec-schema {
   :type "object"
