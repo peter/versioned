@@ -16,6 +16,7 @@
                  [crypto-password "0.2.0"]
                  [cheshire "5.5.0"]
                  [metosin/scjsv "0.2.0"]
+                 [prismatic/schema "1.1.3"]
                  [clj-time "0.11.0"]
                 ]
   :min-lein-version "2.0.0"

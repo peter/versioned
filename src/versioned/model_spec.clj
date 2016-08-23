@@ -1,10 +1,10 @@
 (ns versioned.model-spec
-  (:require [versioned.routes :refer [crud-actions]]
-            [versioned.util.core :as u]
+  (:require [versioned.util.core :as u]
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
             [versioned.util.schema :refer [validate-schema]]
-            [clojure.spec :as s]))
+            [clojure.spec :as s]
+            [schema.core :as schema]))
 
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (defn merge-schemas [& schemas]
@@ -16,16 +16,45 @@
 
 (def empty-callback {:before [] :after []})
 
+; TODO: duplicate of routes/crud-actions
+(def crud-actions [:list :get :create :update :delete])
+(defn valid-routes? [routes]
+  (empty? (clojure.set/difference (set routes)
+                                  (set crud-actions))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Clojure spec definition for model
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; TODO: this spec is a duplicate of the JSON schema below
 (s/def ::type keyword?)
 (s/def ::schema map?)
 (s/def ::callbacks map?)
 (s/def ::relationships map?)
 (s/def ::indexes (s/coll-of map?))
-; TODO: duplicate of routes/crud-actions
-(s/def ::routes (s/coll-of #{:list :get :create :update :delete} :distinct true))
+(s/def ::routes (s/coll-of (set crud-actions) :distinct true))
 (s/def ::model (s/keys :req-un [::type ::schema]
                        :opt-un [::callbacks ::relationships ::indexes ::routes]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Plumatic schema definition for model
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; TODO: this spec is a duplicate of the JSON schema below
+(def Map {schema/Keyword schema/Any})
+(def Routes (schema/pred valid-routes? 'valid-routes?))
+(def Model {
+  :type schema/Keyword
+  :schema Map
+  (schema/optional-key :callbacks) Map
+  (schema/optional-key :relationships) Map
+  (schema/optional-key :indexes) [Map]
+  (schema/optional-key :routes) Routes
+})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; JSON schema definition for model
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def spec-schema {
   :type "object"

@@ -1,8 +1,10 @@
 (ns versioned.test-helper
-  (:require [clojure.spec.test :as stest]))
+  (:require [clojure.spec.test :as stest]
+            [schema.core :as schema]))
 
 (defn setup []
-  (stest/instrument))
+  (stest/instrument)
+  (schema/set-fn-validation! true))
 
 (defn teardown [])
 
