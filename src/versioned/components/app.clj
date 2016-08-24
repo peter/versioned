@@ -1,7 +1,6 @@
 (ns versioned.components.app
   (:require [com.stuartsierra.component :as component]
-            [clojure.spec.test :as stest]
-            [schema.core :as schema]
+            [schema.core :as s]
             [clojure.string :as str]
             [versioned.swagger.core :refer [swagger]]
             [versioned.middleware.core :as middleware]
@@ -24,8 +23,7 @@
                       (middleware/wrap app))]
       (println "Starting Application config:" config "models:" (map :type (vals models)))
       (when (:check-specs? config)
-        (stest/instrument)
-        (schema/set-fn-validation! true))
+        (s/set-fn-validation! true))
       (ensure-indexes database models)
       (assoc component :config config
                        :models models

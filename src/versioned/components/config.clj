@@ -1,14 +1,14 @@
 (ns versioned.components.config
   (:require [clojure.string :as str]
             [versioned.util.core :as u]
-            [versioned.model-spec :as model-spec]
+            [versioned.model-spec :refer [Model]]
             [com.stuartsierra.component :as component]
-            [clojure.spec :as s]))
+            [schema.core :as s]))
 
 (defn get-env [config]
   (or (:env config) (System/getenv "ENV") "development"))
 
-(s/def ::models (s/map-of keyword? ::model-spec/model))
+(def Models {s/Keyword Model})
 
 (defn- default-config [env] {
   :require-read-auth true
@@ -36,7 +36,7 @@
         default-value (config-key defaults)]
     (cond
       (and value (integer? default-value)) (u/parse-int value)
-      (and value (boolean? default-value)) (u/parse-bool value)
+      (and value (u/boolean? default-value)) (u/parse-bool value)
       :else value)))
 
 (defn- env-config [defaults]

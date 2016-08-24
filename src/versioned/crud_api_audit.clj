@@ -1,38 +1,31 @@
 (ns versioned.crud-api-audit
   (:require [versioned.model-validations :refer [model-errors]]
             [versioned.util.date :as d]
+            [versioned.schema :refer [Map Request App]]
             [versioned.model-api :as model-api]
+            [versioned.model-spec :refer [Model]]
             [versioned.model-changes :refer [model-changes]]
             [versioned.db-api :as db]
-            [clojure.spec :as s]))
+            [schema.core :as s]))
 
-(s/fdef get-user
-  :args (s/cat :request map?)
-  :ret (s/nilable string?))
+(def Changelog Map)
+(def Action (s/pred #{:create :update :delete} 'changelog-action?))
+(def Email s/Str)
 
-(defn- get-user [request]
+(s/defn get-user :- (s/maybe Email)
+  [request :- Request]
   (get-in request [:user :email]))
 
-(s/fdef updated-by
-  :args (s/cat :request map?)
-  :ret map?)
-
-(defn updated-by [request]
+(s/defn updated-by :- Map
+  [request :- Request]
   {:updated_by (get-user request)})
 
-(s/fdef created-by
-  :args (s/cat :request map?)
-  :ret map?)
-
-(defn created-by [request]
+(s/defn created-by :- Map
+  [request :- Request]
   {:created_by (get-user request)})
 
-(s/def ::action #{:update :create :delete})
-(s/fdef save-changelog
-  :args (s/cat :app map? :request map? :model map? :action ::action :doc map?)
-  :ret map?)
-
-(defn save-changelog [app request model action doc]
+(s/defn save-changelog :- (s/maybe Changelog)
+  [app :- App, request :- Request, model :- Model, action :- Action, doc :- Map]
   (let [errors (not-empty (model-errors doc))
         changes (if (= :update action) (model-changes model doc) nil)
         user (get-user request)

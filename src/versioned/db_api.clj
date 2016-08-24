@@ -6,14 +6,14 @@
             [monger.query :as mq]
             [monger.joda-time]
             [com.stuartsierra.component :as component]
-            [clojure.spec :as s])
+            [schema.core :as s])
   (:import [org.bson.types ObjectId]
            com.mongodb.DB))
 
 ; Mongo API doc: http://clojuremongodb.info/articles/getting_started.html
 
-(s/def ::db #(instance? com.mongodb.DB %))
-(s/def ::database (s/keys :req-un [::db]))
+(def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
+(def Database {:db DB-Schema s/Keyword s/Any})
 
 (defn connect [uri]
   (mg/connect-via-uri uri))

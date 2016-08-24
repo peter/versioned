@@ -3,7 +3,7 @@
             [scjsv.core :as v]))
 
 (defn json-type? [value]
-  (boolean (some #(% value) [string? keyword? number? boolean? nil? map? vector?])))
+  (boolean (some #(% value) [string? keyword? number? u/boolean? nil? map? vector?])))
 
 ; Test with: {:foo [(fn []) :foobar] :bar {:baz (fn []) :bla :bla}}
 (defn schema-friendly-map [m]

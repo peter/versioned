@@ -1,9 +1,9 @@
 (ns versioned.model-spec-test
   (:require [clojure.test :refer :all]
-            [clojure.spec :as s]
+            [schema.core :as s]
             [versioned.model-spec :as model-spec]))
 
-(deftest model-spec-conforms-valid-models
+(deftest model-schema-validates-model-specs
   (let [valid-basic-model {
           :type :my-model
           :schema {
@@ -19,10 +19,10 @@
         })
         empty-model {}
         invalid-routes-model (merge valid-model {:routes [:foobar]})]
-      (is (nil? (s/explain-data ::model-spec/model valid-basic-model)))
-      (is (nil? (s/explain-data ::model-spec/model valid-model)))
-      (is (not (nil? (s/explain-data ::model-spec/model empty-model))))
-      (is (not (nil? (s/explain-data ::model-spec/model invalid-routes-model))))
+      (is (s/validate model-spec/Model valid-basic-model))
+      (is (s/validate model-spec/Model valid-model))
+      (is (thrown-with-msg? RuntimeException #"does not match schema" (s/validate model-spec/Model empty-model)))
+      (is (thrown-with-msg? RuntimeException #"does not match schema"  (s/validate model-spec/Model invalid-routes-model)))
     ))
 
 (deftest generate-spec-deep-merges-schema-callbacks-indexes-for-specs

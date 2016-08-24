@@ -28,6 +28,9 @@
 (defn valid-int? [value]
   (safe-parse-int value))
 
+(defn boolean? [v]
+  (instance? Boolean v))
+
 (defn parse-bool [value]
   (cond
     (contains? #{nil false "0" "f" "false"} value) false

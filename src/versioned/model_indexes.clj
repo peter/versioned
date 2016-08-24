@@ -1,14 +1,12 @@
 (ns versioned.model-indexes
-  (:require [versioned.db-api :as db-api]
-            [versioned.components.config :as config]
+  (:require [versioned.db-api :as db-api :refer [Database]]
+            [versioned.components.config :as config :refer [Models]]
             [versioned.model-support :as model-support]
-            [clojure.spec :as s]))
+            [schema.core :as s]
+            [versioned.schema :refer [Nil]]))
 
-(s/fdef ensure-indexes
-  :args (s/cat :database ::db-api/database :models ::config/models)
-  :ret nil?)
-
-(defn ensure-indexes [database models]
+(s/defn ensure-indexes :- Nil
+  [database :- Database, models :- Models]
   (doseq [spec (filter #(:indexes %) (vals models))]
     (doseq [options (:indexes spec)]
       (let [coll (or (:coll options) (model-support/coll spec))

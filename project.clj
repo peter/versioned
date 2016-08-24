@@ -5,10 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo
             :comments "same as Clojure"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha11"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
-                 ; TODO: git rm checkouts/monger as soon as Clojure 1.9 compatible version is available,
-                 ; see: https://github.com/michaelklishin/monger/issues/142
                  [com.novemberain/monger "3.0.2"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-devel "1.4.0"]
