@@ -1,5 +1,5 @@
 (ns versioned.model-includes.routed-model
-  (:require [versioned.routes :refer [crud-actions]]))
+  (:require [versioned.schema :refer [crud-actions]]))
 
 (defn routed-spec [& options] {
   :routes crud-actions

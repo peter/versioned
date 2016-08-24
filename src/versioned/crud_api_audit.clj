@@ -1,16 +1,11 @@
 (ns versioned.crud-api-audit
   (:require [versioned.model-validations :refer [model-errors]]
             [versioned.util.date :as d]
-            [versioned.schema :refer [Map Request App]]
             [versioned.model-api :as model-api]
-            [versioned.model-spec :refer [Model]]
             [versioned.model-changes :refer [model-changes]]
             [versioned.db-api :as db]
-            [schema.core :as s]))
-
-(def Changelog Map)
-(def Action (s/pred #{:create :update :delete} 'changelog-action?))
-(def Email s/Str)
+            [schema.core :as s]
+            [versioned.schema :refer [Map Model Request App Changelog Action Email]]))
 
 (s/defn get-user :- (s/maybe Email)
   [request :- Request]

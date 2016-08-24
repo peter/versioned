@@ -1,21 +1,17 @@
 (ns versioned.components.config
   (:require [clojure.string :as str]
             [versioned.util.core :as u]
-            [versioned.model-spec :refer [Model]]
-            [com.stuartsierra.component :as component]
-            [schema.core :as s]))
+            [com.stuartsierra.component :as component]))
 
 (defn get-env [config]
   (or (:env config) (System/getenv "ENV") "development"))
-
-(def Models {s/Keyword Model})
 
 (defn- default-config [env] {
   :require-read-auth true
   :session-expiry (* 60 60 24 14)
   :log-level (if (= "production" env) "info" "debug")
   :env env
-  :check-specs? (not= "production" env)
+  :validate-schemas (not= "production" env)
   :port 5000
   :mongodb-url (str "mongodb://127.0.0.1/versioned-" env)
   :start-web true

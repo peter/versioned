@@ -3,7 +3,7 @@
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
             [versioned.util.schema :refer [validate-schema]]
-            [schema.core :as s]))
+            [versioned.schema :refer [crud-actions]]))
 
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (defn merge-schemas [& schemas]
@@ -14,28 +14,6 @@
       :required required)))
 
 (def empty-callback {:before [] :after []})
-
-; TODO: duplicate of routes/crud-actions
-(def crud-actions [:list :get :create :update :delete])
-(defn valid-routes? [routes]
-  (empty? (clojure.set/difference (set routes)
-                                  (set crud-actions))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Plumatic schema definition for model
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; TODO: this spec is a duplicate of the JSON schema below
-(def Map {s/Keyword s/Any})
-(def Routes (s/pred valid-routes? 'valid-routes?))
-(def Model {
-  :type s/Keyword
-  :schema Map
-  (s/optional-key :callbacks) Map
-  (s/optional-key :relationships) Map
-  (s/optional-key :indexes) [Map]
-  (s/optional-key :routes) Routes
-})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; JSON schema definition for model

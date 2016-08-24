@@ -1,9 +1,8 @@
 (ns versioned.model-indexes
-  (:require [versioned.db-api :as db-api :refer [Database]]
-            [versioned.components.config :as config :refer [Models]]
-            [versioned.model-support :as model-support]
+  (:require [versioned.model-support :as model-support]
+            [versioned.db-api :as db-api]
             [schema.core :as s]
-            [versioned.schema :refer [Nil]]))
+            [versioned.schema :refer [Nil Database Models]]))
 
 (s/defn ensure-indexes :- Nil
   [database :- Database, models :- Models]

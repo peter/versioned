@@ -1,15 +1,11 @@
 (ns versioned.crud-api-attributes
   (:require [versioned.model-support :as model-support]
-            [versioned.model-spec :as model-spec :refer [Model]]
             [versioned.json-api :as json-api]
             [versioned.model-attributes :refer [api-writable-attributes api-readable-attributes]]
             [versioned.crud-api-audit :refer [updated-by created-by save-changelog]]
             [versioned.crud-api-types :refer [coerce-attribute-types]]
             [schema.core :as s]
-            [versioned.schema :refer [Map Request]]))
-
-(def Attributes Map)
-(def AttributeKeys #{s/Keyword})
+            [versioned.schema :refer [Model Attributes AttributeKeys Request]]))
 
 (s/defn write-attributes :- Attributes
   [model :- Model, attributes :- Attributes]

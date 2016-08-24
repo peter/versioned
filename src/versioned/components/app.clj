@@ -22,7 +22,7 @@
           handler (-> (router/create-handler app)
                       (middleware/wrap app))]
       (println "Starting Application config:" config "models:" (map :type (vals models)))
-      (when (:check-specs? config)
+      (when (:validate-schemas config)
         (s/set-fn-validation! true))
       (ensure-indexes database models)
       (assoc component :config config

@@ -1,6 +1,7 @@
 (ns versioned.routes
   (:require [versioned.util.core :as u]
             [clojure.string :as str]
+            [versioned.schema :refer [crud-actions]]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers
@@ -26,8 +27,6 @@
       (lookup-var-handler controller action))))
 
 (def lookup-handler (memoize lookup-handler-uncached))
-
-(def crud-actions [:list :get :create :update :delete])
 
 (defn route-requires-auth? [app request]
   (if (:route request)

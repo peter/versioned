@@ -5,15 +5,11 @@
             [monger.collection :as mc]
             [monger.query :as mq]
             [monger.joda-time]
-            [com.stuartsierra.component :as component]
-            [schema.core :as s])
+            [com.stuartsierra.component :as component])
   (:import [org.bson.types ObjectId]
            com.mongodb.DB))
 
 ; Mongo API doc: http://clojuremongodb.info/articles/getting_started.html
-
-(def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
-(def Database {:db DB-Schema s/Keyword s/Any})
 
 (defn connect [uri]
   (mg/connect-via-uri uri))

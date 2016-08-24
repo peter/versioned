@@ -1,14 +1,19 @@
 (ns versioned.crud-api-opts
-  (:require [versioned.model-support :refer [id-attribute]]))
+  (:require [versioned.model-support :refer [id-attribute]]
+            [schema.core :as s]
+            [versioned.schema :refer [Map Model Request]]))
 
-(defn- list-sort [model-spec request]
-  (if (= (id-attribute model-spec) :id)
+(s/defn list-sort :- Map
+  [model :- Model, request :- Request]
+  (if (= (id-attribute model) :id)
     {:sort (array-map :id -1)}
     {}))
 
-(defn list-opts [model-spec request]
+(s/defn list-opts :- Map
+  [model :- Model, request :- Request]
   (merge (:query-params request)
-         (list-sort model-spec request)))
+         (list-sort model request)))
 
-(defn get-opts [request]
+(s/defn get-opts :- Map
+  [request :- Request]
   (:query-params request))
