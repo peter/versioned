@@ -1,15 +1,26 @@
 (ns versioned.model-attributes
   (:require [versioned.model-schema :refer [schema-attributes restricted-schema]]
             [versioned.util.core :as u]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.set :refer [intersection]]))
 
 (def custom-property-keys #{:meta})
 
+(defn map-with-custom-keys? [value]
+  (and (map? value)
+       (not-empty (intersection (set (keys value)) custom-property-keys))))
+
+; TODO/FIXME: this only works if custom property keys are in "leaf nodes" of the schema tree
 (defn without-custom-keys
   "Drop custom property keys when validating schema to avoid validator warnings or swagger errors"
   [schema]
-  (assoc schema :properties
-                (u/map-values #(apply dissoc % custom-property-keys) (:properties schema))))
+  (let [f #(if (map? (:value %))
+             (apply dissoc (:value %) custom-property-keys)
+             (:value %))
+        recurse-if? #(and (coll? (:value %))
+                          (not (map-with-custom-keys? (:value %))))
+        opts {:recurse-if? recurse-if?}]
+    (u/deep-map-values f schema opts)))
 
 (defn api-writable? [attribute-schema]
   (get-in attribute-schema [:meta :api_writable] true))

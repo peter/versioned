@@ -28,5 +28,8 @@
         data (get-in request [:params :data])
         _ (clear app model-spec)
         result (map one-result (insert app model-spec request data))
-        status (if (not-any? :errors result) 200 error-status)]
+        errors (filter :errors result)
+        status (if (empty? errors) 200 error-status)]
+     (println "bulk-import/create inserts:" (count result) "errors:" (count errors))
+     (if (not-empty errors) (clojure.pprint/pprint errors))
      {:body {:result result} :status status}))

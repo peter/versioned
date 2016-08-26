@@ -15,6 +15,8 @@
     (catch Exception e
       (println "coerce-map exception " (.getMessage e))
       (clojure.stacktrace/print-stack-trace e)
+      (println "coerce-map (type attributes)=" (type attributes))
+      (clojure.pprint/pprint attributes)
       attributes)))
 
 (defn- coerce-value [schema attribute value]
