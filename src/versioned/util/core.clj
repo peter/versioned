@@ -80,16 +80,25 @@
 
 (defn deep-map-values
   ([f v opts]
-    (let [recurse-if? (get opts :recurse-if? coll?)]
+    (let [default-opts {:recurse-if? #(coll? (:value %))
+                        :path []}
+          opts (merge default-opts opts)
+          {:keys [recurse-if? path]} opts
+          args {:key (last path) :value v :path path}
+          recurse? (recurse-if? args)]
       (cond
-        (and (map? v) (recurse-if? v))
+        (and (map? v) recurse?)
           (reduce (fn [altered-map [k mv]]
-                    (assoc altered-map k (deep-map-values f mv opts)))
+                    (let [new-opts (update-in opts [:path] conj k)]
+                      (assoc altered-map k (deep-map-values f mv new-opts))))
                   {}
                   v)
-        (and (coll? v) (recurse-if? v))
-          (map #(deep-map-values f % opts) v)
-        :else (f v))))
+        (and (coll? v) recurse?)
+          (map-indexed (fn [i item]
+                         (let [new-opts (update-in opts [:path] conj i)]
+                           (deep-map-values f item new-opts)))
+                       v)
+        :else (f args))))
   ([f v]
     (deep-map-values f v {})))
 

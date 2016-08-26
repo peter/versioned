@@ -16,7 +16,8 @@
     selection))
 
 (defn deep-resolve-ref [swagger-spec]
-  (let [recurse-if? #(and (coll? %) (not (get-ref %)))]
-    (u/deep-map-values (partial resolve-ref swagger-spec)
+  (let [recurse-if? #(and (coll? (:value %))
+                          (not (get-ref (:value %))))]
+    (u/deep-map-values #(resolve-ref swagger-spec (:value %))
                        swagger-spec
                        {:recurse-if? recurse-if?})))
