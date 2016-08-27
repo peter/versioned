@@ -10,17 +10,13 @@
   (and (map? value)
        (not-empty (intersection (set (keys value)) custom-property-keys))))
 
-; TODO/FIXME: this only works if custom property keys are in "leaf nodes" of the schema tree
 (defn without-custom-keys
   "Drop custom property keys when validating schema to avoid validator warnings or swagger errors"
   [schema]
-  (let [f #(if (map? (:value %))
-             (apply dissoc (:value %) custom-property-keys)
-             (:value %))
-        recurse-if? #(and (coll? (:value %))
-                          (not (map-with-custom-keys? (:value %))))
-        opts {:recurse-if? recurse-if?}]
-    (u/deep-map-values f schema opts)))
+  (let [f #(if (map-with-custom-keys? %)
+               (apply dissoc % custom-property-keys)
+               %)]
+    (clojure.walk/prewalk f schema)))
 
 (defn api-writable? [attribute-schema]
   (get-in attribute-schema [:meta :api_writable] true))
