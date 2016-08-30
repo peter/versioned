@@ -1,7 +1,7 @@
 (ns versioned.crud-api-types
   (:require [versioned.util.core :as u]
             [versioned.util.date :as d]
-            [versioned.model-schema :refer [child-schema attribute-type]]
+            [versioned.model-schema :refer [deep-child-schema attribute-type]]
             [clojure.stacktrace]))
 
 (defn- coerce-map [coerce-fn attributes schema]
@@ -19,8 +19,8 @@
       (clojure.pprint/pprint attributes)
       attributes)))
 
-(defn- coerce-value [schema attribute value]
-  (let [attribute-schema (child-schema schema attribute)
+(defn coerce-value [schema attribute value]
+  (let [attribute-schema (deep-child-schema schema attribute)
         type (attribute-type attribute-schema attribute)]
     (cond
       (u/blank? value)
@@ -31,7 +31,7 @@
         (u/parse-bool value)
       (and (= type "integer") (string? value))
         (u/parse-int value)
-      (= type "array")
+      (and (= type "array") (coll? value))
         (u/compact (map (partial coerce-value attribute-schema attribute) value))
       (and (= type "object") (:properties attribute-schema))
         (safe-coerce-map coerce-value value attribute-schema)

@@ -1,5 +1,6 @@
 (ns versioned.model-schema
-  (:require [versioned.util.core :as u]))
+  (:require [versioned.util.core :as u]
+            [clojure.string :as str]))
 
 (defn schema-attributes [schema]
   (or (:properties schema)
@@ -10,6 +11,12 @@
     (= (:type schema) "object") (get (schema-attributes schema) attribute)
     (= (:type schema) "array") (:items schema)
     :else schema))
+
+(defn attribute-path [attribute]
+  (map keyword (str/split (name attribute) (u/str-to-regex "."))))
+
+(defn deep-child-schema [schema attribute]
+  (reduce child-schema schema (attribute-path attribute)))
 
 (defn attribute-type [schema attribute]
   (cond

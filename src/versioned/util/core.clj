@@ -15,6 +15,9 @@
 (defn present? [value]
   (not (blank? value)))
 
+(defn str-to-regex [s]
+  (re-pattern (java.util.regex.Pattern/quote s)))
+
 (defn parse-int
       "idempotent string to integer conversion"
       [string-or-int]
@@ -56,7 +59,7 @@
   (round (* 100 (/ (- to from) from)) :digits digits))
 
 (defn array [value]
-  (if (= clojure.lang.PersistentVector (class value))
+  (if (coll? value)
     value
     [value]))
 

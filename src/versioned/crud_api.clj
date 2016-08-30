@@ -3,6 +3,7 @@
   (:require [versioned.model-api :as model-api]
             [versioned.json-api :as json-api]
             [versioned.crud-api-opts :refer [list-opts get-opts]]
+            [versioned.crud-api-query :refer [list-query]]
             [versioned.crud-api-attributes :refer [read-attributes invalid-attributes create-attributes update-attributes]]
             [versioned.crud-api-audit :refer [save-changelog]]
             [versioned.logger :as logger]
@@ -23,8 +24,9 @@
   CrudApi
 
   (list [this app request]
-    (let [opts (list-opts model-spec request)
-          docs (model-api/find app model-spec {} opts)
+    (let [query (list-query model-spec request)
+          opts (list-opts model-spec request)
+          docs (model-api/find app model-spec query opts)
           read-docs (map (partial read-attributes model-spec) docs)]
       (json-api/docs-response model-spec read-docs)))
 

@@ -70,6 +70,16 @@
               :type "integer",
               :minimum 1
             }
+            {
+              :name "q",
+              :description "Query - filter out which documents are returned, format is separator:key:value where separator is optional and defaults to comma (,)"
+              :in "query",
+              :required false,
+              :type "array"
+              :items {
+                :type "string"
+              }
+            }
           ],
           :responses {
             "200" {
