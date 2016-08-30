@@ -1,6 +1,6 @@
 (ns versioned.middleware.params-parser
   (:require [versioned.util.core :as u]
-            [versioned.swagger.parameters :refer [parameters-in parameters-schema]]
+            [versioned.swagger.parameters :refer [parameters-in parameters-schema arrayify-attributes]]
             [versioned.util.schema :refer [validate-schema]]
             [versioned.crud-api-types :refer [coerce-attribute-types]]
             [versioned.json-api :refer [error-response]]))
@@ -15,7 +15,9 @@
     (if (not-empty parameters)
       (let [in-params (reduce (fn [result [key parameters]]
                                 (let [schema (parameters-schema parameters)
-                                    attributes (u/keywordize-keys (key request))]
+                                      attributes (->> (key request)
+                                                      (u/keywordize-keys)
+                                                      (arrayify-attributes schema))]
                                   (assoc result key (coerce-attribute-types schema attributes))))
                               {}
                               parameters)

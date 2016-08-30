@@ -1,5 +1,6 @@
 (ns versioned.swagger.paths.model
   (:require [versioned.util.core :as u]
+            [versioned.crud-api-query :refer [query-pattern]]
             [versioned.model-support :refer [id-attribute]]))
 
 (defn- data-schema [attributes-schema]
@@ -78,6 +79,7 @@
               :type "array"
               :items {
                 :type "string"
+                :pattern (str query-pattern)
               }
             }
           ],

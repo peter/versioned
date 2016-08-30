@@ -4,10 +4,12 @@
             [versioned.model-schema :refer [deep-child-schema attribute-type]]
             [versioned.crud-api-types :refer [coerce-value]]))
 
+(def query-pattern #"^(?:(\W*):)?([a-zA-Z0-9._-]+):(.+)$")
+
 (def default-sep ",")
 
 (defn parse-query [query-spec]
-  (if-let [match (re-matches #"^(?:(\W*):)?([a-zA-Z0-9._-]+):(.+)$" query-spec)]
+  (if-let [match (re-matches query-pattern query-spec)]
     (let [sep (or (get match 1) default-sep)]
       {
         :sep sep
