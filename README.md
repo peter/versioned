@@ -111,7 +111,7 @@ lein repl
 (require 'versioned.example.app)
 (def system (versioned.example.app/-main :start-web false))
 (require '[versioned.models.users :as users])
-(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin"})
+(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin" :permission "write"})
 ```
 
 ## Starting the Server with the Example Models

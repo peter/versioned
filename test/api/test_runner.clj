@@ -92,15 +92,19 @@
                                 :locales (:locales context))]
     (assoc context :system system)))
 
-(defn log-in-user [context]
-  (log "log-in-user")
-  (let [params (select-keys (get-in context [:data :users :admin]) [:email :password])
+(defn log-in-user [context user]
+  (log "log-in-user" user)
+  (let [params (select-keys (get-in context [:data :users user]) [:email :password])
         app (get-in context [:system :app])
         response (sessions/create app {:params params})
         auth-header (get-in response [:headers "Authorization"])]
     (if auth-header
-      (assoc-in context [:data :headers :admin] {"Authorization" auth-header})
-      (throw (Exception. (str "Could not log in user " params " response: " response))))))
+      (assoc-in context [:data :headers user] {"Authorization" auth-header})
+      (throw (Exception. (str "Could not log in user " user params " response: " response))))))
+
+(defn log-in-users [context]
+  (let [users (keys (get-in context [:data :users]))]
+    (reduce log-in-user context users)))
 
 (defn add-schemas [context]
   (let [models (get-in context [:system :app :models])
@@ -124,7 +128,7 @@
     (-> context
         (start-server)
         (restore-db)
-        (log-in-user)
+        (log-in-users)
         (add-schemas)
         (write-data-tmp-file)
         (run-tests))))

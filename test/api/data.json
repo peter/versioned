@@ -5,7 +5,15 @@
         "id": 1,
         "name": "Admin User",
         "email": "admin@example.com",
-        "password": "admin"
+        "password": "admin",
+        "permission": "write"
+      },
+      "read": {
+        "id": 2,
+        "name": "Read User",
+        "email": "read@example.com",
+        "password": "read",
+        "permission": "read"
       }
     },
     "pages": {
