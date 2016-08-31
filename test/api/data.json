@@ -18,6 +18,25 @@
           "se": "startsida"
         },
         "widgets_ids": [1, 2]
+      },
+      "about": {
+        "id": 2,
+        "title": {
+          "se": "Om oss"
+        },
+        "slug": {
+          "se": "om"
+        }
+      },
+      "movies": {
+        "id": 3,
+        "title": {
+          "se": "Filmer"
+        },
+        "slug": {
+          "se": "filmer"
+        },
+        "widgets_ids": [2]
       }
     },
     "widgets": {

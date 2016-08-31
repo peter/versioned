@@ -3,6 +3,9 @@
 module.exports = {
   config: {
     log_path: "test/api/log",
+    modules: {
+      http_client: './http_clients/request'
+    },
     defaults: {
       api_call: {
         request: {

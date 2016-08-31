@@ -158,8 +158,6 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
-* Add API test for query parameter to list endpoint. Also, make parsing of query param safe?
-
 * Use [clojure.tools.logging](https://github.com/clojure/tools.logging/blob/master/README.md)
 
 * The changelog mechanism is fragile in how it interacts with callbacks and the :existing-doc meta field since if any of the callbacks
