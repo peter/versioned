@@ -69,6 +69,22 @@ module.exports = {
             ]
           },
           {
+            it: "can filter documents by multiple ids and slug with q[0], q[1] params",
+            request: "GET /pages?q[0]=id:1,2&q[1]=slug.se:{{pages.start.slug.se}}",
+            assert: [
+              {
+                select: "body.data",
+                size: 1
+              },
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  title: "{{pages.start.title}}"
+                }
+              }
+            ]
+          },
+          {
             it: "can filter documents by multiple slugs",
             request: "GET /pages?q=|:slug.se:{{pages.start.slug.se}}|{{pages.about.slug.se}}",
             assert: [

@@ -37,7 +37,8 @@
     }
     :indexes [
       {:fields [:email] :unique true}
-      {:fields [:access_token] :unique true}
+      ; NOTE: unique index on access_token requires partialFilterExpression that is only available with Mongodb 3.2
+      ;{:fields [:access_token] :unique true :partialFilterExpression {:access_token {:$exists true}}}
     ]
     :routes [:list :get]
 }))

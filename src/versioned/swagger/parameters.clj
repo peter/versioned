@@ -2,14 +2,25 @@
   (:require [versioned.util.core :as u]
             [versioned.swagger.ref :refer [resolve-ref]]))
 
+
+; Convert parameter key like q[0] to just q
+(defn array-attribute [attribute]
+  (keyword (or (second (re-matches #"^(.+)(?:\[\d+\])$" (name attribute)))
+               attribute)))
+
 ; Query parameters that can be passed multiple types are specified as type array.
 ; However, if you only pass such a parameter once the value will be a string.
 ; This function will wrap the string in an array.
+; Also, many clients will pass array query params as q[0], q[1] etc. We collapse those
+; to just q.
 (defn arrayify-attributes [schema attributes]
   (reduce (fn [result [attribute value]]
-            (let [type (get-in schema [:properties attribute :type])
-                  new-value (if (= type "array") (u/array value) value)]
-              (assoc result attribute new-value)))
+            (let [array-attribute (array-attribute attribute)
+                  array-value (concat (get result array-attribute []) (u/array value))
+                  type (get-in schema [:properties array-attribute :type])]
+                (if (= type "array")
+                  (assoc result array-attribute array-value)
+                  (assoc result attribute value))))
           {}
           attributes))
 
