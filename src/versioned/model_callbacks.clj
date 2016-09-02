@@ -44,7 +44,13 @@
   (fn [app model-spec doc]
     (let [before-callbacks (get-in model-spec [:callbacks action :before] [])
           after-callbacks (get-in model-spec [:callbacks action :after] [])
-          options {:app app :database (:database app) :action action :model-spec model-spec :schema (:schema model-spec)}]
+          options {
+            :app app
+            :config (:config app)
+            :database (:database app)
+            :action action
+            :model-spec model-spec
+            :schema (:schema model-spec)}]
         ; TODO: capture this chaining pattern with an abort condition in a function/macro?
         (let [doc (invoke-callbacks before-callbacks options doc)]
           (if-not (model-errors doc)
