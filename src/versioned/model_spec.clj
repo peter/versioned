@@ -8,10 +8,10 @@
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (defn merge-schemas [& schemas]
   (let [properties (apply merge (map :properties schemas))
-        required (apply concat (map :required schemas))]
-    (assoc (apply merge schemas)
-      :properties properties
-      :required required)))
+        required (not-empty (apply concat (map :required schemas)))]
+    (u/compact (assoc (apply merge schemas)
+                      :properties properties
+                      :required required))))
 
 (def empty-callback {:before [] :after []})
 
@@ -95,7 +95,6 @@
     }
   }
   :required [:type :schema]
-  :additionalProperties false
 })
 
 (defn generate-spec [& specs]

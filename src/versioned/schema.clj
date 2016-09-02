@@ -28,6 +28,7 @@
   (s/optional-key :relationships) Map
   (s/optional-key :indexes) [Map]
   (s/optional-key :routes) Routes
+  s/Keyword s/Any
 })
 
 (def Models {s/Keyword Model})
