@@ -35,7 +35,7 @@
       (and value (u/boolean? default-value)) (u/parse-bool value)
       :else value)))
 
-(defn- env-config [defaults]
+(defn env-config [defaults]
   (u/compact (into {} (map #(vector % (env-value % defaults)) (keys defaults)))))
 
 (defn- get-config [config]

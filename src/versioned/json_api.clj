@@ -1,6 +1,7 @@
 (ns versioned.json-api
   (:require [versioned.util.core :as u]
             [versioned.model-support :as model-support]
+            [clojure.string :as str]
             [versioned.model-validations :refer [model-errors model-not-updated]]))
 
 ; Inspired by http://jsonapi.org
@@ -46,7 +47,10 @@
   {:body {} :status 404})
 
 (defn invalid-attributes-response [invalids]
-  (error-response [{:type "invalid_attributes" :attributes invalids}]))
+  (error-response [{
+    :type "invalid_attributes"
+    :attributes invalids
+    :message (str "Invalid attributes: " (str/join ", " invalids))}]))
 
 (defn doc-response [model-spec doc]
   (let [errors (model-errors doc)
