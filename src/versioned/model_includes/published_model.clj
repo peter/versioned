@@ -17,9 +17,9 @@
 (def published-schema {
   :type "object"
   :properties {
-    :published_version {:type "integer" :minimum 1}
-    :publish_at {:type "string" :format "date-time"}
-    :unpublish_at {:type "string" :format "date-time"}
+    :published_version {:type "integer" :minimum 1 :meta {:versioned false}}
+    :publish_at {:type "string" :format "date-time" :meta {:versioned false}}
+    :unpublish_at {:type "string" :format "date-time" :meta {:versioned false}}
   }
 })
 
