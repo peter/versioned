@@ -1,6 +1,7 @@
 (ns versioned.model-api
   (:refer-clojure :exclude [find update delete count])
   (:require [versioned.db-api :as db]
+            [versioned.logger :as logger]
             [versioned.model-versions :refer [select-version]]
             [versioned.model-support :refer [coll id-attribute id-query valid-id?]]
             [versioned.model-versions :refer [unversioned-attributes versioned-coll
@@ -8,7 +9,7 @@
             [versioned.util.core :as u]
             [versioned.model-relationships :refer [with-relationships]]
             [versioned.model-validations :refer [with-model-errors model-not-updated]]
-            [versioned.model-changes :refer [model-changed?]]
+            [versioned.model-changes :refer [model-changes]]
             [versioned.model-callbacks :refer [with-callbacks]]))
 
 (defn find
@@ -50,10 +51,14 @@
     (exec-create app model-spec create-doc)))
 
 (defn- exec-update-without-callbacks [app model-spec doc]
-  (let [id ((id-attribute model-spec) doc)
-        result (db/update (:database app) (coll model-spec) (id-query model-spec id) doc)]
-      (with-meta (:doc result)
-                 (merge (meta doc) {:result result}))))
+  (let [changes (model-changes model-spec doc)]
+    (logger/debug app "model-api/exec-update-without-callbacks" (:type doc) ((id-attribute model-spec) doc) "changes:" changes)
+    (if changes
+      (let [id ((id-attribute model-spec) doc)
+            result (db/update (:database app) (coll model-spec) (id-query model-spec id) doc)]
+          (with-meta (:doc result)
+                     (merge (meta doc) {:result result})))
+      (with-model-errors doc model-not-updated))))
 
 (def exec-update (with-callbacks exec-update-without-callbacks :update))
 
@@ -61,9 +66,7 @@
   (let [id ((id-attribute model-spec) doc)
         existing-doc (find-one app model-spec id)
         merged-doc (with-meta (u/compact (merge existing-doc doc)) {:existing-doc existing-doc})]
-    (if (model-changed? model-spec merged-doc)
-      (exec-update app model-spec merged-doc)
-      (with-model-errors doc model-not-updated))))
+    (exec-update app model-spec merged-doc)))
 
 (defn- delete-without-callbacks [app model-spec doc]
   (let [id ((id-attribute model-spec) doc)

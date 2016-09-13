@@ -7,7 +7,8 @@ var page = {
   "slug": {
     "se": "versions-page"
   },
-  "widgets_ids": [1, 2]
+  "widgets_ids": [1, 2],
+  "published_version": 1
 };
 
 module.exports = {

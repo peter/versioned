@@ -3,9 +3,13 @@
 (defn changed-value? [from-value to-value]
   (not= from-value to-value))
 
+(defn tracked-attribute? [attribute-schema]
+  (get-in attribute-schema [:meta :change-tracking] true))
+
 (defn tracked-attributes [model-spec]
-  (let [properties (get-in model-spec [:schema :properties])]
-    (set (keys properties))))
+  (let [schema (:schema model-spec)]
+    (filter #(tracked-attribute? (% (:properties schema)))
+            (keys (:properties schema)))))
 
 (defn model-changes [model-spec doc]
   (let [from (get (meta doc) :existing-doc {})

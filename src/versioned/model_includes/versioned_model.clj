@@ -1,14 +1,21 @@
 (ns versioned.model-includes.versioned-model
   (:require [versioned.model-support :as model-support]
             [versioned.model-changes :refer [model-changes]]
+            [versioned.logger :as logger]
             [versioned.model-versions :refer [versioned-attributes versioned-coll]]
             [versioned.util.db :as db-util]
             [versioned.util.date :as d]
             [versioned.db-api :as db]))
 
+(defn versioned-changes [model-spec doc]
+  (select-keys (model-changes model-spec doc)
+               (versioned-attributes (:schema model-spec))))
+
 (defn increment-version? [model-spec doc]
-  (not-empty (select-keys (model-changes model-spec doc)
-                          (versioned-attributes (:schema model-spec)))))
+  (let [old-version (get-in (meta doc) [:existing-doc :version])]
+    (and (not-empty (versioned-changes model-spec doc))
+         (or (not old-version)
+             (= (:published_version doc) old-version)))))
 
 (defn latest-version [model-spec doc]
   (let [old-version (get-in (meta doc) [:existing-doc :version])]
@@ -24,6 +31,7 @@
     (merge model-attributes version-attributes)))
 
 (defn set-version-callback [doc options]
+  (logger/debug (:app options) "versioned-model/set-version-callback versioned-changes:" (versioned-changes (:model-spec options) doc))
   (assoc doc :version (latest-version (:model-spec options) doc)))
 
 (defn create-version-callback [doc options]
