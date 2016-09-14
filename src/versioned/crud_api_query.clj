@@ -19,19 +19,20 @@
     nil))
 
 (defn coerce-query-types [schema query]
-  (reduce (fn [result [attribute values]]
-            (assoc result attribute (map (partial coerce-value schema attribute) values)))
-          {}
-          query))
+    (reduce (fn [result [attribute values]]
+              (let [type (attribute-type (deep-child-schema schema attribute) attribute)]
+                (if (= type "array")
+                  (assoc result attribute (coerce-value schema attribute values))
+                  (assoc result attribute (map (partial coerce-value schema attribute) values)))))
+            {}
+            query))
 
 (defn to-mongo-query [schema query]
   (reduce (fn [result [attribute values]]
             (let [type (attribute-type (deep-child-schema schema attribute) attribute)]
-              (if (not= type "array")
-                (if (> (count values) 1)
-                  (assoc result attribute {:$in values})
-                  (assoc result attribute (first values)))
-                result)))
+              (if (> (count values) 1)
+                (assoc result attribute {:$in values})
+                (assoc result attribute (first values)))))
           {}
           query))
 

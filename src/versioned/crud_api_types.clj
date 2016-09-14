@@ -32,7 +32,7 @@
       (and (= type "integer") (string? value))
         (u/parse-int value)
       (and (= type "array") (coll? value))
-        (u/compact (map (partial coerce-value attribute-schema attribute) value))
+        (u/compact (map (partial coerce-value (:items attribute-schema) attribute) value))
       (and (= type "object") (:properties attribute-schema))
         (safe-coerce-map coerce-value value attribute-schema)
       :else
