@@ -56,6 +56,13 @@
           :parameters [
             {"$ref" "#/parameters/auth"}
             {
+              :name "sort",
+              :description "Which fields to sort by, comma separated. Prefix with - (minus) for descending. Default sort is by id desc"
+              :in "query",
+              :required false,
+              :type "string"
+            }
+            {
               :name "page",
               :description "Which page to fetch, defaults to 1 (for pagination)"
               :in "query",
