@@ -6,7 +6,8 @@
             [versioned.model-support :refer [coll]]
             [versioned.model-versions :refer [versioned-coll]]
             [versioned.crud-api-attributes :refer [create-attributes]]
-            [versioned.model-validations :refer [model-errors]]))
+            [versioned.model-validations :refer [model-errors with-model-errors]]
+            [clojure.stacktrace]))
 
 (defn- clear [app model-spec]
   (db/delete (:database app) (coll model-spec) {})
@@ -14,7 +15,13 @@
 
 (defn- insert-one [app model-spec request doc]
   (let [attributes (create-attributes model-spec request doc)]
-    (model-api/create app model-spec attributes)))
+    (try (model-api/create app model-spec attributes)
+      (catch Exception e
+        (println "bulk-import/insert-one exception " (.getMessage e))
+        (clojure.stacktrace/print-stack-trace e)
+        (println "bulk-import/insert-one attributes:")
+        (clojure.pprint/pprint attributes)
+        (with-model-errors attributes [{:type "db" :message (.getMessage e)}])))))
 
 (defn- insert [app model-spec request data]
   (map (partial insert-one app model-spec request) data))
