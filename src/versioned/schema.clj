@@ -36,7 +36,12 @@
 (def Models {s/Keyword Model})
 
 (def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
-(def Database {:db DB-Schema s/Keyword s/Any})
+(def DB-Conn (s/pred #(instance? com.mongodb.MongoClient %) 'mongodb-conn?))
+(def DB-IndexOptions {
+  (s/optional-key :unique) s/Bool
+  (s/optional-key :name) s/Str
+})
+(def Database {:db DB-Schema :conn DB-Conn s/Keyword s/Any})
 
 (def Route Map)
 

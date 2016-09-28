@@ -29,6 +29,6 @@
         }
       }
       :indexes [
-        {:fields ["title.se"] :unique true}
+        {:fields [:title.se] :unique true}
       ]
     })))

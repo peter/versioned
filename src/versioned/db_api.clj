@@ -5,19 +5,27 @@
             [monger.collection :as mc]
             [monger.query :as mq]
             [monger.joda-time]
+            [schema.core :as s]
+            [versioned.schema :refer [Nil Database DB-Conn DB-IndexOptions Map]]
             [com.stuartsierra.component :as component])
   (:import [org.bson.types ObjectId]
            com.mongodb.DB))
 
 ; Mongo API doc: http://clojuremongodb.info/articles/getting_started.html
 
-(defn connect [uri]
+(s/defn connect :- Database
+  [uri :- String]
   (mg/connect-via-uri uri))
 
-(defn disconnect [conn]
+(s/defn disconnect :- Nil
+  [conn :- DB-Conn]
   (mg/disconnect conn))
 
-(defn ensure-index [database coll fields options]
+(s/defn ensure-index :- Nil
+  [database :- Database
+   coll :- s/Keyword
+   fields :- [s/Keyword]
+   options :- DB-IndexOptions]
   (mc/ensure-index (:db database) coll (mongo-map fields) options))
 
 (defn find
