@@ -24,7 +24,7 @@
       (println "Starting Application config:" config "models:" (map :type (vals models)))
       (when (:validate-schemas config)
         (s/set-fn-validation! true))
-      (ensure-indexes database models)
+      (ensure-indexes app)
       (assoc component :config config
                        :models models
                        :swagger swagger-spec

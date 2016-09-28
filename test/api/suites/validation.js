@@ -42,6 +42,25 @@ module.exports = {
             status: 422
           },
         ]
+      },
+
+      {
+        name: "database errors",
+        api_calls: [
+          {
+            it: "violating a unique db index yields a validation error",
+            request: "POST /pages",
+            params: {data: {attributes: {title: {se: "Startsida"}}}},
+            status: 422,
+            assert: {
+              select: "body.errors.0",
+              equal_keys: {
+                type: "duplicate_key",
+                message: /E11000 duplicate key error index/
+              }
+            }
+          },
+        ]
       }
     ]
   }

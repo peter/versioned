@@ -8,9 +8,12 @@
                                                   versioned-id-query apply-version]]
             [versioned.util.core :as u]
             [versioned.model-relationships :refer [with-relationships]]
-            [versioned.model-validations :refer [with-model-errors model-not-updated]]
+            [versioned.model-validations :refer [with-model-errors
+                                                 model-not-updated
+                                                 duplicate-key-error]]
             [versioned.model-changes :refer [model-changes]]
-            [versioned.model-callbacks :refer [with-callbacks]]))
+            [versioned.model-callbacks :refer [with-callbacks]])
+   (:import [com.mongodb DuplicateKeyException]))
 
 (defn find
   ([app model-spec query opts]
@@ -41,10 +44,22 @@
 
 (defn- exec-create-without-callbacks [app model-spec doc]
   (let [result (db/create (:database app) (coll model-spec) doc)]
+    (logger/debug "model-api/create result:" result)
     (with-meta (:doc result)
                (merge (meta doc) {:result result}))))
 
-(def exec-create (with-callbacks exec-create-without-callbacks :create))
+(defn with-db-error-handling [write-fn]
+  (fn [app model-spec doc]
+    (try
+      (write-fn app model-spec doc)
+      (catch DuplicateKeyException e
+        (logger/debug "model-api/with-db-error-handling exception: " (type e) (.getMessage e))
+        (with-model-errors doc (duplicate-key-error (.getMessage e)))))))
+
+(def exec-create
+  (-> exec-create-without-callbacks
+    (with-callbacks :create)
+    (with-db-error-handling)))
 
 (defn create [app model-spec doc]
   (let [create-doc (u/compact doc)]
@@ -56,11 +71,15 @@
     (if changes
       (let [id ((id-attribute model-spec) doc)
             result (db/update (:database app) (coll model-spec) (id-query model-spec id) doc)]
+          (logger/debug "model-api/update result:" result)
           (with-meta (:doc result)
                      (merge (meta doc) {:result result})))
       (with-model-errors doc model-not-updated))))
 
-(def exec-update (with-callbacks exec-update-without-callbacks :update))
+(def exec-update
+  (-> exec-update-without-callbacks
+    (with-callbacks :update)
+    (with-db-error-handling)))
 
 (defn update [app model-spec doc]
   (let [id ((id-attribute model-spec) doc)

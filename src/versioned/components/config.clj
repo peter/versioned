@@ -6,6 +6,9 @@
 (defn get-env [config]
   (or (:env config) (System/getenv "ENV") "development"))
 
+(defn mongodb-url [env]
+  (str "mongodb://127.0.0.1/versioned-" env))
+
 (defn- default-config [env] {
   :require-read-auth true
   :session-expiry (* 60 60 24 14)
@@ -13,7 +16,7 @@
   :env env
   :validate-schemas (not= "production" env)
   :port 5000
-  :mongodb-url (str "mongodb://127.0.0.1/versioned-" env)
+  :mongodb-url (mongodb-url env)
   :start-web true
   :models {
     :users "versioned.models.users/spec"

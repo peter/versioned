@@ -38,6 +38,6 @@
         :widgets {}
       }
       :indexes [
-        ;{:fields [:title] :unique true}
+        {:fields ["title.se"] :unique true}
       ]
     })))

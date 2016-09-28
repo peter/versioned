@@ -108,8 +108,8 @@ As an example of how the `callbacks` property works, take a look at the callback
 
 ```
 lein repl
-(require 'versioned.example.app)
-(def system (versioned.example.app/-main :start-web false))
+(require 'versioned)
+(def system (versioned/-main :start-web false))
 (require '[versioned.models.users :as users])
 (users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin" :permission "write"})
 ```
@@ -158,6 +158,16 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 ## TODO
 
+* More API tests, i.e. related to publishing
+
+* Validation
+  * Validate association id references before save
+  * Validate published_version reference before save
+
+* Handle mongodb WriteConcernException as a validation error? Use mongo error codes? See https://api.mongodb.com/java/3.0/com/mongodb/DuplicateKeyException.html
+
+* Logger should take config as first argument instead of app?
+
 * Use [clojure.tools.logging](https://github.com/clojure/tools.logging/blob/master/README.md)
 
 * The changelog mechanism is fragile in how it interacts with callbacks and the :existing-doc meta field since if any of the callbacks
@@ -169,23 +179,12 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 * Get reload to work again
 
-* Try clojure spec in Clojure 1.9 for function pre conditions (there are some [good](http://clojure.org/guides/spec) [resources](http://www.lispcast.com/clojure.spec-vs-schema)). For a discussion around typing and schemas in Clojure, I like [this presentation](https://vimeo.com/127299449) by Jessica Kerr.
-
 * Should not allow both version and published params in get endpoint
-
-* Validation
-  * Validate association id references before save
-  * Validate published_version reference before save
-  * unique constraint
-  * deal with mongo errors?
 
 * git rm checkouts/monger as soon as Clojure 1.9 compatible version is available (https://github.com/michaelklishin/monger/issues/142)
 
 * Better compliance with jsonapi.org?
 
-* list endpoint
-  * support sort parameter
-
 * Add first_published_at to published-model
 
-* Scheduler that publishes and unpulishes documents based on publish_at/unpublish_at
+* Scheduler that publishes and unpublishes documents based on publish_at/unpublish_at

@@ -1,11 +1,11 @@
 (ns api.test-runner
   (:require [versioned :as versioned]
+            [versioned.components.config :refer [mongodb-url]]
             [versioned.util.json :as json]
             [versioned.crud-api-attributes :refer [create-attributes read-attributes]]
             [versioned.model-api :as model-api]
             [versioned.model-validations :refer [model-errors]]
             [me.raynes.conch :as sh]
-            [monger.db :refer [drop-db]]
             [versioned.util.file :as file]
             [versioned.util.core :as u]
             [versioned.controllers.sessions :as sessions]
@@ -18,7 +18,8 @@
   (:data (json/parse (slurp path))))
 
 (defn new-context []
-  (let [models {:sections "versioned.example.models.sections/spec"
+  (let [env "test"
+        models {:sections "versioned.example.models.sections/spec"
                 :pages "versioned.example.models.pages/spec"
                 :widgets "versioned.example.models.widgets/spec"}
         sites ["se" "no" "dk" "fi"]
@@ -31,6 +32,7 @@
           :test-suites "test/api/suites"
         }]
   {
+    :mongodb-url (mongodb-url env)
     :paths paths
     :data (read-data (:data paths))
     :models models
@@ -44,9 +46,11 @@
         suites (file/ls (:test-suites paths) :ext ".js")]
     (flatten [(:data-tmp paths) (:config paths) suites])))
 
-(defn clear-db [context]
-  (let [db (get-in context [:system :database :db])]
-    (drop-db db)
+(defn drop-db [context]
+  (log "drop-db")
+  (let [db-url (get-in context [:mongodb-url])
+        drop-file "test/api/drop_db.js"]
+    (sh/execute "mongo" db-url drop-file)
     context))
 
 (defn save-doc [app model-spec request doc]
@@ -67,6 +71,7 @@
     (u/map-values (partial save-doc app model-spec request) data)))
 
 (defn save-db [context]
+  (log "save-db")
   (let [model? (set (keys (get-in context [:system :app :models])))
         data (reduce
                 (fn [result [k v]]
@@ -77,15 +82,10 @@
                 (:data context))]
     (assoc context :data data)))
 
-(defn restore-db [context]
-  (log "restore-db")
-  (-> context
-      (clear-db)
-      (save-db)))
-
 (defn start-server [context]
   (log "start-server")
-  (let [system (versioned/-main :env "test"
+  (let [system (versioned/-main :env (:env context)
+                                :mongodb-url (:mongodb-url context)
                                 :port (:port context)
                                 :models (:models context)
                                 :sites (:sites context)
@@ -126,8 +126,9 @@
   (let [context (new-context)]
     (log "Starting with context" context)
     (-> context
+        (drop-db)
         (start-server)
-        (restore-db)
+        (save-db)
         (log-in-users)
         (add-schemas)
         (write-data-tmp-file)

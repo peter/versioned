@@ -8,4 +8,4 @@
 (deftest ensure-indexes-does-not-allow-invalid-args
   (is (thrown-with-msg? RuntimeException
                         #"does not match schema"
-                        (ensure-indexes {} {}))))
+                        (ensure-indexes {}))))

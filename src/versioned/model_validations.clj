@@ -13,5 +13,11 @@
 
 (def model-not-updated [{:type "unchanged"}])
 
+; Violation of mongodb unique index. Example message:
+; "Write failed with error code 11000 and error message
+; 'E11000 duplicate key error index: versioned-example.pages.$title.se_1 dup key: { : \"Startsida\" }'"
+(defn duplicate-key-error [message]
+  [{:type "duplicate_key" :message message}])
+
 (defn validate-model-schema [schema doc]
   (validate-schema (without-custom-keys schema) doc))
