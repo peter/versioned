@@ -44,12 +44,24 @@ module.exports = {
             params: {data: {attributes: {published_version: 1}}}
           },
           {
-            it: "can now get the published version of the page with one published widget",
+            it: "can now get the published version of the page with one published widget and one version",
             request: "GET /pages/{{page_id}}?relationships=1&published=1",
-            assert: {
-              select: "body.data.relationships.widgets.data.attributes.id",
-              equal: [1]
-            }
+            assert: [
+              {
+                select: "body.data.relationships.widgets.data.attributes.id",
+                equal: [1]
+              },
+            ]
+          },
+          {
+            it: "still has a single version",
+            request: "GET /pages/{{page_id}}?relationships=1",
+            assert: [
+              {
+                select: "body.data.relationships.versions.data",
+                size: 1
+              }
+            ]
           },
           {
             it: "can unpublish the page by setting published_version = null",
