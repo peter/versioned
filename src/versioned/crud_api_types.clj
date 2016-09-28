@@ -2,15 +2,19 @@
   (:require [versioned.util.core :as u]
             [versioned.util.date :as d]
             [versioned.model-schema :refer [deep-child-schema attribute-type]]
+            [schema.core :as s]
+            [versioned.schema :refer [Map Schema Function]]
             [clojure.stacktrace]))
 
-(defn- coerce-map [coerce-fn attributes schema]
+(s/defn coerce-map :- Map
+  [coerce-fn :- Function attributes :- Map schema :- Schema]
   (reduce (fn [altered-map [k v]]
             (assoc altered-map k (coerce-fn schema k v)))
           {}
           attributes))
 
-(defn- safe-coerce-map [coerce-fn attributes schema]
+(s/defn safe-coerce-map :- Map
+  [coerce-fn :- Function attributes :- Map schema :- Schema]
   (try (coerce-map coerce-fn attributes schema)
     (catch Exception e
       (println "coerce-map exception " (.getMessage e))
@@ -19,7 +23,8 @@
       (clojure.pprint/pprint attributes)
       attributes)))
 
-(defn coerce-value [schema attribute value]
+(s/defn coerce-value :- (s/maybe s/Any)
+  [schema :- (s/maybe Schema) attribute :- s/Keyword value :- s/Any]
   (let [attribute-schema (deep-child-schema schema attribute)
         type (attribute-type attribute-schema attribute)]
     (cond
@@ -38,5 +43,6 @@
       :else
         value)))
 
-(defn coerce-attribute-types [schema attributes]
+(s/defn coerce-attribute-types :- Map
+  [schema :- Schema attributes :- Map]
   (safe-coerce-map coerce-value attributes schema))

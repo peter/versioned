@@ -19,11 +19,13 @@
   (empty? (clojure.set/difference (set routes)
                                   (set crud-actions))))
 
+(def Schema Map)
+
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))
 (def Model {
   :type s/Keyword
-  :schema Map
+  :schema Schema
   (s/optional-key :callbacks) Map
   (s/optional-key :relationships) Map
   (s/optional-key :indexes) [Map]

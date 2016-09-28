@@ -10,7 +10,8 @@
     {:sort (array-map :id -1)}
     {}))
 
-(defn list-sort [model request]
+(s/defn list-sort :- Map
+  [model :- Model request :- Request]
   (if-let [sort (get-in request [:query-params :sort])]
     (let [specs (str/split sort #",")]
       (reduce (fn [result spec]
