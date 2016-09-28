@@ -40,9 +40,24 @@
 
 (def Handler Function)
 
+(def ModelSpecPath (s/constrained String #(re-matches #"^([\w.-]+)/([\w-]+)$" %))) ; "versioned.models.users/spec"
+
+(def ModelsConfig (s/constrained
+                    {s/Keyword (s/conditional map? Model :else ModelSpecPath)}
+                    (fn [m]
+                      (every? (fn [[k v]]
+                                (or (string? v)
+                                    (= k (:type v))))
+                              (seq m)))))
+
+(def Config {
+  :models ModelsConfig
+  s/Keyword s/Any
+})
+
 (def App {
-  :config {s/Keyword s/Any}
-  :models {s/Keyword Model}
+  :config Config
+  :models Models
   :swagger Map
   :routes [Route]
   s/Keyword s/Any

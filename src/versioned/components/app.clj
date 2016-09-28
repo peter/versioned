@@ -13,6 +13,8 @@
   component/Lifecycle
 
   (start [component]
+    (when (get-in config [:config :validate-schemas])
+      (s/set-fn-validation! true))
     (let [config (:config config)
           models (init-models config)
           swagger-spec (swagger {:config config :models models})
@@ -22,8 +24,6 @@
           handler (-> (router/create-handler app)
                       (middleware/wrap app))]
       (println "Starting Application config:" config "models:" (map :type (vals models)))
-      (when (:validate-schemas config)
-        (s/set-fn-validation! true))
       (ensure-indexes app)
       (assoc component :config config
                        :models models

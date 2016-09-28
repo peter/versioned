@@ -1,5 +1,7 @@
 (ns versioned.model-init
-  (:require [versioned.util.core :as u]))
+  (:require [versioned.util.core :as u]
+            [schema.core :as s]
+            [versioned.schema :refer [Models Config]]))
 
 (defn load-model-spec [config spec]
   (if (string? spec)
@@ -8,7 +10,8 @@
       loaded-spec)
     spec))
 
-(defn init-models [config]
+(s/defn init-models :- Models
+  [config :- Config]
   (reduce (fn [models [type spec]]
             (assoc models type (load-model-spec config spec)))
           {}
