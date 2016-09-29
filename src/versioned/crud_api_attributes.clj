@@ -31,5 +31,5 @@
 
 (s/defn invalid-attributes :- (s/maybe AttributeKeys)
   [model :- Model, request :- Request]
-  (not-empty (clojure.set/difference (set (keys (json-api/attributes model request)))
+  (not-empty (clojure.set/difference (set (keys (json-api/attributes request)))
                                      (set (keys (get-in model [:schema :properties]))))))

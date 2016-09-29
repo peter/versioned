@@ -12,6 +12,14 @@
         (and (coll? value) (= (count value) 0)) true
         :else false))
 
+; Convert keyword to string.
+; Doing (name keyword) will not retain the namespace of the keyword
+; http://stackoverflow.com/questions/16594610/what-is-the-right-way-to-convert-a-namespaced-clojure-keyword-to-string
+(defn keyword-str [value]
+  (if (keyword? value)
+    (subs (str value) 1)
+    value))
+    
 (defn present? [value]
   (not (blank? value)))
 
@@ -87,27 +95,27 @@
 
 (defn deep-map-values
   ([f v opts]
-    (let [default-opts {:recurse-if? #(coll? (:value %))
-                        :path []}
-          opts (merge default-opts opts)
-          {:keys [recurse-if? path]} opts
-          args {:key (last path) :value v :path path}
-          recurse? (recurse-if? args)]
-      (cond
-        (and (map? v) recurse?)
-          (reduce (fn [altered-map [k mv]]
-                    (let [new-opts (update-in opts [:path] conj k)]
-                      (assoc altered-map k (deep-map-values f mv new-opts))))
-                  {}
-                  v)
-        (and (coll? v) recurse?)
-          (map-indexed (fn [i item]
-                         (let [new-opts (update-in opts [:path] conj i)]
-                           (deep-map-values f item new-opts)))
-                       v)
-        :else (f args))))
+   (let [default-opts {:recurse-if? #(coll? (:value %))
+                       :path []}
+         opts (merge default-opts opts)
+         {:keys [recurse-if? path]} opts
+         args {:key (last path) :value v :path path}
+         recurse? (recurse-if? args)]
+     (cond
+       (and (map? v) recurse?)
+       (reduce (fn [altered-map [k mv]]
+                 (let [new-opts (update-in opts [:path] conj k)]
+                   (assoc altered-map k (deep-map-values f mv new-opts))))
+               {}
+               v)
+       (and (coll? v) recurse?)
+       (map-indexed (fn [i item]
+                      (let [new-opts (update-in opts [:path] conj i)]
+                        (deep-map-values f item new-opts)))
+                    v)
+       :else (f args))))
   ([f v]
-    (deep-map-values f v {})))
+   (deep-map-values f v {})))
 
 ; Wrap a function in a nil check, i.e. only execute function if value is not nil
 (defn maybe [f]

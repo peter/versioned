@@ -1,6 +1,7 @@
 (ns versioned.models.users
   (:require [versioned.model-spec :refer [generate-spec]]
             [versioned.model-includes.id-model :refer [id-spec]]
+            [versioned.model-includes.typed-model :refer [typed-spec]]
             [versioned.model-api :as model-api]
             [versioned.util.core :as u]
             [versioned.util.encrypt :as encrypt]
@@ -15,6 +16,7 @@
 (defn spec [config]
   (generate-spec
     (id-spec)
+    (typed-spec)
     {
     :type :users
     :schema {

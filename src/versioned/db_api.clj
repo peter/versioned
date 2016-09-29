@@ -33,17 +33,17 @@
     coll :- s/Keyword
     query :- Map
     opts :- Map]
-    (let [default-opts {:page 1 :per-page 100 :sort {} :fields []}
-          opts (merge default-opts opts)]
-      (map json-friendly (mq/with-collection (:db database) (name coll)
-                                             (mq/find (mongo-friendly query))
-                                             (mq/fields (:fields opts))
-                                             (mq/paginate :page (:page opts) :per-page (:per-page opts))
-                                             (mq/sort (:sort opts))))))
+   (let [default-opts {:page 1 :per-page 100 :sort {} :fields []}
+         opts (merge default-opts opts)]
+     (map json-friendly (mq/with-collection (:db database) (name coll)
+                                            (mq/find (mongo-friendly query))
+                                            (mq/fields (:fields opts))
+                                            (mq/paginate :page (:page opts) :per-page (:per-page opts))
+                                            (mq/sort (:sort opts))))))
   ([database :- Database
     coll :- s/Keyword
     query :- Map]
-    (find database coll query {})))
+   (find database coll query {})))
 
 (s/defn find-one :- (s/maybe Map)
   [database :- Database

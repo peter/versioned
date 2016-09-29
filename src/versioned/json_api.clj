@@ -2,64 +2,92 @@
   (:require [versioned.util.core :as u]
             [versioned.model-support :as model-support]
             [clojure.string :as str]
+            [schema.core :as s]
+            [versioned.types :refer [Map
+                                     ID
+                                     Request
+                                     Model
+                                     JsonApiAttributes
+                                     JsonApiData
+                                     JsonApiResource
+                                     JsonApiResponse
+                                     JsonApiErrorResponse
+                                     JsonApiDataResponse
+                                     Coll
+                                     AttributeList
+                                     JsonApiError]]
             [versioned.model-validations :refer [model-errors model-not-updated]]))
 
 ; Inspired by http://jsonapi.org
 
 (def error-status 422)
 
-(defn id [request]
+(s/defn id :- ID
+  [request :- Request]
   (get-in request [:params :id]))
 
-(defn attributes [model-spec request]
+(s/defn attributes :- Map
+  [request :- Request]
   (get-in request [:params :data :attributes]))
 
-(defn with-attrs [model-spec doc]
-  (let [id ((model-support/id-attribute model-spec) doc)]
-    {
-      :id (str id)
-      :type (:type doc)
-      :attributes doc
-    }))
+(s/defn json-api-attributes :- JsonApiAttributes
+  [model :- Model
+   doc :- Map]
+  (let [id ((model-support/id-attribute model) doc)]
+    (u/compact {
+                :id (str id)
+                :type (u/keyword-str (:type doc))
+                :attributes doc})))
 
-(defn relationship-docs [model-spec docs]
-  {:data (map #(with-attrs model-spec %) docs)})
+(s/defn json-api-data :- JsonApiData
+  [model :- Model
+   docs :- [Map]]
+  {:data (map #(json-api-attributes model %) docs)})
 
-(defn resource [model-spec doc]
-  (let [id ((model-support/id-attribute model-spec) doc)
-        relationships (not-empty (u/map-values (partial relationship-docs model-spec)
+(s/defn resource :- JsonApiResource
+  [model :- Model
+   doc :- Map]
+  (let [id ((model-support/id-attribute model) doc)
+        relationships (not-empty (u/map-values (partial json-api-data model)
                                                (or (:relationships (meta doc)) {})))]
-    (u/compact (merge (with-attrs model-spec doc) {
-      :relationships relationships
-    }))))
+    (u/compact (merge (json-api-attributes model doc) {
+                                                       :relationships relationships}))))
 
-(defn error-response [errors]
+(s/defn error-response :- JsonApiErrorResponse
+  [errors :- [JsonApiError]]
   {:body {:errors errors} :status error-status})
 
-(defn data-response
-  ([data status] {:body {:data data} :status status})
-  ([data] (data-response data 200)))
+(s/defn data-response :- JsonApiDataResponse
+  ([data :- Coll status :- s/Int] {:body {:data data} :status status})
+  ([data :- Coll] (data-response data 200)))
 
-(defn no-update-response []
+(s/defn no-update-response :- {:status s/Int}
+  []
   {:status 204})
 
-(defn missing-response []
-  {:body {} :status 404})
+(s/defn missing-response :- {:status s/Int}
+  []
+  {:status 404})
 
-(defn invalid-attributes-response [invalids]
+(s/defn invalid-attributes-response :- JsonApiErrorResponse
+  [invalids :- AttributeList]
   (error-response [{
-    :type "invalid_attributes"
-    :attributes invalids
-    :message (str "Invalid attributes: " (str/join ", " invalids))}]))
+                    :type "invalid_attributes"
+                    :attributes invalids
+                    :message (str "Invalid attributes: " (str/join ", " invalids))}]))
 
-(defn doc-response [model-spec doc]
+(s/defn doc-response :- JsonApiResponse
+  [model :- Model
+   doc :- Map]
   (let [errors (model-errors doc)
-        data (resource model-spec doc)]
-  (cond
-    (= errors model-not-updated) (no-update-response)
-    errors (error-response errors)
-    :else (data-response data))))
+        data (resource model doc)]
+   (cond
+     (= errors model-not-updated) (no-update-response)
+     errors (error-response errors)
+     :else (data-response data))))
 
-(defn docs-response [model-spec docs]
-  (let [data (map (partial resource model-spec) docs)]
+(s/defn docs-response :- JsonApiResponse
+  [model :- Model
+   docs :- [Map]]
+  (let [data (map (partial resource model) docs)]
     (data-response data)))

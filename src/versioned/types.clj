@@ -5,8 +5,13 @@
 (def Map {s/Keyword s/Any})
 (def Nil (s/pred nil? 'nil?))
 (def Function (s/pred fn? 'fn?))
+(def Coll (s/pred coll? 'coll?))
+
+(def AttributeList (s/constrained Coll #(every? keyword? %)))
 
 (def PosInt (s/pred u/positive-int? 'positive-int?))
+
+(def ID (s/cond-pre s/Str PosInt))
 
 (def LogLevel (s/enum "info" "debug"))
 
@@ -19,6 +24,25 @@
 (def Action (s/pred #{:create :update :delete} 'changelog-action?))
 (def Email s/Str)
 
+(def JsonApiAttributes {
+                        :id s/Str
+                        (s/optional-key :type) s/Str
+                        :attributes Map})
+(def JsonApiData {
+                  :data [JsonApiAttributes]})
+(def JsonApiResource (merge JsonApiAttributes {
+                                                (s/optional-key :relationships) {s/Keyword JsonApiData}}))
+(def JsonApiError {
+                   :type s/Str
+                   (s/optional-key :message) s/Str
+                   s/Keyword s/Any})
+(def JsonApiResponse {
+                      :status s/Int
+                      (s/optional-key :body) Map})
+
+(def JsonApiErrorResponse {:body {:errors [JsonApiError]} :status s/Int})
+(def JsonApiDataResponse {:body {:data Coll} :status s/Int})
+
 (def crud-actions [:list :get :create :update :delete])
 (defn valid-routes? [routes]
   (empty? (clojure.set/difference (set routes)
@@ -29,14 +53,14 @@
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))
 (def Model {
-  :type s/Keyword
-  :schema Schema
-  (s/optional-key :callbacks) Map
-  (s/optional-key :relationships) Map
-  (s/optional-key :indexes) [Map]
-  (s/optional-key :routes) Routes
-  s/Keyword s/Any
-})
+            :type s/Keyword
+            :schema Schema
+            (s/optional-key :callbacks) Map
+            (s/optional-key :relationships) Map
+            (s/optional-key :indexes) [Map]
+            (s/optional-key :routes) Routes
+            s/Keyword s/Any})
+
 
 (def Models {s/Keyword Model})
 
@@ -44,9 +68,9 @@
 (def DB-Conn (s/pred #(instance? com.mongodb.MongoClient %) 'mongodb-conn?))
 (def WriteResult (s/pred #(instance? com.mongodb.WriteResult %) 'write-result?))
 (def DB-IndexOptions {
-  (s/optional-key :unique) s/Bool
-  (s/optional-key :name) s/Str
-})
+                      (s/optional-key :unique) s/Bool
+                      (s/optional-key :name) s/Str})
+
 (def Database {:db DB-Schema :conn DB-Conn s/Keyword s/Any})
 
 (def Route Map)
@@ -64,14 +88,13 @@
                               (seq m)))))
 
 (def Config {
-  :models ModelsConfig
-  s/Keyword s/Any
-})
+             :models ModelsConfig
+             s/Keyword s/Any})
+
 
 (def App {
-  :config Config
-  :models Models
-  :swagger Map
-  :routes [Route]
-  s/Keyword s/Any
-})
+          :config Config
+          :models Models
+          :swagger Map
+          :routes [Route]
+          s/Keyword s/Any})

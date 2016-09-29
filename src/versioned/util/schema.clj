@@ -11,7 +11,10 @@
                        (if (json-type? value)
                          value
                          (.toString value)))
-                      m))
+                     m))
 
 (defn validate-schema [schema doc]
-  ((v/validator schema) (schema-friendly-map doc)))
+  (let [errors ((v/validator schema) (schema-friendly-map doc))]
+    (if errors
+      (map #(assoc % :type "schema") errors)
+      errors)))

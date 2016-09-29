@@ -17,8 +17,8 @@
       {
         :sep sep
         :field (keyword (get match 2))
-        :values (str/split (get match 3) (u/str-to-regex sep))
-      })
+        :values (str/split (get match 3) (u/str-to-regex sep))})
+
     nil))
 
 (s/defn coerce-query-types :- Map

@@ -25,21 +25,21 @@
         sites ["se" "no" "dk" "fi"]
         locales sites
         paths {
-          :jsonapitest (or (System/getenv "JSONAPITEST_PATH") "jsonapitest")
-          :config "test/api/config.js"
-          :data "test/api/data.json"
-          :data-tmp "test/api/data.tmp.json"
-          :test-suites "test/api/suites"
-        }]
-  {
-    :mongodb-url (mongodb-url env)
-    :paths paths
-    :data (read-data (:data paths))
-    :models models
-    :sites sites
-    :locales locales
-    :port 5001
-  }))
+               :jsonapitest (or (System/getenv "JSONAPITEST_PATH") "jsonapitest")
+               :config "test/api/config.js"
+               :data "test/api/data.json"
+               :data-tmp "test/api/data.tmp.json"
+               :test-suites "test/api/suites"}]
+
+   {
+     :mongodb-url (mongodb-url env)
+     :paths paths
+     :data (read-data (:data paths))
+     :models models
+     :sites sites
+     :locales locales
+     :port 5001}))
+
 
 (defn test-files [context]
   (let [paths (:paths context)
