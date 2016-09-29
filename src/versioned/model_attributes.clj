@@ -1,18 +1,21 @@
 (ns versioned.model-attributes
   (:require [versioned.model-schema :refer [schema-attributes restricted-schema]]
             [versioned.util.core :as u]
+            [schema.core :as s]
+            [versioned.types :refer [Schema]]
             [clojure.string :as str]
             [clojure.set :refer [intersection]]))
 
 (def custom-property-keys #{:meta})
 
-(defn map-with-custom-keys? [value]
-  (and (map? value)
-       (not-empty (intersection (set (keys value)) custom-property-keys))))
+(s/defn map-with-custom-keys? :- s/Bool
+  [value :- s/Any]
+  (boolean (and (map? value)
+                (not-empty (intersection (set (keys value)) custom-property-keys)))))
 
-(defn without-custom-keys
+(s/defn without-custom-keys :- Schema
   "Drop custom property keys when validating schema to avoid validator warnings or swagger errors"
-  [schema]
+  [schema :- Schema]
   (let [f #(if (map-with-custom-keys? %)
                (apply dissoc % custom-property-keys)
                %)]

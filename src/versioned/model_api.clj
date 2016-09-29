@@ -2,6 +2,8 @@
   (:refer-clojure :exclude [find update delete count])
   (:require [versioned.db-api :as db]
             [versioned.logger :as logger]
+            [schema.core :as s]
+            [versioned.types :refer [Map App Model ID PosInt Function]]
             [versioned.model-versions :refer [select-version]]
             [versioned.model-support :refer [coll id-attribute id-query valid-id?]]
             [versioned.model-versions :refer [unversioned-attributes versioned-coll
@@ -13,45 +15,62 @@
                                                  duplicate-key-error]]
             [versioned.model-changes :refer [model-changes]]
             [versioned.model-callbacks :refer [with-callbacks]])
-   (:import [com.mongodb DuplicateKeyException]))
+  (:import [com.mongodb DuplicateKeyException]))
 
-(defn find
-  ([app model-spec query opts]
-    (db/find (:database app) (coll model-spec) query opts))
-  ([app model-spec query]
-    (find app model-spec query {})))
+(s/defn find :- [Map]
+  ([app :- App
+    model :- Model
+    query :- Map
+    opts :- Map]
+   (db/find (:database app) (coll model) query opts))
+  ([app :- App
+    model :- Model
+    query :- Map]
+   (find app model query {})))
 
-(defn find-one
-  ([app model-spec id opts]
-    (if (valid-id? model-spec id)
-      (let [doc (db/find-one (:database app) (coll model-spec) (id-query model-spec id))
-            published? (:published opts)
-            relationships-opts (select-keys opts [:published :relationships])
-            version (select-version doc (:version opts) published?)]
-        (if (and version (not= version (:version doc)))
-          (let [versioned-doc (db/find-one (:database app) (versioned-coll model-spec) (versioned-id-query model-spec id version))
-                doc (apply-version model-spec doc versioned-doc)]
-                (with-relationships app model-spec doc relationships-opts))
-          (if (and published? (not (:published_version doc)))
-              nil
-              (with-relationships app model-spec doc relationships-opts))))
-      nil))
-  ([app model-spec id]
-    (find-one app model-spec id {})))
+(s/defn find-one :- (s/maybe Map)
+  ([app :- App
+    model :- Model
+    id :- ID
+    opts :- Map]
+   (if (valid-id? model id)
+     (let [doc (db/find-one (:database app) (coll model) (id-query model id))
+           published? (:published opts)
+           relationships-opts (select-keys opts [:published :relationships])
+           version (select-version doc (:version opts) published?)]
+       (if (and version (not= version (:version doc)))
+         (let [versioned-doc (db/find-one (:database app) (versioned-coll model) (versioned-id-query model id version))
+               doc (apply-version model doc versioned-doc)]
+              (with-relationships app model doc relationships-opts))
+         (if (and published? (not (:published_version doc)))
+             nil
+             (with-relationships app model doc relationships-opts))))
+     nil))
+  ([app :- App
+    model :- Model
+    id :- ID]
+   (find-one app model id {})))
 
-(defn count [app model-spec query]
-  (db/count (:database app) (coll model-spec) query))
+(s/defn count :- PosInt
+  [app :- App
+   model :- Model
+   query :- Map]
+  (db/count (:database app) (coll model) query))
 
-(defn- exec-create-without-callbacks [app model-spec doc]
-  (let [result (db/create (:database app) (coll model-spec) doc)]
+(s/defn exec-create-without-callbacks :- Map
+  [app :- App
+   model :- Model
+   doc :- Map]
+  (let [result (db/create (:database app) (coll model) doc)]
     (logger/debug app "model-api/create result:" result)
     (with-meta (:doc result)
                (assoc (meta doc) :result (:result result)))))
 
-(defn with-db-error-handling [write-fn]
-  (fn [app model-spec doc]
+(s/defn with-db-error-handling :- Function
+  [write-fn :- Function]
+  (fn [app model doc]
     (try
-      (write-fn app model-spec doc)
+      (write-fn app model doc)
       (catch DuplicateKeyException e
         (logger/debug app "model-api/with-db-error-handling exception: " (type e) (.getMessage e))
         (with-model-errors doc (duplicate-key-error (.getMessage e)))))))
@@ -61,16 +80,22 @@
     (with-callbacks :create)
     (with-db-error-handling)))
 
-(defn create [app model-spec doc]
+(s/defn create :- Map
+  [app :- App
+   model :- Model
+   doc :- Map]
   (let [create-doc (u/compact doc)]
-    (exec-create app model-spec create-doc)))
+    (exec-create app model create-doc)))
 
-(defn- exec-update-without-callbacks [app model-spec doc]
-  (let [changes (model-changes model-spec doc)]
-    (logger/debug app "model-api/exec-update-without-callbacks" (:type doc) ((id-attribute model-spec) doc) "changes:" changes)
+(s/defn exec-update-without-callbacks :- Map
+  [app :- App
+   model :- Model
+   doc :- Map]
+  (let [changes (model-changes model doc)]
+    (logger/debug app "model-api/exec-update-without-callbacks" (:type doc) ((id-attribute model) doc) "changes:" changes)
     (if changes
-      (let [id ((id-attribute model-spec) doc)
-            result (db/update (:database app) (coll model-spec) (id-query model-spec id) doc)]
+      (let [id ((id-attribute model) doc)
+            result (db/update (:database app) (coll model) (id-query model id) doc)]
           (logger/debug app "model-api/update result:" result)
           (with-meta (:doc result)
                      (merge (meta doc) {:result result})))
@@ -81,15 +106,21 @@
     (with-callbacks :update)
     (with-db-error-handling)))
 
-(defn update [app model-spec doc]
-  (let [id ((id-attribute model-spec) doc)
-        existing-doc (find-one app model-spec id)
+(s/defn update :- Map
+  [app :- App
+   model :- Model
+   doc :- Map]
+  (let [id ((id-attribute model) doc)
+        existing-doc (find-one app model id)
         merged-doc (with-meta (u/compact (merge existing-doc doc)) {:existing-doc existing-doc})]
-    (exec-update app model-spec merged-doc)))
+    (exec-update app model merged-doc)))
 
-(defn- delete-without-callbacks [app model-spec doc]
-  (let [id ((id-attribute model-spec) doc)
-        result (db/delete (:database app) (coll model-spec) (id-query model-spec id))]
+(s/defn delete-without-callbacks :- Map
+  [app :- App
+   model :- Model
+   doc :- Map]
+  (let [id ((id-attribute model) doc)
+        result (db/delete (:database app) (coll model) (id-query model id))]
     (with-meta doc {:result result})))
 
 (def delete (with-callbacks delete-without-callbacks :delete))

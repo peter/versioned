@@ -48,6 +48,20 @@
   (empty? (clojure.set/difference (set routes)
                                   (set crud-actions))))
 
+; (declare Schema)
+; (def ScalarSchemaType (s/enum "string" "number" "integer" "null" "boolean"))
+; (def ScalarSchema {
+;                    :type (s/cond-pre ScalarSchemaType [ScalarSchemaType])
+;                    s/Keyword s/Any})
+; (def ObjectSchema {
+;                    :type (s/eq "object")
+;                    :properties {s/Keyword (s/recursive #'Schema)}
+;                    s/Keyword s/Any})
+; (def ArraySchema {
+;                   :type (s/eq "array")
+;                   :items (s/recursive #'Schema)
+;                   s/Keyword s/Any})
+; (def Schema (s/cond-pre ScalarSchema ObjectSchema ArraySchema))
 (def Schema Map)
 
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
