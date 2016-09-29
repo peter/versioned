@@ -23,6 +23,10 @@
       [string-or-int]
   (if (string? string-or-int) (. Integer parseInt string-or-int) string-or-int))
 
+(defn positive-int? [v]
+  (and (integer? v)
+       (or (= 0 v) (pos? v))))
+
 (defn safe-parse-int [string-or-int]
   (try
     (parse-int string-or-int)

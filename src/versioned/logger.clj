@@ -1,19 +1,29 @@
 (ns versioned.logger
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [schema.core :as s]
+            [versioned.schema :refer [Nil App LogLevel]]))
 
-(defn level [app]
+(s/defn level :- LogLevel
+  [app :- App]
   (get-in app [:config :log-level]))
 
-(defn level-prefix [level]
+(s/defn level-prefix :- String
+  [level :- LogLevel]
   (str "[" (str/upper-case level) "]"))
 
-(defn log [level args]
+(s/defn log :- Nil
+  [level :- LogLevel
+   args :- [s/Any]]
   (let [print-args (into [(level-prefix level)] args)]
     (apply println print-args)))
 
-(defn debug [app & args]
+(s/defn debug :- Nil
+  [app :- App
+   & args :- [s/Any]]
   (if (= (level app) "debug")
     (log "debug" args)))
 
-(defn info [app & args]
+(s/defn info :- Nil
+  [app :- App
+   & args :- [s/Any]]
   (log "info" args))

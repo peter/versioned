@@ -44,16 +44,16 @@
 
 (defn- exec-create-without-callbacks [app model-spec doc]
   (let [result (db/create (:database app) (coll model-spec) doc)]
-    (logger/debug "model-api/create result:" result)
+    (logger/debug app "model-api/create result:" result)
     (with-meta (:doc result)
-               (merge (meta doc) {:result result}))))
+               (assoc (meta doc) :result (:result result)))))
 
 (defn with-db-error-handling [write-fn]
   (fn [app model-spec doc]
     (try
       (write-fn app model-spec doc)
       (catch DuplicateKeyException e
-        (logger/debug "model-api/with-db-error-handling exception: " (type e) (.getMessage e))
+        (logger/debug app "model-api/with-db-error-handling exception: " (type e) (.getMessage e))
         (with-model-errors doc (duplicate-key-error (.getMessage e)))))))
 
 (def exec-create
@@ -71,7 +71,7 @@
     (if changes
       (let [id ((id-attribute model-spec) doc)
             result (db/update (:database app) (coll model-spec) (id-query model-spec id) doc)]
-          (logger/debug "model-api/update result:" result)
+          (logger/debug app "model-api/update result:" result)
           (with-meta (:doc result)
                      (merge (meta doc) {:result result})))
       (with-model-errors doc model-not-updated))))

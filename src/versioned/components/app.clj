@@ -1,6 +1,5 @@
 (ns versioned.components.app
   (:require [com.stuartsierra.component :as component]
-            [schema.core :as s]
             [clojure.string :as str]
             [versioned.swagger.core :refer [swagger]]
             [versioned.middleware.core :as middleware]
@@ -13,8 +12,6 @@
   component/Lifecycle
 
   (start [component]
-    (when (get-in config [:config :validate-schemas])
-      (s/set-fn-validation! true))
     (let [config (:config config)
           models (init-models config)
           swagger-spec (swagger {:config config :models models})

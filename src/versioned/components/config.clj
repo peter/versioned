@@ -1,6 +1,7 @@
 (ns versioned.components.config
   (:require [clojure.string :as str]
             [versioned.util.core :as u]
+            [schema.core :as s]
             [com.stuartsierra.component :as component]))
 
 (defn get-env [config]
@@ -55,6 +56,8 @@
   (start [component]
     (let [config (get-config config)]
       (println "Starting Config" config)
+      (when (:validate-schemas config)
+        (s/set-fn-validation! true))
       (assoc component :config config)))
 
   (stop [component]

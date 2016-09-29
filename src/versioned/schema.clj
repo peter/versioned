@@ -1,9 +1,14 @@
 (ns versioned.schema
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [versioned.util.core :as u]))
 
 (def Map {s/Keyword s/Any})
 (def Nil (s/pred nil? 'nil?))
 (def Function (s/pred fn? 'fn?))
+
+(def PosInt (s/pred u/positive-int? 'positive-int?))
+
+(def LogLevel (s/enum "info" "debug"))
 
 (def Request Map)
 
@@ -37,6 +42,7 @@
 
 (def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
 (def DB-Conn (s/pred #(instance? com.mongodb.MongoClient %) 'mongodb-conn?))
+(def WriteResult (s/pred #(instance? com.mongodb.WriteResult %) 'write-result?))
 (def DB-IndexOptions {
   (s/optional-key :unique) s/Bool
   (s/optional-key :name) s/Str

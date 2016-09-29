@@ -6,7 +6,7 @@
             [monger.query :as mq]
             [monger.joda-time]
             [schema.core :as s]
-            [versioned.schema :refer [Nil Database DB-Conn DB-IndexOptions Map]]
+            [versioned.schema :refer [Nil Database DB-Conn DB-IndexOptions Map PosInt WriteResult]]
             [com.stuartsierra.component :as component])
   (:import [org.bson.types ObjectId]
            com.mongodb.DB))
@@ -28,8 +28,11 @@
    options :- DB-IndexOptions]
   (mc/ensure-index (:db database) coll (mongo-map fields) options))
 
-(defn find
-  ([database coll query opts]
+(s/defn find :- [Map]
+  ([database :- Database
+    coll :- s/Keyword
+    query :- Map
+    opts :- Map]
     (let [default-opts {:page 1 :per-page 100 :sort {} :fields []}
           opts (merge default-opts opts)]
       (map json-friendly (mq/with-collection (:db database) (name coll)
@@ -37,25 +40,43 @@
                                              (mq/fields (:fields opts))
                                              (mq/paginate :page (:page opts) :per-page (:per-page opts))
                                              (mq/sort (:sort opts))))))
-  ([database coll query]
+  ([database :- Database
+    coll :- s/Keyword
+    query :- Map]
     (find database coll query {})))
 
-(defn find-one [database coll query]
+(s/defn find-one :- (s/maybe Map)
+  [database :- Database
+   coll :- s/Keyword
+   query :- Map]
   (first (find database coll query)))
 
-(defn count [database coll query]
+(s/defn count :- PosInt
+  [database :- Database
+   coll :- s/Keyword
+   query :- Map]
   (mc/count (:db database) coll query))
 
-(defn create [database coll doc]
+(s/defn create :- {:doc Map :result WriteResult}
+  [database :- Database
+   coll :- s/Keyword
+   doc :- Map]
   (let [created-doc (assoc doc :_id (ObjectId.))
         result (mc/insert (:db database) coll created-doc)]
     {:doc (json-friendly created-doc) :result result}))
 
 ; For partial update - use: {:$set {:foo "bar"}}
-(defn update [database coll query doc]
+(s/defn update :- {:doc Map :result WriteResult}
+  [database :- Database
+   coll :- s/Keyword
+   query :- Map
+   doc :- Map]
   (let [result (mc/update (:db database) coll (mongo-friendly query) (mongo-friendly doc))
         updated-doc (find-one database coll query)]
     {:doc updated-doc :result result}))
 
-(defn delete [database coll query]
+(s/defn delete :- WriteResult
+  [database :- Database
+   coll :- s/Keyword
+   query :- Map]
   (mc/remove (:db database) coll (mongo-friendly query)))

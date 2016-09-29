@@ -14,6 +14,6 @@
         (let [access-token (auth/generate-token)
               updated (users/store-token app user access-token)
               doc (assoc (read-attributes model updated) :access_token access-token)]
-          (logger/debug "sessions create authenticated user:" updated (meta updated))
+          (logger/debug app "sessions create authenticated user:" updated (meta updated))
           (merge (json-api/doc-response model doc) {:headers (auth/header access-token)}))
         {:status 401})))
