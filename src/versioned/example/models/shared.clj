@@ -34,7 +34,7 @@
     ;       but patternProperties is currently not allowed by Swagger.
     (let [default-attribute-schema {:type "string"}
           attribute-schema (merge default-attribute-schema custom-schema)
-          properties (reduce #(assoc %1 %2 attribute-schema) {} locales)]
+          properties (reduce #(assoc %1 (keyword %2) attribute-schema) {} locales)]
       {
         :type "object"
         :meta {

@@ -2,7 +2,7 @@
   (:require [versioned.model-schema :refer [schema-attributes restricted-schema]]
             [versioned.util.core :as u]
             [schema.core :as s]
-            [versioned.types :refer [Schema]]
+            [versioned.types :refer [JsonSchema]]
             [clojure.string :as str]
             [clojure.set :refer [intersection]]))
 
@@ -13,9 +13,9 @@
   (boolean (and (map? value)
                 (not-empty (intersection (set (keys value)) custom-property-keys)))))
 
-(s/defn without-custom-keys :- Schema
+(s/defn without-custom-keys :- JsonSchema
   "Drop custom property keys when validating schema to avoid validator warnings or swagger errors"
-  [schema :- Schema]
+  [schema :- JsonSchema]
   (let [f #(if (map-with-custom-keys? %)
                (apply dissoc % custom-property-keys)
                %)]

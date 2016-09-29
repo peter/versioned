@@ -5,6 +5,7 @@
 (def Map {s/Keyword s/Any})
 (def Nil (s/pred nil? 'nil?))
 (def Function (s/pred fn? 'fn?))
+(def StrOrKeyword (s/cond-pre s/Str s/Keyword))
 (def Coll (s/pred coll? 'coll?))
 
 (def AttributeList (s/constrained Coll #(every? keyword? %)))
@@ -48,21 +49,31 @@
   (empty? (clojure.set/difference (set routes)
                                   (set crud-actions))))
 
-; (declare Schema)
-; (def ScalarSchemaType (s/enum "string" "number" "integer" "null" "boolean"))
-; (def ScalarSchema {
-;                    :type (s/cond-pre ScalarSchemaType [ScalarSchemaType])
-;                    s/Keyword s/Any})
-; (def ObjectSchema {
-;                    :type (s/eq "object")
-;                    :properties {s/Keyword (s/recursive #'Schema)}
-;                    s/Keyword s/Any})
-; (def ArraySchema {
-;                   :type (s/eq "array")
-;                   :items (s/recursive #'Schema)
-;                   s/Keyword s/Any})
-; (def Schema (s/cond-pre ScalarSchema ObjectSchema ArraySchema))
-(def Schema Map)
+(declare JsonSchema)
+(def JsonValue (s/cond-pre s/Str s/Num Nil s/Bool Coll))
+(def ScalarSchemaType (s/enum "string" "number" "integer" "null" "boolean"))
+(def ScalarSchema {
+                   :type (s/cond-pre ScalarSchemaType [ScalarSchemaType])
+                   s/Keyword s/Any})
+(def EnumSchema {
+                 :enum [JsonValue]
+                 s/Keyword s/Any})
+(def ObjectSchema {
+                   :type (s/eq "object")
+                   (s/optional-key :properties) {s/Keyword (s/recursive #'JsonSchema)}
+                   (s/optional-key :additionalProperties) s/Bool
+                   (s/optional-key :required) [StrOrKeyword]
+                   s/Keyword s/Any})
+(def ArraySchema {
+                  :type (s/eq "array")
+                  (s/optional-key :items) (s/recursive #'JsonSchema)
+                  s/Keyword s/Any})
+(def JsonSchema (s/conditional
+                  #(= (:type %) "object") ObjectSchema
+                  #(= (:type %) "array") ArraySchema
+                  #(contains? % :enum) EnumSchema
+                  identity ScalarSchema))
+(def Schema JsonSchema)
 
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))

@@ -18,7 +18,7 @@
       (is (init-models {:models {:foo "versioned.example.models.sections/spec"}}))
     )
     (testing "can be passed valid models map where values are model specs (maps)"
-      (is (init-models {:models {:foo {:type :foo :schema {:type "object"}}}}))
+      (is (init-models {:models {:foo {:type :foo :schema {:type "object" :properties {:title {:type "string"}}}}}}))
     )
   )
 )
