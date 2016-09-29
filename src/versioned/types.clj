@@ -1,4 +1,4 @@
-(ns versioned.schema
+(ns versioned.types
   (:require [schema.core :as s]
             [versioned.util.core :as u]))
 

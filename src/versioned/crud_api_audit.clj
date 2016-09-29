@@ -5,7 +5,7 @@
             [versioned.model-changes :refer [model-changes]]
             [versioned.db-api :as db]
             [schema.core :as s]
-            [versioned.schema :refer [Map Model Request App Changelog Action Email]]))
+            [versioned.types :refer [Map Model Request App Changelog Action Email]]))
 
 (s/defn get-user :- (s/maybe Email)
   [request :- Request]

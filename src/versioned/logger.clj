@@ -1,7 +1,7 @@
 (ns versioned.logger
   (:require [clojure.string :as str]
             [schema.core :as s]
-            [versioned.schema :refer [Nil App LogLevel]]))
+            [versioned.types :refer [Nil App LogLevel]]))
 
 (s/defn level :- LogLevel
   [app :- App]

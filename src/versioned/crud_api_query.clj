@@ -1,7 +1,7 @@
 (ns versioned.crud-api-query
   (:require [clojure.string :as str]
             [schema.core :as s]
-            [versioned.schema :refer [Map Schema Model Request]]
+            [versioned.types :refer [Map Schema Model Request]]
             [versioned.util.core :as u]
             [versioned.model-schema :refer [deep-child-schema attribute-type]]
             [versioned.crud-api-types :refer [coerce-value]]))

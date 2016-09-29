@@ -3,7 +3,7 @@
             [versioned.db-api :as db-api]
             [versioned.logger :as logger]
             [schema.core :as s]
-            [versioned.schema :refer [Nil App]]))
+            [versioned.types :refer [Nil App]]))
 
 (s/defn ensure-indexes :- Nil
   [app :- App]

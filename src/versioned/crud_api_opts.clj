@@ -2,7 +2,7 @@
   (:require [versioned.model-support :refer [id-attribute]]
             [schema.core :as s]
             [clojure.string :as str]
-            [versioned.schema :refer [Map Model Request]]))
+            [versioned.types :refer [Map Model Request]]))
 
 (s/defn default-list-sort :- Map
   [model :- Model, request :- Request]

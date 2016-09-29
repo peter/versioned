@@ -1,7 +1,7 @@
-(ns versioned.schema-test
+(ns versioned.types-test
   (:require [clojure.test :refer :all]
             [schema.core :as s]
-            [versioned.schema :refer [Model ModelsConfig]]))
+            [versioned.types :refer [Model ModelsConfig]]))
 
 (deftest model-schema-validates-model-specs
   (testing "Model"

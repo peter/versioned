@@ -15,7 +15,7 @@
   :session-expiry (* 60 60 24 14)
   :log-level (if (= "production" env) "info" "debug")
   :env env
-  :validate-schemas (not= "production" env)
+  :type-check (not= "production" env)
   :port 5000
   :mongodb-url (mongodb-url env)
   :start-web true
@@ -56,7 +56,7 @@
   (start [component]
     (let [config (get-config config)]
       (println "Starting Config" config)
-      (when (:validate-schemas config)
+      (when (:type-check config)
         (s/set-fn-validation! true))
       (assoc component :config config)))
 

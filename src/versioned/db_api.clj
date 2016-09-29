@@ -6,7 +6,7 @@
             [monger.query :as mq]
             [monger.joda-time]
             [schema.core :as s]
-            [versioned.schema :refer [Nil Database DB-Conn DB-IndexOptions Map PosInt WriteResult]]
+            [versioned.types :refer [Nil Database DB-Conn DB-IndexOptions Map PosInt WriteResult]]
             [com.stuartsierra.component :as component])
   (:import [org.bson.types ObjectId]
            com.mongodb.DB))

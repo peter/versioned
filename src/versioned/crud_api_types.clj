@@ -3,7 +3,7 @@
             [versioned.util.date :as d]
             [versioned.model-schema :refer [deep-child-schema attribute-type]]
             [schema.core :as s]
-            [versioned.schema :refer [Map Schema Function]]
+            [versioned.types :refer [Map Schema Function]]
             [clojure.stacktrace]))
 
 (s/defn coerce-map :- Map

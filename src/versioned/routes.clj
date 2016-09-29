@@ -1,7 +1,7 @@
 (ns versioned.routes
   (:require [versioned.util.core :as u]
             [clojure.string :as str]
-            [versioned.schema :refer [crud-actions]]
+            [versioned.types :refer [crud-actions]]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers

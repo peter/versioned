@@ -3,7 +3,7 @@
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
             [versioned.util.schema :refer [validate-schema]]
-            [versioned.schema :refer [crud-actions]]))
+            [versioned.types :refer [crud-actions]]))
 
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (defn merge-schemas [& schemas]
