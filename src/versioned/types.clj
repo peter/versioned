@@ -16,6 +16,7 @@
 
 (def Request Map)
 
+(def Attribute s/Keyword)
 (def Attributes Map)
 (def AttributeSet #{s/Keyword})
 
@@ -102,6 +103,8 @@
             (s/optional-key :indexes) [Map]
             (s/optional-key :routes) Routes
             s/Keyword s/Any})
+
+(def ModelChanges {s/Keyword {:from s/Any :to s/Any}})
 
 (def Doc Map) ; A model instance
 
