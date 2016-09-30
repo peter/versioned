@@ -4,6 +4,8 @@
             [versioned.types :refer [PosInt
                                      Map
                                      Doc
+                                     App
+                                     Model
                                      ModelWriteFn
                                      Callback
                                      CallbackMap
@@ -67,20 +69,23 @@
 (s/defn with-callbacks :- ModelWriteFn
   [model-fn :- ModelWriteFn
    action :- CallbackAction]
-  (fn [app model-spec doc]
-    (let [before-callbacks (get-in model-spec [:callbacks action :before] [])
-          after-callbacks (get-in model-spec [:callbacks action :after] [])
+  (s/fn :- Doc
+    [app :- App
+     model :- Model
+     doc :- Doc]
+    (let [before-callbacks (get-in model [:callbacks action :before] [])
+          after-callbacks (get-in model [:callbacks action :after] [])
           options {
             :app app
             :config (:config app)
             :database (:database app)
             :action action
-            :model-spec model-spec
-            :schema (:schema model-spec)}]
+            :model-spec model
+            :schema (:schema model)}]
         ; TODO: capture this chaining pattern with an abort condition in a function/macro?
         (let [doc (invoke-callbacks before-callbacks options doc)]
           (if-not (model-errors doc)
-            (let [doc (model-fn app model-spec doc)]
+            (let [doc (model-fn app model doc)]
               (if-not (model-errors doc)
                 (invoke-callbacks after-callbacks options doc)
                 doc))

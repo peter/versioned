@@ -1,7 +1,9 @@
 (ns versioned.types-test
   (:require [clojure.test :refer :all]
             [schema.core :as s]
+            [versioned.stubs :as stubs]
             [versioned.types :refer [Model
+                                     App
                                      ModelsConfig
                                      Schema]]))
 
@@ -32,6 +34,8 @@
     (is (thrown-with-msg? RuntimeException #"does not match schema" (s/validate ModelsConfig {:articles {:type :foo :schema {:type "object"}}})))
     (is (thrown-with-msg? RuntimeException #"does not match schema" (s/validate ModelsConfig {:articles {:type :articles}})))
   )
+  (testing "App"
+    (is (s/validate App stubs/app)))
   (testing "Schema"
     (is (s/validate Schema {:type "string"}))
     (is (s/validate Schema {:type "number"}))

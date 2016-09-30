@@ -103,8 +103,6 @@
             (s/optional-key :routes) Routes
             s/Keyword s/Any})
 
-(def ModelWriteFn Function) ; App -> Model -> Doc -> Doc
-
 (def Doc Map) ; A model instance
 
 (def Models {s/Keyword Model})
@@ -143,3 +141,10 @@
           :swagger Map
           :routes [Route]
           s/Keyword s/Any})
+
+(s/defn ModelWriteFnSignature :- Doc
+  [app :- App
+   model :- Model
+   doc :- Doc])
+(def ModelWriteFnSchema (s/fn-schema ModelWriteFnSignature))
+(def ModelWriteFn (s/constrained Function #(= (s/fn-schema %) ModelWriteFnSchema)))
