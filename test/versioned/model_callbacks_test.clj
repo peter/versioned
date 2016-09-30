@@ -2,13 +2,16 @@
   (:require [clojure.test :refer :all]
             [versioned.model-callbacks :as model-callbacks]))
 
+(defn foo [] "foo")
+(defn bar [] "bar")
+
 (deftest normalize-callbacks_does-not-touch-callbacks-without-save
-  (is (= (model-callbacks/normalize-callbacks {:create {:before [:foo]} :update {:before [:bar]}})
-         {:create {:before [:foo]} :update {:before [:bar]}})))
+  (is (= (model-callbacks/normalize-callbacks {:create {:before [foo]} :update {:before [bar]}})
+         {:create {:before [foo]} :update {:before [bar]}})))
 
 (deftest normalize-callbacks_merges-save-callbacks-with-update-create-callbacks
-  (is (= (model-callbacks/normalize-callbacks {:save {:before [:foo]} :update {:before [:bar]}})
-         {:create {:before [:foo]} :update {:before [:foo :bar]}})))
+  (is (= (model-callbacks/normalize-callbacks {:save {:before [foo]} :update {:before [bar]}})
+         {:create {:before [foo]} :update {:before [foo bar]}})))
 
 (deftest invoke-callbacks_invokes-callbacks-in-order-with-doc-options-and-returns-the-resulting-doc
   (let [callbacks [

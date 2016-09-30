@@ -2,6 +2,9 @@
   (:require [clojure.test :refer :all]
             [versioned.model-spec :as model-spec]))
 
+(defn spec1-cb [] "spec1")
+(defn spec2-cb [] "spec2")
+
 (deftest generate-spec-deep-merges-schema-callbacks-indexes-for-specs
   (let [spec1 {
           :type "spec1"
@@ -13,7 +16,7 @@
           }
           :callbacks {
             :create {
-              :before [:spec1]
+              :before [spec1-cb]
             }
           }
           :indexes [{:fields [:spec1]}]
@@ -28,7 +31,7 @@
           }
           :callbacks {
             :create {
-              :before [:spec2]
+              :before [spec2-cb]
             }
           }
           :indexes [{:fields [:spec2]}]
@@ -44,7 +47,7 @@
           }
           :callbacks {
             :create {
-              :before [:spec1 :spec2]
+              :before [spec1-cb spec2-cb]
             }
           }
           :indexes [{:fields [:spec1]} {:fields [:spec2]}]

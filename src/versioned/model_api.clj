@@ -3,7 +3,7 @@
   (:require [versioned.db-api :as db]
             [versioned.logger :as logger]
             [schema.core :as s]
-            [versioned.types :refer [Map App Model ID PosInt Function]]
+            [versioned.types :refer [Map App Model Doc ID PosInt Function]]
             [versioned.model-versions :refer [select-version]]
             [versioned.model-support :refer [coll id-attribute id-query valid-id?]]
             [versioned.model-versions :refer [unversioned-attributes versioned-coll
@@ -17,7 +17,7 @@
             [versioned.model-callbacks :refer [with-callbacks]])
   (:import [com.mongodb DuplicateKeyException]))
 
-(s/defn find :- [Map]
+(s/defn find :- [Doc]
   ([app :- App
     model :- Model
     query :- Map
@@ -28,7 +28,7 @@
     query :- Map]
    (find app model query {})))
 
-(s/defn find-one :- (s/maybe Map)
+(s/defn find-one :- (s/maybe Doc)
   ([app :- App
     model :- Model
     id :- ID
@@ -57,10 +57,10 @@
    query :- Map]
   (db/count (:database app) (coll model) query))
 
-(s/defn exec-create-without-callbacks :- Map
+(s/defn exec-create-without-callbacks :- Doc
   [app :- App
    model :- Model
-   doc :- Map]
+   doc :- Doc]
   (let [result (db/create (:database app) (coll model) doc)]
     (logger/debug app "model-api/create result:" result)
     (with-meta (:doc result)
@@ -80,17 +80,17 @@
     (with-callbacks :create)
     (with-db-error-handling)))
 
-(s/defn create :- Map
+(s/defn create :- Doc
   [app :- App
    model :- Model
-   doc :- Map]
+   doc :- Doc]
   (let [create-doc (u/compact doc)]
     (exec-create app model create-doc)))
 
-(s/defn exec-update-without-callbacks :- Map
+(s/defn exec-update-without-callbacks :- Doc
   [app :- App
    model :- Model
-   doc :- Map]
+   doc :- Doc]
   (let [changes (model-changes model doc)]
     (logger/debug app "model-api/exec-update-without-callbacks" (:type doc) ((id-attribute model) doc) "changes:" changes)
     (if changes
@@ -106,19 +106,19 @@
     (with-callbacks :update)
     (with-db-error-handling)))
 
-(s/defn update :- Map
+(s/defn update :- Doc
   [app :- App
    model :- Model
-   doc :- Map]
+   doc :- Doc]
   (let [id ((id-attribute model) doc)
         existing-doc (find-one app model id)
         merged-doc (with-meta (u/compact (merge existing-doc doc)) {:existing-doc existing-doc})]
     (exec-update app model merged-doc)))
 
-(s/defn delete-without-callbacks :- Map
+(s/defn delete-without-callbacks :- Doc
   [app :- App
    model :- Model
-   doc :- Map]
+   doc :- Doc]
   (let [id ((id-attribute model) doc)
         result (db/delete (:database app) (coll model) (id-query model id))]
     (with-meta doc {:result result})))

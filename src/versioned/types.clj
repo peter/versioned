@@ -69,6 +69,29 @@
              (s/optional-key :meta) SchemaMeta
              s/Keyword SchemaValue})
 
+(def CallbackFunction Function)
+(def CallbackSort (s/enum :first :middle :last))
+(def CallbackMap {
+                  :fn CallbackFunction
+                  (s/optional-key :sort) CallbackSort})
+(def Callback (s/cond-pre CallbackFunction CallbackMap))
+(def BeforeAfterCallbacks {
+                           (s/optional-key :before) [Callback]
+                           (s/optional-key :after) [Callback]})
+(def CallbackAction (s/enum :create :update :delete))
+(def Callbacks {
+                (s/optional-key :save) BeforeAfterCallbacks
+                (s/optional-key :create) BeforeAfterCallbacks
+                (s/optional-key :update) BeforeAfterCallbacks
+                (s/optional-key :delete) BeforeAfterCallbacks})
+(def CallbackOptions Map)
+            ; :app app
+            ; :config (:config app)
+            ; :database (:database app)
+            ; :action action
+            ; :model-spec model-spec
+            ; :schema (:schema model-spec))
+
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))
 (def Model {
@@ -80,6 +103,9 @@
             (s/optional-key :routes) Routes
             s/Keyword s/Any})
 
+(def ModelWriteFn Function) ; App -> Model -> Doc -> Doc
+
+(def Doc Map) ; A model instance
 
 (def Models {s/Keyword Model})
 

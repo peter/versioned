@@ -1,46 +1,72 @@
 (ns versioned.model-callbacks
   (:require [versioned.util.core :as u]
+            [schema.core :as s]
+            [versioned.types :refer [PosInt
+                                     Map
+                                     Doc
+                                     ModelWriteFn
+                                     Callback
+                                     CallbackMap
+                                     CallbackFunction
+                                     CallbackOptions
+                                     CallbackAction
+                                     Callbacks]]
             [versioned.model-validations :refer [model-errors]]))
 
-(defn merge-callbacks [& callbacks]
+(s/defn merge-callbacks :- Callbacks
+  [& callbacks :- [Callbacks]]
   (apply u/deep-merge-with concat callbacks))
 
 (def sort-keys [:first :middle :last])
 
-(defn- callback-map [callback]
+(s/defn callback-map :- CallbackMap
+  [callback :- Callback]
   (if (map? callback) callback {:fn callback}))
 
-(defn- callback-fn [callback]
+(s/defn callback-fn :- CallbackFunction
+  [callback :- Callback]
   (if (map? callback) (:fn callback) callback))
 
-(defn sort-index [v]
-  (let [sort-key (get (callback-map v) :sort :middle)]
+(s/defn sort-index :- PosInt
+  [callback :- Callback]
+  (let [sort-key (get (callback-map callback) :sort :middle)]
     (.indexOf sort-keys sort-key)))
 
-(defn sort-callbacks [callbacks]
+(s/defn sort-callbacks :- Callbacks
+  [callbacks :- Callbacks]
   (u/deep-map-values #(sort-by sort-index (:value %))
                      callbacks
                      {:recurse-if? #(map? (:value %))}))
 
-(defn- save-callbacks [callbacks]
+(s/defn save-callbacks :- Callbacks
+  [callbacks :- Callbacks]
   {:update (:save callbacks) :create (:save callbacks)})
 
-(defn- normalize-save [callbacks]
+(s/defn normalize-save :- Callbacks
+  [callbacks :- Callbacks]
   (if (:save callbacks)
     (merge-callbacks (save-callbacks callbacks) (dissoc callbacks :save))
     callbacks))
 
-(defn normalize-callbacks [callbacks]
+(s/defn normalize-callbacks :- Callbacks
+  [callbacks :- Callbacks]
   (->> callbacks
       (normalize-save)))
 
-(defn composed-callbacks [callbacks options]
+(s/defn composed-callbacks :- CallbackFunction
+  [callbacks :- [Callback]
+   options :- CallbackOptions]
   (apply comp (map #(u/partial-right % options) (reverse (map callback-fn callbacks)))))
 
-(defn invoke-callbacks [callbacks options doc]
+(s/defn invoke-callbacks :- Doc
+  [callbacks :- [Callback]
+   options :- CallbackOptions
+   doc :- Doc]
   ((composed-callbacks callbacks options) doc))
 
-(defn with-callbacks [model-fn action]
+(s/defn with-callbacks :- ModelWriteFn
+  [model-fn :- ModelWriteFn
+   action :- CallbackAction]
   (fn [app model-spec doc]
     (let [before-callbacks (get-in model-spec [:callbacks action :before] [])
           after-callbacks (get-in model-spec [:callbacks action :after] [])
