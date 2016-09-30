@@ -142,9 +142,5 @@
           :routes [Route]
           s/Keyword s/Any})
 
-(s/defn ModelWriteFnSignature :- Doc
-  [app :- App
-   model :- Model
-   doc :- Doc])
-(def ModelWriteFnSchema (s/fn-schema ModelWriteFnSignature))
+(def ModelWriteFnSchema (s/fn-schema (s/fn :- Doc [app :- App model :- Model doc :- Doc])))
 (def ModelWriteFn (s/constrained Function #(= (s/fn-schema %) ModelWriteFnSchema)))
