@@ -73,5 +73,10 @@
         :additionalProperties false
       }
     }))
+    (is (not-empty ((s/checker Schema) {
+      :type "object"
+      :properties {
+        :title {:type "string" :meta {:foo (fn [])}} ; Function is not a SchemaValue
+      }})))
   )
 )

@@ -4,7 +4,7 @@
   (not= from-value to-value))
 
 (defn tracked-attribute? [attribute-schema]
-  (get-in attribute-schema [:meta :change-tracking] true))
+  (get-in attribute-schema [:meta :change_tracking] true))
 
 (defn tracked-attributes [model-spec]
   (let [schema (:schema model-spec)]

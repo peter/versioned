@@ -50,8 +50,17 @@
                                   (set crud-actions))))
 
 (declare Schema)
-(def SchemaValue (s/cond-pre s/Str s/Num Nil s/Bool Coll))
+(declare SchemaValue)
+(def SchemaMap {s/Keyword (s/recursive #'SchemaValue)})
+(def SchemaArray [(s/recursive #'SchemaValue)])
+(def SchemaValue (s/cond-pre s/Str s/Num Nil s/Bool SchemaMap SchemaArray))
 (def SchemaType (s/enum "string" "number" "integer" "null" "boolean" "array" "object"))
+(def SchemaMeta {
+                 (s/optional-key :api_writable) s/Bool
+                 (s/optional-key :api_readable) s/Bool
+                 (s/optional-key :change_tracking) s/Bool
+                 (s/optional-key :versioned) s/Bool
+                 s/Keyword SchemaValue})
 (def Schema {
              (s/optional-key :type) (s/cond-pre SchemaType [SchemaType])
              (s/optional-key :properties) {s/Keyword (s/recursive #'Schema)}
@@ -59,7 +68,8 @@
              (s/optional-key :required) [StrOrKeyword]
              (s/optional-key :items) (s/recursive #'Schema)
              (s/optional-key :enum) [SchemaValue]
-             s/Keyword s/Any})
+             (s/optional-key :meta) SchemaMeta
+             s/Keyword SchemaValue})
 
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))

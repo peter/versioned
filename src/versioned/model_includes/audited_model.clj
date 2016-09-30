@@ -12,8 +12,8 @@
   :properties {
     :created_at {:type "string" :format "date-time" :meta {:api_writable false :versioned false}}
     :created_by {:type "string" :meta {:api_writable false :versioned false}}
-    :updated_at {:type "string" :format "date-time" :meta {:api_writable false :versioned false :change-tracking false}}
-    :updated_by {:type "string" :meta {:api_writable false :versioned false :change-tracking false}}
+    :updated_at {:type "string" :format "date-time" :meta {:api_writable false :versioned false :change_tracking false}}
+    :updated_by {:type "string" :meta {:api_writable false :versioned false :change_tracking false}}
   }
   :required [:created_at :created_by]
 })

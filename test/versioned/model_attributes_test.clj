@@ -19,13 +19,13 @@
     (let [schema {
             :type "object"
             :properties {
-              :title {:type "string" :meta "foo"}
+              :title {:type "string" :meta {:foo "foo"}}
               :version_number {
                 :type "array"
                 :items {
                   :type "object"
                   :properties {
-                    :title {:type "string" :meta "bar"}
+                    :title {:type "string" :meta {:foo "bar"}}
                   }
                 }
               }
