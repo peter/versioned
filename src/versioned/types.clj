@@ -8,8 +8,6 @@
 (def StrOrKeyword (s/cond-pre s/Str s/Keyword))
 (def Coll (s/pred coll? 'coll?))
 
-(def AttributeList (s/constrained Coll #(every? keyword? %)))
-
 (def PosInt (s/pred u/positive-int? 'positive-int?))
 
 (def ID (s/cond-pre s/Str PosInt))
@@ -19,7 +17,7 @@
 (def Request Map)
 
 (def Attributes Map)
-(def AttributeKeys #{s/Keyword})
+(def AttributeSet #{s/Keyword})
 
 (def Changelog Map)
 (def Action (s/pred #{:create :update :delete} 'changelog-action?))

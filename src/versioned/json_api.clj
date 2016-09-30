@@ -14,7 +14,7 @@
                                      JsonApiErrorResponse
                                      JsonApiDataResponse
                                      Coll
-                                     AttributeList
+                                     AttributeSet
                                      JsonApiError]]
             [versioned.model-validations :refer [model-errors model-not-updated]]))
 
@@ -70,7 +70,7 @@
   {:status 404})
 
 (s/defn invalid-attributes-response :- JsonApiErrorResponse
-  [invalids :- AttributeList]
+  [invalids :- AttributeSet]
   (error-response [{
                     :type "invalid_attributes"
                     :attributes invalids

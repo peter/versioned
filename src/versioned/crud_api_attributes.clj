@@ -5,7 +5,7 @@
             [versioned.crud-api-audit :refer [updated-by created-by save-changelog]]
             [versioned.crud-api-types :refer [coerce-attribute-types]]
             [schema.core :as s]
-            [versioned.types :refer [Model Attributes AttributeKeys Request]]))
+            [versioned.types :refer [Model Attributes AttributeSet Request]]))
 
 (s/defn write-attributes :- Attributes
   [model :- Model, attributes :- Attributes]
@@ -29,7 +29,7 @@
          (model-support/id-query model (json-api/id request))
          (updated-by request)))
 
-(s/defn invalid-attributes :- (s/maybe AttributeKeys)
+(s/defn invalid-attributes :- (s/maybe AttributeSet)
   [model :- Model, request :- Request]
   (not-empty (clojure.set/difference (set (keys (json-api/attributes request)))
                                      (set (keys (get-in model [:schema :properties]))))))

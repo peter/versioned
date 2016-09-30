@@ -2,7 +2,7 @@
   (:require [versioned.model-schema :refer [schema-attributes restricted-schema]]
             [versioned.util.core :as u]
             [schema.core :as s]
-            [versioned.types :refer [Schema]]
+            [versioned.types :refer [Schema Attributes AttributeSet]]
             [clojure.string :as str]
             [clojure.set :refer [intersection]]))
 
@@ -21,28 +21,38 @@
                %)]
     (clojure.walk/prewalk f schema)))
 
-(defn api-writable? [attribute-schema]
+(s/defn api-writable? :- s/Bool
+  [attribute-schema :- Schema]
   (get-in attribute-schema [:meta :api_writable] true))
 
-(defn api-writable-attribute-keys [schema]
+(s/defn api-writable-attribute-keys :- AttributeSet
+  [schema :- Schema]
   (let [schema-attrs (schema-attributes schema)]
-    (filter #(api-writable? (% schema-attrs)) (keys schema-attrs))))
+    (set (filter #(api-writable? (% schema-attrs)) (keys schema-attrs)))))
 
-(defn api-writable-attributes [schema attributes]
+(s/defn api-writable-attributes :- Attributes
+  [schema :- Schema
+   attributes :- Attributes]
   (select-keys attributes (api-writable-attribute-keys schema)))
 
-(defn api-writable-schema [schema]
+(s/defn api-writable-schema :- Schema
+  [schema :- Schema]
   (restricted-schema schema (api-writable-attribute-keys schema)))
 
-(defn api-readable? [attribute-schema]
+(s/defn api-readable? :- s/Bool
+  [attribute-schema :- Schema]
   (get-in attribute-schema [:meta :api_readable] true))
 
-(defn api-readable-attribute-keys [schema]
+(s/defn api-readable-attribute-keys :- AttributeSet
+  [schema :- Schema]
   (let [schema-attrs (schema-attributes schema)]
-    (filter #(api-readable? (% schema-attrs)) (keys schema-attrs))))
+    (set (filter #(api-readable? (% schema-attrs)) (keys schema-attrs)))))
 
-(defn api-readable-attributes [schema attributes]
+(s/defn api-readable-attributes :- Attributes
+  [schema :- Schema
+   attributes :- Attributes]
   (select-keys attributes (api-readable-attribute-keys schema)))
 
-(defn api-readable-schema [schema]
+(s/defn api-readable-schema :- Schema
+  [schema :- Schema]
   (restricted-schema schema (api-readable-attribute-keys schema)))
