@@ -1,13 +1,15 @@
 (ns versioned.model-init
   (:require [versioned.util.core :as u]
             [schema.core :as s]
-            [versioned.types :refer [Models Config]]))
+            [versioned.types :refer [Models Model ModelOrPath Config]]))
 
-(defn load-model-spec [config spec]
+(s/defn load-model-spec :- Model
+  [config :- Config
+   spec :- ModelOrPath]
   (if (string? spec)
     (let [spec-fn (u/load-var spec)
-          loaded-spec (spec-fn config)]
-      loaded-spec)
+          loaded-model (spec-fn config)]
+      loaded-model)
     spec))
 
 (s/defn init-models :- Models

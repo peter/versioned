@@ -124,9 +124,9 @@
 (def Handler Function)
 
 (def ModelSpecPath (s/constrained String #(re-matches #"^([\w.-]+)/([\w-]+)$" %))) ; "versioned.models.users/spec"
-
+(def ModelOrPath (s/conditional map? Model :else ModelSpecPath))
 (def ModelsConfig (s/constrained
-                    {s/Keyword (s/conditional map? Model :else ModelSpecPath)}
+                    {s/Keyword ModelOrPath}
                     (fn [m]
                       (every? (fn [[k v]]
                                 (or (string? v)
