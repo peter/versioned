@@ -53,7 +53,8 @@
 (def SchemaMap {s/Keyword (s/recursive #'SchemaValue)})
 (def SchemaArray [(s/recursive #'SchemaValue)])
 (def SchemaValue (s/cond-pre s/Str s/Num Nil s/Bool SchemaMap SchemaArray))
-(def SchemaType (s/enum "string" "number" "integer" "null" "boolean" "array" "object"))
+(def schema-types ["string" "number" "integer" "null" "boolean" "array" "object"])
+(def SchemaType (apply s/enum schema-types))
 (def SchemaMeta {
                  (s/optional-key :api_writable) s/Bool
                  (s/optional-key :api_readable) s/Bool
@@ -69,6 +70,9 @@
              (s/optional-key :enum) [SchemaValue]
              (s/optional-key :meta) SchemaMeta
              s/Keyword SchemaValue})
+(def SchemaProperties {s/Keyword Schema})
+
+(def AttributeType (apply s/enum (concat schema-types ["date"])))
 
 (def CallbackFunction Function)
 (def CallbackSort (s/enum :first :middle :last))
