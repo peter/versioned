@@ -2,15 +2,28 @@
   (:require [versioned.model-support :as model-support]
             [versioned.model-versions :refer [apply-version versioned-coll published-model?]]
             [versioned.db-api :as db]
+            [schema.core :as s]
+            [versioned.types :refer [RelationshipKey
+                                     RelationshipField
+                                     Relationship
+                                     Relationships
+                                     Model
+                                     Map
+                                     App
+                                     Doc]]
             [versioned.util.core :as u]))
 
-(defn- id-field [relationship]
+(s/defn id-field :- RelationshipField
+  [relationship :- RelationshipKey]
   (keyword (str (name relationship) "_id")))
 
-(defn- ids-field [relationship]
+(s/defn ids-field :- RelationshipField
+  [relationship :- RelationshipKey]
   (keyword (str (name relationship) "_ids")))
 
-(defn relationship-spec [relationship model-spec]
+(s/defn relationship-spec :- Relationship
+  [model-spec :- Map
+   relationship :- RelationshipKey]
   (let [options (get-in model-spec [:relationships relationship])
         from-model (get options :from_model (:type model-spec))
         from-coll (get options :from_coll (:type model-spec))
@@ -29,12 +42,19 @@
       :to_field to-field
     })))
 
-(defn normalized-relationships [model-spec]
-  (not-empty (reduce (fn [m [k v]] (assoc m k (relationship-spec k model-spec)))
+(s/defn normalized-relationships :- (s/maybe Relationships)
+  [model-spec :- Map]
+  (not-empty (reduce (fn [m [k v]] (assoc m k (relationship-spec model-spec k)))
                      {}
                      (get model-spec :relationships {}))))
 
-(defn- with-published-versions [app docs spec model query opts]
+(s/defn with-published-versions :- [Doc]
+  [app :- App
+   docs :- [Doc]
+   spec :- Relationship
+   model :- s/Keyword
+   query :- Map
+   opts :- Map]
   (if (and (:published opts) (published-model? app model))
     (let [docs (filter :published_version docs)
           draft-docs (filter #(not= (:published_version %) (:version %)) docs)
@@ -57,8 +77,13 @@
 ; from_field widgets_ids
 ; to_coll widgets
 ; to_field id
-(defn find-relationship-to-many [app model-spec doc relationship opts]
-  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+(s/defn find-relationship-to-many :- [Doc]
+  [app :- App
+   model :- Model
+   doc :- Doc
+   relationship :- RelationshipKey
+   opts :- Map]
+  (let [spec (get-in model [:relationships (keyword relationship)])
         coll (:to_coll spec)
         model (:to_model spec)
         field (:to_field spec)
@@ -76,8 +101,13 @@
 ; from_field widgets_id
 ; to_coll widgets
 ; to_field id
-(defn find-relationship-to-one [app model-spec doc relationship opts]
-  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+(s/defn find-relationship-to-one :- [Doc]
+  [app :- App
+   model :- Model
+   doc :- Doc
+   relationship :- RelationshipKey
+   opts :- Map]
+  (let [spec (get-in model [:relationships (keyword relationship)])
         coll (:to_coll spec)
         model (:to_model spec)
         field (:to_field spec)
@@ -92,8 +122,13 @@
 ; from_field id
 ; to_coll pages
 ; to_field id
-(defn find-relationship-from-many [app model-spec doc relationship opts]
-  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+(s/defn find-relationship-from-many :- [Doc]
+  [app :- App
+   model :- Model
+   doc :- Doc
+   relationship :- RelationshipKey
+   opts :- Map]
+  (let [spec (get-in model [:relationships (keyword relationship)])
         coll (:from_coll spec)
         model (:from_model spec)
         field (:from_field spec)
@@ -103,25 +138,31 @@
         docs (and id (db/find (:database app) coll query find-opts))]
     (with-published-versions app docs spec model query opts)))
 
-(defn find-relationship [app model-spec doc relationship opts]
-  (let [spec (get-in model-spec [:relationships (keyword relationship)])
-        coll (model-support/coll model-spec)
+(s/defn find-relationship :- [Doc]
+  [app :- App
+   model :- Model
+   doc :- Doc
+   relationship :- RelationshipKey
+   opts :- Map]
+  (let [spec (get-in model [:relationships (keyword relationship)])
+        coll (model-support/coll model)
         from-field (:from_field spec)
-        multiple? (= (get-in model-spec [:schema :properties from-field :type]) "array")
+        multiple? (= (get-in model [:schema :properties from-field :type]) "array")
         find-fn (cond
                   (and (= coll (:from_coll spec)) multiple?) find-relationship-to-many
                   (and (= coll (:from_coll spec)) (not multiple?)) find-relationship-to-one
                   (= coll (:to_coll spec)) find-relationship-from-many)]
-    (find-fn app model-spec doc relationship opts)))
+    (find-fn app model doc relationship opts)))
 
-(defn with-relationships [app model-spec doc opts]
-  (if (and doc (not-empty (:relationships model-spec)) (:relationships opts))
-    (let [spec (if (:published opts) (dissoc (:relationships model-spec) :versions)
-                                      (:relationships model-spec))
-          relationships (u/compact (u/map-key-values #(find-relationship app model-spec doc % opts)
+(s/defn with-relationships :- (s/maybe Doc)
+  [app :- App
+   model :- Model
+   doc :- (s/maybe Doc)
+   opts :- Map]
+  (if (and doc (not-empty (:relationships model)) (:relationships opts))
+    (let [spec (if (:published opts) (dissoc (:relationships model) :versions)
+                                      (:relationships model))
+          relationships (u/compact (u/map-key-values #(find-relationship app model doc % opts)
                                                      spec))]
       (with-meta doc (merge (meta doc) {:relationships relationships})))
     doc))
-
-; TODO: validate ids of has-one and has-many if from_coll = (coll model-spec)
-(defn validate-references-callback [doc options])

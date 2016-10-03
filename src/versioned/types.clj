@@ -93,6 +93,26 @@
             ; :model-spec model-spec
             ; :schema (:schema model-spec))
 
+(def SortDirection (s/enum 1 -1))
+(def FindSort {Attribute SortDirection})
+(def FindOpts {
+  (s/optional-key :page) PosInt
+  (s/optional-key :per-page) PosInt
+  (s/optional-key :sort) FindSort
+  (s/optional-key :fields) [s/Keyword]})
+
+(def RelationshipKey s/Keyword)
+(def RelationshipField s/Keyword)
+(def Relationship {
+                   :from_coll s/Keyword
+                   (s/optional-key :from_model) (s/cond-pre Nil s/Keyword)
+                   :from_field s/Keyword
+                   :to_field s/Keyword
+                   :to_coll s/Keyword
+                   (s/optional-key :to_model) (s/cond-pre Nil s/Keyword)
+                   (s/optional-key :find_opts) FindOpts})
+(def Relationships {RelationshipKey Relationship})
+
 ; TODO: this spec is a duplicate of the JSON schema in model_spec.clj
 (def Routes (s/pred valid-routes? 'valid-routes?))
 (def Model {

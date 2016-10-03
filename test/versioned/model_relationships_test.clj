@@ -25,7 +25,7 @@
           :to_model :widgets
           :to_field :id
         }]
-    (is (= (relationship-spec relationship model-spec) expected))))
+    (is (= (relationship-spec model-spec relationship) expected))))
 
 (deftest relationship-spec-can-default-from_coll-from_field-to_coll-to_field-for-has-one
   (let [relationship :widgets
@@ -50,7 +50,7 @@
           :to_model :widgets
           :to_field :id
         }]
-    (is (= (relationship-spec relationship model-spec) expected))))
+    (is (= (relationship-spec model-spec relationship) expected))))
 
 (deftest relationship-spec-can-specify-from_coll-from_field-to_coll-to_field
   (let [relationship :widgets
@@ -76,4 +76,4 @@
           }
         }
         expected options]
-    (is (= (relationship-spec relationship model-spec) expected))))
+    (is (= (relationship-spec model-spec relationship) expected))))
