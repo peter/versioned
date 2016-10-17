@@ -2,6 +2,7 @@
   (:require [versioned.util.core :as u]
             [schema.core :as s]
             [versioned.types :refer [Schema
+                                     Nil
                                      AttributeType
                                      SchemaProperties
                                      Attribute
@@ -30,7 +31,7 @@
    attribute :- s/Keyword]
   (reduce child-schema schema (attribute-path attribute)))
 
-(s/defn attribute-type :- (s/maybe AttributeType)
+(s/defn attribute-type :- (s/cond-pre AttributeType [AttributeType] Nil)
   [schema :- (s/maybe Schema)
    attribute :- s/Keyword]
   (cond

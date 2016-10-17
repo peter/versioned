@@ -21,6 +21,7 @@
       (clojure.stacktrace/print-stack-trace e)
       (println "coerce-map (type attributes)=" (type attributes))
       (clojure.pprint/pprint attributes)
+      (clojure.pprint/pprint schema)
       attributes)))
 
 (s/defn coerce-value :- (s/maybe s/Any)
