@@ -31,12 +31,13 @@
 
 (defn create [app request]
   (let [model-name (keyword (get-in request [:params :model]))
+        batch-index (get-in request [:params :batch_index] 0)
         model-spec (get-in app [:models model-name])
         data (get-in request [:params :data])
-        _ (clear app model-spec)
+        _ (if (= batch-index 0) (clear app model-spec))
         result (map one-result (insert app model-spec request data))
         errors (filter :errors result)
         status (if (empty? errors) 200 error-status)]
-     (println "bulk-import/create" model-name "inserts:" (count result) "errors:" (count errors))
+     (println "bulk-import/create" model-name batch-index "inserts:" (count result) "errors:" (count errors))
      (if (not-empty errors) (clojure.pprint/pprint errors))
      {:body {:result result} :status status}))
