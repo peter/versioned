@@ -1,9 +1,9 @@
 (ns versioned.middleware.core
   (:require [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.reload :refer [wrap-reload]]
+            [versioned.middleware.keyword-params :refer [wrap-keyword-params]]
             [versioned.middleware.cors :refer [wrap-cors]]
             [versioned.middleware.auth :refer [wrap-auth]]
             [versioned.middleware.routes :refer [wrap-route-match]]
