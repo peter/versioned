@@ -1,4 +1,4 @@
-(ns versioned.controllers.bulk-import
+(ns versioned.controllers.import-initial
   (:require [versioned.db-api :as db]
             [versioned.util.core :as u]
             [versioned.json-api :refer [error-status]]
@@ -17,9 +17,9 @@
   (let [attributes (create-attributes model-spec request doc)]
     (try (model-api/create app model-spec attributes)
       (catch Exception e
-        (println "bulk-import/insert-one exception " (.getMessage e))
+        (println "import-initial/insert-one exception " (.getMessage e))
         (clojure.stacktrace/print-stack-trace e)
-        (println "bulk-import/insert-one attributes:")
+        (println "import-initial/insert-one attributes:")
         (clojure.pprint/pprint attributes)
         (with-model-errors attributes [{:type "db" :message (.getMessage e)}])))))
 
@@ -38,6 +38,6 @@
         result (map one-result (insert app model-spec request data))
         errors (filter :errors result)
         status (if (empty? errors) 200 error-status)]
-     (println "bulk-import/create" model-name batch-index "inserts:" (count result) "errors:" (count errors))
+     (println "import-initial/create" model-name batch-index "inserts:" (count result) "errors:" (count errors))
      (if (not-empty errors) (clojure.pprint/pprint errors))
      {:body {:result result} :status status}))

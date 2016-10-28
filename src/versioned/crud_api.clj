@@ -67,7 +67,7 @@
         (let [doc (model-api/delete app model-spec existing-doc)]
           (logger/debug app "crud-api delete" (:type model-spec) "doc:" doc "meta:" (meta doc))
           (save-changelog app request model-spec :delete doc)
-          (json-api/data-response {}))
+          (doc-response model-spec doc))
         (json-api/missing-response)))))
 
 (defn new-api [& args]

@@ -148,15 +148,19 @@ lein midje
 lein run -m api.test-runner
 ```
 
-## Bulk Import
+## Import
 
 There is a bulk import API that you can use if you need to load larger amounts of data (i.e. migrate from another CMS):
 
 ```
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": {"se": "Latest Movies"}, "published_version": 1}, {"title": {"se": "Latest Series"}}]}' http://localhost:5000/v1/bulk_import
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": {"se": "Latest Movies"}, "published_version": 1}, {"title": {"se": "Latest Series"}}]}' http://localhost:5000/v1/import_initial
 ```
 
+There are also two endpoints for syncing - `import_sync/delete` and `import_sync/upsert`.
+
 ## TODO
+
+* API tests for import API, especially the sync part
 
 * More API tests, i.e. related to publishing
 
