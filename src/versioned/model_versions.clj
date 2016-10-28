@@ -1,5 +1,6 @@
 (ns versioned.model-versions
   (:require [versioned.util.core :as u]
+            [clojure.set :refer [difference]]
             [versioned.model-support :as model-support]))
 
 (defn versioned-attribute? [attribute-schema]
@@ -10,8 +11,8 @@
           (keys (:properties schema))))
 
 (defn unversioned-attributes [schema]
-  (clojure.set/difference (set (keys (:properties schema)))
-                          (set (versioned-attributes schema))))
+  (difference (set (keys (:properties schema)))
+              (set (versioned-attributes schema))))
 
 (defn versioned-coll [model-spec]
   (keyword (str (name (model-support/coll model-spec)) "_versions")))

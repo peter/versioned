@@ -1,5 +1,6 @@
 (ns versioned.controllers.import-sync
-  (:require [versioned.util.core :as u]
+  (:require [clojure.set :refer [difference]]
+            [versioned.util.core :as u]
             [versioned.json-api :refer [error-status]]
             [versioned.model-api :as model-api]
             [versioned.crud-api :as crud-api]
@@ -57,7 +58,7 @@
         id-field (keyword (get-in request [:params :id_field]))
         new-ids (get-in request [:params :ids])
         existing-ids (map id-field (model-api/find app model {} {:per-page 100000 :sort (array-map id-field 1) :fields [id-field]}))
-        delete-ids (clojure.set/difference (set existing-ids) (set new-ids))
+        delete-ids (difference (set existing-ids) (set new-ids))
         result (map (partial delete-doc api app user model id-field) delete-ids)
         errors (filter error-response? result)
         writes (filter write-response? result)

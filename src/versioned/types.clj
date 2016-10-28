@@ -1,5 +1,6 @@
 (ns versioned.types
   (:require [schema.core :as s]
+            [clojure.set :refer [difference]]
             [versioned.util.core :as u]))
 
 (def Map {s/Keyword s/Any})
@@ -45,8 +46,8 @@
 
 (def crud-actions [:list :get :create :update :delete])
 (defn valid-routes? [routes]
-  (empty? (clojure.set/difference (set routes)
-                                  (set crud-actions))))
+  (empty? (difference (set routes)
+                      (set crud-actions))))
 
 (declare Schema)
 (declare SchemaValue)
