@@ -31,8 +31,12 @@
     (merge model-attributes version-attributes)))
 
 (defn set-version-callback [doc options]
-  (logger/debug (:app options) "versioned-model/set-version-callback versioned-changes:" (versioned-changes (:model-spec options) doc))
-  (assoc doc :version (latest-version (:model-spec options) doc)))
+  (let [new-version (latest-version (:model-spec options) doc)]
+    (logger/debug (:app options) "versioned-model/set-version-callback"
+                                 "old-version:" (get-in (meta doc) [:existing-doc :version])
+                                 "new-version:" new-version
+                                 "versioned-changes:" (versioned-changes (:model-spec options) doc))
+    (assoc doc :version new-version)))
 
 (defn create-version-callback [doc options]
   (if (increment-version? (:model-spec options) doc)

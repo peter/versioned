@@ -9,7 +9,7 @@
     published-version))
 
 (defn published-version-callback [doc options]
-  (let [published-version (adjust-published-version (latest-version (:model-spec options) doc) (:published-version doc))]
+  (let [published-version (adjust-published-version (latest-version (:model-spec options) doc) (:published_version doc))]
     (if published-version
       (assoc doc :published_version published-version)
       doc)))
