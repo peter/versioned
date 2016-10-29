@@ -1,4 +1,4 @@
-(defproject versioned "0.11.12"
+(defproject versioned "0.11.13"
   :description "CMS REST API based on MongoDB"
   :url "https://github.com/peter/versioned"
   :license {:name "Eclipse Public License - v 1.0"

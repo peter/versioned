@@ -2,11 +2,13 @@
   "Middleware that converts parameter keys in the request to keywords.")
 
 ; NOTE: copied from https://github.com/ring-clojure/ring/blob/1.5.0/ring-core/src/ring/middleware/keyword_params.clj#L27
-;       to allow strings starting with digits to be converted to keywords, see:
+;       to allow all string keys to be converted to keywords. This is in order for equality
+;       comparison with maps from the mongodb to work. See:
 ;       https://github.com/ring-clojure/ring/issues/237
 
 (defn- keyword-syntax? [s]
-  (re-matches #"[A-Za-z0-9*+!_?-][A-Za-z0-9*+!_?-]*" s))
+  ;(re-matches #"[A-Za-z0-9*+!_?-][A-Za-z0-9*+!_?-]*" s))
+  true)
 
 (defn- keyify-params [target]
   (cond
