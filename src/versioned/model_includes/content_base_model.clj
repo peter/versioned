@@ -9,6 +9,7 @@
             [versioned.model-includes.compact-model :refer [compact-spec]]))
 
 (defn content-base-spec [type] [
+  (compact-spec)
   (id-spec)
   (typed-spec)
   (audited-spec)
@@ -16,5 +17,4 @@
   (published-spec)
   (validated-spec)
   (routed-spec)
-  (compact-spec)
 ])

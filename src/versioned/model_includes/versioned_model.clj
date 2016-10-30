@@ -12,8 +12,9 @@
                (versioned-attributes (:schema model-spec))))
 
 (defn increment-version? [model-spec doc]
-  (let [old-version (get-in (meta doc) [:existing-doc :version])]
-    (and (not-empty (versioned-changes model-spec doc))
+  (let [old-version (get-in (meta doc) [:existing-doc :version])
+        changes (versioned-changes model-spec doc)]
+    (and (not-empty changes)
          (or (not old-version)
              (and (:published_version doc) (>= (:published_version doc) old-version))))))
 
