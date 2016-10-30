@@ -15,7 +15,7 @@
   (let [old-version (get-in (meta doc) [:existing-doc :version])]
     (and (not-empty (versioned-changes model-spec doc))
          (or (not old-version)
-             (= (:published_version doc) old-version)))))
+             (and (:published_version doc) (>= (:published_version doc) old-version))))))
 
 (defn latest-version [model-spec doc]
   (let [old-version (get-in (meta doc) [:existing-doc :version])]

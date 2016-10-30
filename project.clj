@@ -1,4 +1,4 @@
-(defproject versioned "0.11.13"
+(defproject versioned "0.11.14"
   :description "CMS REST API based on MongoDB"
   :url "https://github.com/peter/versioned"
   :license {:name "Eclipse Public License - v 1.0"
@@ -7,7 +7,7 @@
             :comments "same as Clojure"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
-                 [com.novemberain/monger "3.0.2"]
+                 [com.novemberain/monger "3.1.0"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-devel "1.4.0"]
                  [com.stuartsierra/component "0.3.1"]

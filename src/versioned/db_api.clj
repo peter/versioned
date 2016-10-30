@@ -6,6 +6,7 @@
             [monger.query :as mq]
             [monger.joda-time]
             [schema.core :as s]
+            [versioned.middleware.keyword-params :refer [keyify-params]]
             [versioned.types :refer [Nil Database DB-Conn DB-IndexOptions Map PosInt WriteResult]]
             [com.stuartsierra.component :as component])
   (:import [org.bson.types ObjectId]
@@ -35,11 +36,12 @@
     opts :- Map]
    (let [default-opts {:page 1 :per-page 100 :sort {} :fields []}
          opts (merge default-opts opts)]
-     (map json-friendly (mq/with-collection (:db database) (name coll)
-                                            (mq/find (mongo-friendly query))
-                                            (mq/fields (:fields opts))
-                                            (mq/paginate :page (:page opts) :per-page (:per-page opts))
-                                            (mq/sort (:sort opts))))))
+     (map (comp json-friendly keyify-params) (mq/with-collection (:db database) (name coll)
+                                             (mq/find (mongo-friendly query))
+                                             (mq/fields (:fields opts))
+                                             (mq/paginate :page (:page opts) :per-page (:per-page opts))
+                                             (mq/sort (:sort opts))
+                                             (mq/keywordize-fields false)))))
   ([database :- Database
     coll :- s/Keyword
     query :- Map]

@@ -2,15 +2,17 @@
   "Middleware that converts parameter keys in the request to keywords.")
 
 ; NOTE: copied from https://github.com/ring-clojure/ring/blob/1.5.0/ring-core/src/ring/middleware/keyword_params.clj#L27
-;       to allow all string keys to be converted to keywords. This is in order for equality
-;       comparison with maps from the mongodb to work. See:
+;       so that we can reuse the keyify-params (keywordize) function when reading from
+;       MongoDB. It turns out string/keyword conversion breaks down when you have slashes (/)
+;       in strings, therefore we don't convert all strings to keywords and it's important
+;       to use the same policy when reading from Mongodb as when reading from HTTP for
+;       change tracking (equality comparisons) to work. See:
 ;       https://github.com/ring-clojure/ring/issues/237
 
-(defn- keyword-syntax? [s]
-  ;(re-matches #"[A-Za-z0-9*+!_?-][A-Za-z0-9*+!_?-]*" s))
-  true)
+(defn keyword-syntax? [s]
+  (re-matches #"[A-Za-z0-9*+!_?-][A-Za-z0-9*+!_?-]*" s))
 
-(defn- keyify-params [target]
+(defn keyify-params [target]
   (cond
     (map? target)
       (into {}
