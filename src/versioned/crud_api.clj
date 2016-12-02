@@ -39,12 +39,13 @@
   (create [this app request]
     (let [invalids (invalid-attributes model-spec request)]
       (if-not invalids
-        (let [attributes (->> (json-api/attributes request)
-                              (create-attributes model-spec request))
-              doc (model-api/create app model-spec attributes)]
-          (logger/debug app "crud-api create" (:type model-spec) "attributes:" attributes "doc:" doc "meta:" (meta doc))
-          (save-changelog app request model-spec :create doc)
-          (doc-response model-spec doc))
+        (if-let [attributes (some->> (json-api/attributes request)
+                                     (create-attributes model-spec request))]
+          (let [doc (model-api/create app model-spec attributes)]
+            (logger/debug app "crud-api create" (:type model-spec) "attributes:" attributes "doc:" doc "meta:" (meta doc))
+            (save-changelog app request model-spec :create doc)
+            (doc-response model-spec doc))
+          (json-api/missing-attributes-response))
         (json-api/invalid-attributes-response invalids))))
 
   (update [this app request]
@@ -52,12 +53,13 @@
       (if-not invalids
         (let [existing-doc (model-api/find-one app model-spec (json-api/id request))]
           (if existing-doc
-            (let [attributes (->> (json-api/attributes request)
-                                  (update-attributes model-spec request))
-                  doc (model-api/update app model-spec attributes)]
-              (logger/debug app "crud-api update" (:type model-spec) "doc:" doc "meta:" (meta doc))
-              (save-changelog app request model-spec :update doc)
-              (doc-response model-spec doc))
+            (if-let [attributes (some->> (json-api/attributes request)
+                                         (update-attributes model-spec request))]
+              (let [doc (model-api/update app model-spec attributes)]
+                (logger/debug app "crud-api update" (:type model-spec) "doc:" doc "meta:" (meta doc))
+                (save-changelog app request model-spec :update doc)
+                (doc-response model-spec doc))
+              (json-api/missing-attributes-response))
             (json-api/missing-response)))
         (json-api/invalid-attributes-response invalids))))
 

@@ -18,6 +18,24 @@ module.exports = {
         name: "validation of a page",
         api_calls: [
           {
+            it: "cannot create with missing data attribute",
+            request: "POST /pages",
+            params: {pages: {attributes: {slug: {se: "validations-page"}}}},
+            status: 422
+          },
+          {
+            it: "cannot update page that doesn't exist",
+            request: "PUT /pages/0",
+            params: {pages: {attributes: {slug: {se: "validations-page"}}}},
+            status: 404
+          },
+          {
+            it: "cannot update page with missing data attribute",
+            request: "PUT /pages/{{pages.start.id}}",
+            params: {pages: {attributes: {slug: {se: "validations-page"}}}},
+            status: 422
+          },
+          {
             it: "cannot create without a title (required)",
             request: "POST /pages",
             params: {data: {attributes: {slug: {se: "validations-page"}}}},

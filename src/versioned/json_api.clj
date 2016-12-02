@@ -26,7 +26,7 @@
   [request :- Request]
   (get-in request [:params :id]))
 
-(s/defn attributes :- Map
+(s/defn attributes :- (s/maybe Map)
   [request :- Request]
   (get-in request [:params :data :attributes]))
 
@@ -75,6 +75,12 @@
                     :type "invalid_attributes"
                     :attributes invalids
                     :message (str "Invalid attributes: " (str/join ", " invalids))}]))
+
+(s/defn missing-attributes-response :- JsonApiErrorResponse
+  []
+  (error-response [{
+                    :type "missing_attributes"
+                    :message "Could not find data in request body"}]))
 
 (s/defn doc-response :- JsonApiResponse
   [model :- Model
