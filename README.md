@@ -2,7 +2,7 @@
 
 A clojure framework that provides a CMS REST API based on MongoDB. Features include token based user authentication, JSON schema validation, versioning, publishing, relationships, changelog, partial [jsonapi.org](http://jsonapi.org) compliance, [Swagger](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) documentation, Heroku deployment, and a model API with before/after callbacks on create/update/delete operations.
 
-The background of this library is that it is a re-implementation and simplification of the
+The background of this library is that it is a re-implementation, generalization, and simplification of the
 Node.js/Mongodb CMS API that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
 in 2015.
 
@@ -14,14 +14,213 @@ There is an online example application with Swagger API documentation at [versio
 
 This framework is a work in progress and has not been used in production yet.
 
-## Getting Started Tutorial
+## Example App and Getting Started Tutorial
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed. This framework is available
 via the following Leiningen dependency:
 
 [![Clojars Project](http://clojars.org/versioned/latest-version.svg)](http://clojars.org/versioned)
 
-Check out [versioned-example](https://github.com/peter/versioned-example) to get a feeling for what a simple app based on this framework might look like.
+Check out [example/app.clj](src/versioned/example/app.clj) to get a feeling for what a simple app based on this framework might look like. A similar example app is also available in a separate repo called [versioned-example](https://github.com/peter/versioned-example) and you can use that as boilerplate to get started.
+
+Let's try running the example app embedded in this library. Check out the code and create an admin user via the REPL:
+
+```
+git clone git@github.com:peter/versioned.git
+cd versioned
+lein repl
+(require 'versioned)
+(def system (versioned.example.app/-main :start-web false))
+(require '[versioned.models.users :as users])
+(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin" :permission "write"})
+exit
+```
+
+Start the server from the command line:
+
+```
+lein run
+```
+
+The server can also be started from the REPL:
+
+```
+lein repl
+(require 'versioned.example.app)
+(def system (versioned.example.app/-main))
+```
+
+In a different terminal, log in:
+
+```bash
+curl -i -X POST -H 'Content-Type: application/json' -d '{"email": "admin@example.com", "password": "admin"}' http://localhost:5000/v1/login
+
+export TOKEN=<auth token in header response above>
+```
+
+Basic CRUD workflow:
+
+```bash
+# create
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section"}, "slug": {"se": "my-section"}}}}' http://localhost:5000/v1/sections
+
+# get
+curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
+
+# list
+curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections
+
+# update
+curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section EDIT"}}}}' http://localhost:5000/v1/sections/1
+
+# delete
+curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/sections/1
+```
+
+Now, let's look at versioning, associations, and publishing. Create two widgets and a page:
+
+```bash
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Movies"}, "published_version": 1}}}' http://localhost:5000/v1/widgets
+
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Series"}}}}' http://localhost:5000/v1/widgets
+
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Start Page"}, "widgets_ids": [1, 2], "published_version": 1}}}' http://localhost:5000/v1/pages
+```
+
+The first widget and the page are published since the `published_version` is set but the second widget is not. Now we can fetch the page with its associations:
+
+```bash
+curl -i -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pages/1?relationships=1
+```
+
+The response looks something like:
+
+```json
+{
+  "data" : {
+    "id" : "1",
+    "type" : "pages",
+    "attributes" : {
+      "version" : 1,
+      "created_at" : "2016-07-18T08:36:10.887+02:00",
+      "type" : "pages",
+      "id" : 1,
+      "created_by" : "admin@example.com",
+      "widgets_ids" : [ 1, 2 ],
+      "title" : {
+        "se" : "Start Page"
+      },
+      "published_version" : 1,
+      "_id" : "578c78daf2b4a45bcddb65a1"
+    },
+    "relationships" : {
+      "versions" : {
+        "data" : [ {
+          "id" : "1",
+          "type" : "pages",
+          "attributes" : {
+            "created_by" : "admin@example.com",
+            "created_at" : "2016-07-18T08:36:10.900+02:00",
+            "version" : 1,
+            "widgets_ids" : [ 1, 2 ],
+            "id" : 1,
+            "title" : {
+              "se" : "Start Page"
+            },
+            "type" : "pages",
+            "published_version" : 1,
+            "_id" : "578c78daf2b4a45bcddb65a2"
+          }
+        } ]
+      },
+      "widgets" : {
+        "data" : [ {
+          "id" : "1",
+          "type" : "widgets",
+          "attributes" : {
+            "version" : 1,
+            "created_at" : "2016-07-18T08:35:02.281+02:00",
+            "type" : "widgets",
+            "id" : 1,
+            "created_by" : "admin@example.com",
+            "title" : {
+              "se" : "Latest Movies"
+            },
+            "published_version" : 1,
+            "_id" : "578c7896f2b4a45bcddb659b"
+          }
+        }, {
+          "id" : "2",
+          "type" : "widgets",
+          "attributes" : {
+            "version" : 1,
+            "created_at" : "2016-07-18T08:35:31.708+02:00",
+            "type" : "widgets",
+            "id" : 2,
+            "created_by" : "admin@example.com",
+            "title" : {
+              "se" : "Latest Series"
+            },
+            "_id" : "578c78b3f2b4a45bcddb659e"
+          }
+        } ]
+      }
+    }
+  }
+}
+```
+
+Notice how the page has a single version and how it is associated with two widgets, only the first of which has a published version.
+Now, if we ask for the published version of the page (relevant to the end-user/public facing website) we don't get the version history
+and we only get the first widget:
+
+```bash
+curl -i -H "Authorization: Bearer $TOKEN" 'http://localhost:5000/v1/pages/1?relationships=1&published=1'
+```
+
+If the page hadn't been published we would have gotten a 404.
+
+In addition to the version history there is a `changelog` collection in Mongodb with a log of all write operations performed via the API:
+
+```bash
+curl -i -H "Authorization: Bearer $TOKEN" 'http://localhost:5000/v1/changelog'
+```
+
+Here is an example entry from the update above:
+
+```json
+{
+  "action": "update",
+  "errors": null,
+  "doc": {
+    "slug": {
+      "se": "my-section"
+    },
+    "type": "sections",
+    "title": {
+      "se": "My Section EDIT"
+    },
+    "updated_at": "2016-07-18T06:29:50.142Z",
+    "id": 1,
+    "updated_by": "admin@example.com",
+    "version": 2,
+    "created_by": "admin@example.com",
+    "created_at": "2016-07-18T06:29:34.924Z"
+  },
+  "changes": {
+    "title": {
+      "from": {
+        "se": "My Section"
+      },
+      "to": {
+        "se": "My Section EDIT"
+      }
+    }
+  },
+  "created_by": "admin@example.com",
+  "created_at": "2016-07-18T06:29:50.167Z"
+}
+```
 
 ## Models
 
@@ -104,49 +303,15 @@ As an example of how the `callbacks` property works, take a look at the callback
 })
 ```
 
-## Creating an Admin User
+## Running Library Tests
+
+To run both unit and API (HTTP level) tests, do:
 
 ```
-lein repl
-(require 'versioned)
-(def system (versioned/-main :start-web false))
-(require '[versioned.models.users :as users])
-(users/create (:app system) {:name "Admin User" :email "admin@example.com" :password "admin" :permission "write"})
+lein test-al
 ```
 
-## Starting the Server with the Example Models
-
-From the command line:
-
-```
-lein run
-```
-
-From the REPL:
-
-```
-lein repl
-(require 'versioned.example.app)
-(def system (versioned.example.app/-main))
-```
-
-## Running All Tests
-
-```
-lein test
-```
-
-## Running Unit Tests
-
-```
-lein midje
-```
-
-## Running API Tests
-
-```
-lein run -m api.test-runner
-```
+The `test-all` task runs the `test` (unit test) and `test-api` tasks.
 
 ## Import
 
