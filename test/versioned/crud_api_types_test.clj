@@ -30,6 +30,24 @@
         }]
     (is (= (coerce-attribute-types schema attributes) expected))))
 
+(deftest coerce-attribute-leaves_unparsable_values_untouched
+  (let [attributes {
+          :foo "this-is-not-a-valid-number"
+          :bar "123"
+        }
+        schema {
+          :type "object"
+          :properties {
+            :foo {:type "integer"}
+            :bar {:type "integer"}
+          }
+        }
+        expected {
+          :foo "this-is-not-a-valid-number"
+          :bar 123
+        }]
+    (is (= (coerce-attribute-types schema attributes) expected))))
+
 (deftest coerce-attribute-types_parses-dates-in-nested-attributes
   (let [attributes {
           :title "foobar"
