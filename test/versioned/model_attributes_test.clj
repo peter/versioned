@@ -10,40 +10,6 @@
           :type "object"
           :properties {
             :title {:type "string"}
-            :version_number {:type "integer" :meta {:api_writable false}}
+            :version_number {:type "integer" :x-meta {:api_writable false}}
           }}]
     (is (= (api-writable-attributes schema attributes) {:title "The title"}))))
-
-(deftest without-custom-keys-test
-  (testing "can strip out the meta property from schemas"
-    (let [schema {
-            :type "object"
-            :properties {
-              :title {:type "string" :meta {:foo "foo"}}
-              :version_number {
-                :type "array"
-                :items {
-                  :type "object"
-                  :properties {
-                    :title {:type "string" :meta {:foo "bar"}}
-                  }
-                }
-              }
-            }
-          }
-          expected {
-            :type "object"
-            :properties {
-              :title {:type "string"}
-              :version_number {
-                :type "array"
-                :items {
-                  :type "object"
-                  :properties {
-                    :title {:type "string"}
-                  }
-                }
-              }
-            }
-          }]
-      (is (= (without-custom-keys schema) expected)))))

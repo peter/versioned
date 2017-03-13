@@ -10,7 +10,7 @@
     :schema {
       :type "object"
       :properties {
-        :_id {:type "string" :pattern "^[a-z0-9]{24}$" :meta {:api_writable false}}
+        :_id {:type "string" :pattern "^[a-z0-9]{24}$" :x-meta {:api_writable false}}
         :title {:type "string"}
         :body {:type "string"}
       }

@@ -14,7 +14,7 @@
 
 (s/defn tracked-attribute? :- s/Bool
   [attribute-schema :- Schema]
-  (get-in attribute-schema [:meta :change_tracking] true))
+  (get-in attribute-schema [:x-meta :change_tracking] true))
 
 (s/defn tracked-attributes :- AttributeSet
   [model :- Model]

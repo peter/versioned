@@ -6,7 +6,8 @@
             [clojure.string :as str]
             [clojure.set :refer [intersection]]))
 
-(def custom-property-keys #{:meta})
+; NOTE: we now use the 'x-' prefix for custom keys and they don't need to be removed
+(def custom-property-keys #{})
 
 (s/defn map-with-custom-keys? :- s/Bool
   [value :- s/Any]
@@ -23,7 +24,7 @@
 
 (s/defn api-writable? :- s/Bool
   [attribute-schema :- Schema]
-  (get-in attribute-schema [:meta :api_writable] true))
+  (get-in attribute-schema [:x-meta :api_writable] true))
 
 (s/defn api-writable-attribute-keys :- AttributeSet
   [schema :- Schema]
@@ -41,7 +42,7 @@
 
 (s/defn api-readable? :- s/Bool
   [attribute-schema :- Schema]
-  (get-in attribute-schema [:meta :api_readable] true))
+  (get-in attribute-schema [:x-meta :api_readable] true))
 
 (s/defn api-readable-attribute-keys :- AttributeSet
   [schema :- Schema]

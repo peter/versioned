@@ -28,7 +28,7 @@
   (let [attribute-schema (deep-child-schema schema attribute)
         type (attribute-type attribute-schema attribute)]
     (cond
-      (= (get-in attribute-schema [:meta :coerce]) false)
+      (= (get-in attribute-schema [:x-meta :coerce]) false)
         value
       (u/blank? value)
         nil

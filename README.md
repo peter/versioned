@@ -12,7 +12,7 @@ There is an online example application with Swagger API documentation at [versio
 
 ## Maturity
 
-This framework is a work in progress and has not been used in production yet.
+This framework is used in production but should not be considered mature yet.
 
 ## Example App and Getting Started Tutorial
 

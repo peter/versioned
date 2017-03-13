@@ -69,7 +69,7 @@
              (s/optional-key :required) [StrOrKeyword]
              (s/optional-key :items) (s/recursive #'Schema)
              (s/optional-key :enum) [SchemaValue]
-             (s/optional-key :meta) SchemaMeta
+             (s/optional-key :x-meta) SchemaMeta
              s/Keyword SchemaValue})
 (def SchemaProperties {s/Keyword Schema})
 

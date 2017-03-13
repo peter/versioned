@@ -39,7 +39,7 @@
 
 (defn id-parameter [model]
   (let [id-attr (id-attribute model)
-        id-schema (dissoc (get-in model [:schema :properties id-attr] {}) :meta)]
+        id-schema (dissoc (get-in model [:schema :properties id-attr] {}) :x-meta)]
     (merge id-schema {
       :name "id"
       :in "path"

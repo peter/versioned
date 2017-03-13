@@ -14,7 +14,9 @@
                      m))
 
 (defn validate-schema [schema doc]
-  (let [errors ((v/validator schema) (schema-friendly-map doc))]
-    (if errors
+  (let [errors (some->> (schema-friendly-map doc)
+                        ((v/validator schema))
+                        (remove #(= (:level %) "warning")))]
+    (if (not-empty errors)
       (map #(assoc % :type "schema") errors)
-      errors)))
+      nil)))

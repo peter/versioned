@@ -37,7 +37,7 @@
           properties (reduce #(assoc %1 (keyword %2) attribute-schema) {} locales)]
       {
         :type "object"
-        :meta {
+        :x-meta {
           :translated true
         }
         :properties properties

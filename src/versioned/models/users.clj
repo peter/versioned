@@ -24,10 +24,10 @@
       :properties {
         :name {:type "string"}
         :email {:type "string"}
-        :password {:type "string" :meta {:api_readable false}}
+        :password {:type "string" :x-meta {:api_readable false}}
         :permission {:enum ["read" "write"]}
-        :access_token {:type "string" :meta {:api_writable false :api_readable false}}
-        :access_token_created_at {:type "string" :format "date-time" :meta {:api_writable false}}
+        :access_token {:type "string" :x-meta {:api_writable false :api_readable false}}
+        :access_token_created_at {:type "string" :format "date-time" :x-meta {:api_writable false}}
       }
       :additionalProperties false
       :required [:name :email :password :permission]
