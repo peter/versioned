@@ -7,7 +7,7 @@
 (def typed-schema {
   :type "object"
   :properties {
-    :type {:type "string"}
+    :type {:type "string" :x-meta {:api_writable false}}
   }
   :required [:type]
 })

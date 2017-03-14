@@ -53,7 +53,7 @@
 (declare SchemaValue)
 (def SchemaMap {s/Keyword (s/recursive #'SchemaValue)})
 (def SchemaArray [(s/recursive #'SchemaValue)])
-(def SchemaValue (s/cond-pre s/Str s/Num Nil s/Bool SchemaMap SchemaArray))
+(def SchemaValue (s/cond-pre s/Str s/Keyword s/Num Nil s/Bool SchemaMap SchemaArray))
 (def schema-types ["string" "number" "integer" "null" "boolean" "array" "object"])
 (def SchemaType (apply s/enum schema-types))
 (def SchemaMeta {
