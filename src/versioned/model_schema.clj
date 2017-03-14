@@ -42,5 +42,5 @@
   [schema :- Schema
    allowed-properties :- AttributeSet]
   (let [properties (select-keys (:properties schema) allowed-properties)
-        required (if (:required schema) (filter (set allowed-properties) (:required schema)))]
+        required (not-empty (if (:required schema) (filter (set allowed-properties) (:required schema))))]
     (merge schema (u/compact {:properties properties :required required}))))
