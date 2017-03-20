@@ -47,8 +47,8 @@
   (deep-resolve-ref {
       :swagger "2.0"
       :info {
-          :title "Versioned API"
-          :description "A REST CMS API based on MongoDB"
+          :title (get-in app [:config :title])
+          :description (get-in app [:config :description])
           :version (version app)
       }
       :basePath (get-in app [:config :api-prefix])

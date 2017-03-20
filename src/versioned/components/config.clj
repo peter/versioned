@@ -11,6 +11,8 @@
   (str "mongodb://127.0.0.1/versioned-" env))
 
 (defn- default-config [env] {
+  :title "Versioned API"
+  :description "A REST CMS API based on MongoDB"
   :require-read-auth true
   :session-expiry (* 60 60 24 14)
   :log-level (if (= "production" env) "info" "debug")
