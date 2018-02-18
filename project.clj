@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo
             :comments "same as Clojure"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
                  [com.novemberain/monger "3.1.0"]
                  [ring/ring-json "0.4.0"]

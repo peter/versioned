@@ -308,10 +308,11 @@ As an example of how the `callbacks` property works, take a look at the callback
 To run both unit and API (HTTP level) tests, do:
 
 ```
-lein test-al
+lein test-all
 ```
 
 The `test-all` task runs the `test` (unit test) and `test-api` tasks.
+The API tests depend on the [jsonapitest test framework](https://github.com/peter/jsonapitest).
 
 ## Import
 

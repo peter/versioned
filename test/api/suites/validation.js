@@ -74,7 +74,7 @@ module.exports = {
               select: "body.errors.0",
               equal_keys: {
                 type: "duplicate_key",
-                message: /E11000 duplicate key error index/
+                message: /E11000 duplicate key error/
               }
             }
           },
