@@ -27,7 +27,7 @@
                              nil)
          db-query (merge query published-query)
          docs (db/find (:database app) (coll model) db-query opts)]
-      (with-published-versions app docs (:type model) {} opts)))
+      (with-published-versions app docs (:type model) opts)))
   ([app :- App
     model :- Model
     query :- Map]
