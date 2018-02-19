@@ -1,5 +1,23 @@
 "use strict";
 
+const crypto = require('crypto')
+
+function digest() {
+  const time = (new Date()).valueOf().toString()
+  const random = Math.random().toString()
+  return crypto.createHash('sha1').update(time + random).digest("hex")
+}
+
+const pageDigest = digest()
+const page = {
+  "title": {
+    "se": `Testsida ${pageDigest}`
+  },
+  "slug": {
+    "se": `testsida-${pageDigest}`
+  }
+};
+
 module.exports = {
   suite: {
     name: "list",
@@ -116,6 +134,102 @@ module.exports = {
             request: "GET /pages?q=this-is-not-valid&q=also-not-valid",
             status: 422
           }
+        ]
+      },
+
+      {
+        name: "published",
+        description: "You can use a published=1 query parameter to get only published docs",
+        api_calls: [
+          {
+            it: "can create an unpublished page",
+            request: "POST /pages",
+            params: {data: {attributes: page}},
+            save: {
+              "page_id": "body.data.attributes.id"
+            }
+          },
+          {
+            it: "can list the unpublished page",
+            request: "GET /pages",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  title: page.title
+                }
+              }
+            ]
+          },
+          {
+            it: "can list only published pages and then the unpublished page is not there",
+            request: "GET /pages?published=1",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                not_equal_keys: {
+                  title: page.title
+                }
+              }
+            ]
+          },
+          {
+            it: "can publish the page",
+            request: "PUT /pages/{{page_id}}",
+            params: {
+              data: {attributes: {published_version: 1}}
+            }
+          },
+          {
+            it: "can list only published pages and the published page is now there",
+            request: "GET /pages?published=1",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  title: page.title
+                }
+              }
+            ]
+          },
+          {
+            it: "can update the page",
+            request: "PUT /pages/{{page_id}}",
+            params: {
+              data: {attributes: {title: {se: (page.title.se + ' EDIT')}}}
+            }
+          },
+          {
+            it: "can list only published pages and the latest edit is not visible since it's not published",
+            request: "GET /pages?published=1",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  title: page.title
+                }
+              }
+            ]
+          },
+          {
+            it: "can publish the updated version of the page",
+            request: "PUT /pages/{{page_id}}",
+            params: {
+              data: {attributes: {published_version: 2}}
+            }
+          },
+          {
+            it: "can list only published pages and the latest edit is now visible as it's been published",
+            request: "GET /pages?published=1",
+            assert: [
+              {
+                select: "body.data.0.attributes",
+                equal_keys: {
+                  title: {se: (page.title.se + ' EDIT')}
+                }
+              }
+            ]
+          },
         ]
       }
     ]
