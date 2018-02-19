@@ -326,6 +326,12 @@ There are also two endpoints for syncing - `import_sync/delete` and `import_sync
 
 ## TODO
 
+* Ability to set published=1 for list endpoint - add "published" test in api/suites/list
+
+* Add first_published_at and last_published_at fields. Add publish-events model to default models?
+
+* Ability to recursively get relationships or get them to the N-th level
+
 * API tests for import API, especially the sync part
 
 * More API tests, i.e. related to publishing

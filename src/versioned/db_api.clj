@@ -33,7 +33,7 @@
   ([database :- Database
     coll :- s/Keyword
     query :- Map
-    opts :- Map]
+    opts :- (s/maybe Map)]
    (let [default-opts {:page 1 :per-page 100 :sort {} :fields []}
          opts (merge default-opts opts)]
      (map (comp json-friendly keyify-params) (mq/with-collection (:db database) (name coll)

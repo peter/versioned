@@ -51,9 +51,8 @@
 (s/defn with-published-versions :- [Doc]
   [app :- App
    docs :- [Doc]
-   spec :- Relationship
    model :- s/Keyword
-   query :- Map
+   find-opts :- (s/maybe Map)
    opts :- Map]
   (if (and (:published opts) (published-model? app model))
     (let [docs (filter :published_version docs)
@@ -62,7 +61,7 @@
           versions-query {:$or version-ids}
           versions-spec (get-in app [:models model])
           versions-coll (versioned-coll versions-spec)
-          versions (if (not-empty version-ids) (db/find (:database app) versions-coll versions-query (:find_opts spec)))
+          versions (if (not-empty version-ids) (db/find (:database app) versions-coll versions-query find-opts))
           versions-by-id (reduce #(assoc %1 (:id %2) %2) {} versions)
           published-docs (map (fn [doc]
                                 (if-let [version (get versions-by-id (:id doc))]
@@ -94,7 +93,7 @@
         docs (and (not-empty ids) (db/find (:database app) coll query find-opts))
         docs-by-id (group-by field docs)
         ordered-docs (u/compact (map #(first (docs-by-id %)) ids))]
-    (with-published-versions app ordered-docs spec model query opts)))
+    (with-published-versions app ordered-docs model (:find_opts spec) opts)))
 
 ; Example: (i.e. ActiveRecord belongs_to)
 ; from_coll pages
@@ -115,7 +114,7 @@
         query {field id}
         find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    (first (with-published-versions app docs spec model query opts))))
+    (first (with-published-versions app docs model (:find_opts spec) opts))))
 
 ; Example: (i.e. ActiveRecord has_many)
 ; from_coll pages_versions
@@ -136,7 +135,7 @@
         query {field id}
         find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    (with-published-versions app docs spec model query opts)))
+    (with-published-versions app docs model (:find_opts spec) opts)))
 
 (s/defn find-relationship :- [Doc]
   [app :- App

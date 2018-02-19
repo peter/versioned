@@ -9,7 +9,7 @@
             [versioned.model-versions :refer [unversioned-attributes versioned-coll
                                                   versioned-id-query apply-version]]
             [versioned.util.core :as u]
-            [versioned.model-relationships :refer [with-relationships]]
+            [versioned.model-relationships :refer [with-relationships with-published-versions]]
             [versioned.model-validations :refer [with-model-errors
                                                  model-not-updated
                                                  duplicate-key-error]]
@@ -22,7 +22,12 @@
     model :- Model
     query :- Map
     opts :- Map]
-   (db/find (:database app) (coll model) query opts))
+   (let [published-query (if (:published opts)
+                             {:published_version {:$ne nil}}
+                             nil)
+         db-query (merge query published-query)
+         docs (db/find (:database app) (coll model) db-query opts)]
+      (with-published-versions app docs (:type model) {} opts)))
   ([app :- App
     model :- Model
     query :- Map]

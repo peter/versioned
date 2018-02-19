@@ -88,6 +88,13 @@
                 :type "string"
                 :pattern (str query-pattern)
               }
+            },
+            {
+              :name "published",
+              :description "Whether to only fetch published docs"
+              :in "query",
+              :required false,
+              :type "boolean"
             }
           ],
           :responses {
