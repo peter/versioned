@@ -5,7 +5,7 @@
             [com.stuartsierra.component :as component]))
 
 (defn get-env [config]
-  (or (:env config) (System/getenv "ENV") "development"))
+  (or (:env config) (System/getenv "ENV") (System/getenv "RING_ENV") "development"))
 
 (defn mongodb-url [env]
   (str "mongodb://127.0.0.1/versioned-" env))
@@ -45,8 +45,9 @@
   (u/compact (into {} (map #(vector % (env-value % defaults)) (keys defaults)))))
 
 (defn- get-config [config]
-  (let [defaults (default-config (get-env config))]
-    (u/deep-merge defaults config (env-config defaults))))
+  (let [defaults (default-config (get-env config))
+        config-with-defaults (u/deep-merge defaults config)]
+    (u/deep-merge config-with-defaults (env-config config-with-defaults))))
 
 ; --------------------------------------------------------
 ; Component

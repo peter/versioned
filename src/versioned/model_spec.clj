@@ -14,7 +14,7 @@
   [& schemas :- [Schema]]
   (let [properties (apply merge (map :properties schemas))
         required (not-empty (apply concat (map :required schemas)))]
-    (u/compact (assoc (apply merge schemas)
+    (u/compact (assoc (apply u/deep-merge schemas)
                       :properties properties
                       :required required))))
 

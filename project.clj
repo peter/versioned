@@ -16,6 +16,7 @@
                  [metosin/scjsv "0.2.0"]
                  [prismatic/schema "1.1.3"]
                  [clj-time "0.11.0"]
+                 [clj-http "3.7.0"]
                 ]
   :min-lein-version "2.0.0"
   :uberjar-name "versioned-standalone.jar"

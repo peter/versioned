@@ -1,6 +1,7 @@
 (ns versioned.example.models.pages
   (:require [versioned.example.models.shared :refer [set-sites-callback sites-schema translated-attribute]]
             [versioned.model-spec :refer [generate-spec]]
+            [versioned.example.searchable-model :refer [searchable-model-spec]]
             [versioned.model-includes.content-base-model :refer [content-base-spec]]))
 
 (def model-type :pages)
@@ -9,10 +10,14 @@
   (let [locales (:locales config)]
     (generate-spec
       (content-base-spec model-type)
+      (searchable-model-spec)
       {
       :type model-type
       :schema {
         :type "object"
+        :x-meta {
+          :admin_properties [:title :description]
+        }
         :properties {
           :title (translated-attribute locales)
           :description (translated-attribute locales)

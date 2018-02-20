@@ -222,6 +222,16 @@ Here is an example entry from the update above:
 }
 ```
 
+If you have an Algolia search account (available as Heroku addon) you can index your data like this:
+
+```
+ALGOLIASEARCH_API_KEY=... ALGOLIASEARCH_APPLICAON_ID=... lein repl
+(require 'versioned)
+(def system (versioned.example.app/-main :start-web false))
+(require '[versioned.example.search.algolia :as search :reload-all true])
+(search/index-rebuild (:app system))
+```
+
 ## Models
 
 Models (i.e. resources, content types) are at the heart of the Versioned framework and they are the blueprints for your

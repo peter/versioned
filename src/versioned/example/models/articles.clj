@@ -9,6 +9,9 @@
     :type model-type
     :schema {
       :type "object"
+      :x-meta {
+        :admin_properties [:title :body]
+      }
       :properties {
         :_id {:type "string" :pattern "^[a-z0-9]{24}$" :x-meta {:api_writable false}}
         :title {:type "string"}
