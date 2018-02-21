@@ -15,6 +15,9 @@
       :type model-type
       :schema {
         :type "object"
+        :x-meta {
+          :admin_properties [:title :description]
+        }
         :properties {
           :title (translated-attribute locales)
           :description (translated-attribute locales)
