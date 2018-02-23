@@ -18,6 +18,8 @@
                  [clj-time "0.11.0"]
                  [clj-http "3.7.0"]
                 ]
+  :deploy-repositories [["releases"  {:sign-releases false :url "https://clojars.org/repo"}]
+                        ["snapshots" {:sign-releases false :url "https://clojars.org/repo"}]]
   :min-lein-version "2.0.0"
   :uberjar-name "versioned-standalone.jar"
   :main ^:skip-aot versioned.example.app

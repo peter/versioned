@@ -336,6 +336,11 @@ curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $T
 
 There are also two endpoints for syncing - `import_sync/delete` and `import_sync/upsert`.
 
+## How to Relase new Version of This Library
+
+* Bump the version in project.clj
+* Issue `lein deploy` and enter clojars credentials
+
 ## TODO
 
 * Add api tests for first_published_at and last_published_at fields
