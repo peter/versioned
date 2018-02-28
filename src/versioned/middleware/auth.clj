@@ -11,10 +11,16 @@
 
 (def write-method? #{:post :put :patch :delete})
 
+(defn read-auth-required? [app request]
+  (let [app-read-auth (get-in app [:config :require-read-auth])
+        model (get-in request [:route :swagger :x-model])
+        model-read-auth (get-in app [:models model :schema :x-meta :require-read-auth])]
+    (if (nil? model-read-auth) app-read-auth model-read-auth)))
+
 (defn auth-required? [app request]
   (and (route-requires-auth? app request)
        (or (write-method? (:request-method request))
-           (get-in app [:config :require-read-auth]))))
+           (read-auth-required? app request))))
 
 (defn user-authorized? [user write-request?]
   (or (not write-request?)

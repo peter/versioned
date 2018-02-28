@@ -52,6 +52,7 @@
         :get (if (add-route? model :list) {
           :tags [name],
           :summary (str "List " name),
+          :x-model (:type model)
           :x-handler (str name "/api:list")
           :parameters [
             {"$ref" "#/parameters/auth"}
@@ -122,6 +123,7 @@
         :post (if (add-route? model :create) {
           :tags [name],
           :summary (str "Create " name),
+          :x-model (:type model)
           :x-handler (str name "/api:create")
           :parameters [
             {"$ref" "#/parameters/auth"},
@@ -149,6 +151,7 @@
         :get (if (add-route? model :get) {
           :tags [name],
           :summary (str "Get " name),
+          :x-model (:type model)
           :x-handler (str name "/api:get")
           :parameters [
             {"$ref" "#/parameters/auth"},
@@ -186,6 +189,7 @@
         :put (if (add-route? model :update) {
           :tags [name],
           :summary (str "Update " name),
+          :x-model (:type model)
           :x-handler (str name "/api:update")
           :parameters [
             {"$ref" "#/parameters/auth"},
@@ -209,6 +213,7 @@
         :delete (if (add-route? model :delete) {
           :tags [name],
           :summary (str "Delete " name),
+          :x-model (:type model)
           :x-handler (str name "/api:delete")
           :parameters [
             {"$ref" "#/parameters/auth"},

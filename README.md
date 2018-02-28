@@ -343,6 +343,8 @@ There are also two endpoints for syncing - `import_sync/delete` and `import_sync
 
 ## TODO
 
+* We should use an [id_sequences collection](https://www.tutorialspoint.com/mongodb/mongodb_autoincrement_sequence.htm) to ensure we don't reuse an id after a delete
+
 * Add api tests for first_published_at and last_published_at fields
 
 * Add publish-events model to default models?
