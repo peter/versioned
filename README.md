@@ -343,6 +343,8 @@ There are also two endpoints for syncing - `import_sync/delete` and `import_sync
 
 ## TODO
 
+* Issue auth tokens with JWT and let each session have a unique token.
+
 * We should use an [id_sequences collection](https://www.tutorialspoint.com/mongodb/mongodb_autoincrement_sequence.htm) to ensure we don't reuse an id after a delete
 
 * Add api tests for first_published_at and last_published_at fields

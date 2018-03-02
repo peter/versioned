@@ -11,9 +11,10 @@
         user (users/find-one app {:email email})
         model (get-in app [:models :users])]
       (if (users/authenticate user password)
-        (let [access-token (auth/generate-token)
-              updated (users/store-token app user access-token)
-              doc (assoc (read-attributes model updated) :access_token access-token)]
-          (logger/debug app "sessions create authenticated user:" updated (meta updated))
-          (merge (json-api/doc-response model doc) {:headers (auth/header access-token)}))
+        (let [updated-user (if (or (nil? (:access_token user)) (users/token-expired? user (:config app)))
+                           (users/store-token app user (auth/generate-token))
+                           user)
+              doc (assoc (read-attributes model updated-user) :access_token (:access_token updated-user))]
+          (logger/debug app "sessions create authenticated user:" doc (meta doc))
+          (merge (json-api/doc-response model doc) {:headers (auth/header (:access_token doc))}))
         {:status 401})))
