@@ -22,10 +22,11 @@
     (if (nil? model-read-auth) app-read-auth model-read-auth)))
 
 (defn write-auth-required? [request]
-  (let [published? (get-in request [:query-params :published])]
-    (println "pm debug write-auth-required? published? " published? "")
+  (let [published? (get-in request [:query-params :published])
+        version-token? (get-in request [:query-params :version_token])]
     (or (write-method? (:request-method request))
-        (not published?))))
+        (not (or published?
+                 version-token?)))))
 
 (defn auth-required? [app request]
   (and (route-requires-auth? app request)

@@ -172,6 +172,13 @@
               :minimum 1
             }
             {
+              :name "version_token",
+              :description "Token/digest of version to fetch (for preview)"
+              :in "query",
+              :required false,
+              :type "string"
+            }
+            {
               :name "published",
               :description "Whether to only fetch published version of document and its relationships"
               :in "query",

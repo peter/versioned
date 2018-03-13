@@ -17,9 +17,9 @@
 (defn versioned-coll [model-spec]
   (keyword (str (name (model-support/coll model-spec)) "_versions")))
 
-(defn versioned-id-query [model-spec id version]
+(defn versioned-id-query [model-spec id version version-token]
   (merge (model-support/id-query model-spec id)
-         {:version version}))
+         (u/compact {:version version :version_token version-token})))
 
 (defn select-version [doc version-param published?]
   (if published?
@@ -27,9 +27,11 @@
     (and version-param (u/safe-parse-int version-param))))
 
 (defn apply-version [model-spec doc versioned-doc]
-  (and versioned-doc (merge versioned-doc
+  (if (and versioned-doc (not= (:version doc) (:version versioned-doc)))
+    (and versioned-doc (merge versioned-doc
                             (select-keys doc
-                                         (unversioned-attributes (:schema model-spec))))))
+                                         (unversioned-attributes (:schema model-spec)))))
+    doc))
 
 (defn published-model? [app model]
   (and model (get-in app [:models model :schema :properties :published_version])))

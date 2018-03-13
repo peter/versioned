@@ -42,9 +42,11 @@
      (let [doc (db/find-one (:database app) (coll model) (id-query model id))
            published? (:published opts)
            relationships-opts (select-keys opts [:published :relationships])
-           version (select-version doc (:version opts) published?)]
-       (if (and version (not= version (:version doc)))
-         (let [versioned-doc (db/find-one (:database app) (versioned-coll model) (versioned-id-query model id version))
+           version (select-version doc (:version opts) published?)
+           version-token (:version_token opts)]
+       (if (or (and version (not= version (:version doc)))
+               version-token)
+         (let [versioned-doc (db/find-one (:database app) (versioned-coll model) (versioned-id-query model id version version-token))
                doc (apply-version model doc versioned-doc)]
               (with-relationships app model doc relationships-opts))
          (if (and published? (not (:published_version doc)))

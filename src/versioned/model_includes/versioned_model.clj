@@ -5,6 +5,7 @@
             [versioned.model-versions :refer [versioned-attributes versioned-coll]]
             [versioned.util.db :as db-util]
             [versioned.util.date :as d]
+            [versioned.util.digest :as digest]
             [versioned.db-api :as db]))
 
 (defn versioned-changes [model-spec doc]
@@ -24,12 +25,18 @@
       (if (increment-version? model-spec doc) (inc old-version) old-version)
       1)))
 
+(defn version-token [doc options]
+  (if (or (not (:version_token doc))
+          (increment-version? (:model-spec options) doc))
+      (digest/generate)
+      (:version_token doc)))
+
 (defn versioned-doc [model-spec doc]
   (let [model-attributes (select-keys doc (versioned-attributes (:schema model-spec)))
         version-attributes {
           :created_at (d/now)
           :created_by (or (:updated_by doc) (:created_by doc))}]
-    (merge model-attributes version-attributes)))
+    (dissoc (merge model-attributes version-attributes) :_id)))
 
 (defn set-version-callback [doc options]
   (let [new-version (latest-version (:model-spec options) doc)]
@@ -37,7 +44,15 @@
                                  "old-version:" (get-in (meta doc) [:existing-doc :version])
                                  "new-version:" new-version
                                  "versioned-changes:" (versioned-changes (:model-spec options) doc))
-    (assoc doc :version new-version)))
+    (assoc doc :version new-version :version_token (version-token doc options))))
+
+(defn update-version-callback [doc options]
+  (if (not (increment-version? (:model-spec options) doc))
+    (let [id-attribute (model-support/id-attribute (:model-spec options))
+          query (select-keys doc [id-attribute :version])
+          updated-doc (versioned-doc (:model-spec options) doc)
+          result (db/update (:database options) (versioned-coll doc) query updated-doc)]))
+  doc)
 
 (defn create-version-callback [doc options]
   (if (increment-version? (:model-spec options) doc)
@@ -54,14 +69,15 @@
   :type "object"
   :properties {
     :version {:type "integer" :minimum 1 :x-meta {:api_writable false}}
+    :version_token {:type "string" :x-meta {:api_writable false}}
   }
-  :required [:version]
+  :required [:version :version_token]
 })
 
 (def versioned-callbacks {
   :save {
     :before [set-version-callback]
-    :after [create-version-callback]
+    :after [update-version-callback create-version-callback]
   }
   :delete {
     :after [remove-version-callbacks]
@@ -70,6 +86,7 @@
 
 (defn versioned-indexes [type] [
   {:fields [:id :version] :coll (versioned-coll {:type type}) :unique true}
+  ; {:fields [:id :version_token] :coll (versioned-coll {:type type}) :unique true}
 ])
 
 (defn versioned-relationships [type id-attribute]
