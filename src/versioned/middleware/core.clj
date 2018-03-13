@@ -18,12 +18,12 @@
 ; NOTE: middleware execute execute in reverse order - the last one listed here exeucutes first
 (defn wrap [handler app]
   (-> handler
+      (wrap-auth app)
       (wrap-params-parser app)
       (wrap-keyword-params)
       (wrap-params {})
       (wrap-json-params {})
       (wrap-json-response {:pretty true})
-      (wrap-auth app)
       (wrap-cors)
       (development-middleware (:env app))
       (wrap-route-match app)

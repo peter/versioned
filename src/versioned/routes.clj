@@ -28,11 +28,6 @@
 
 (def lookup-handler (memoize lookup-handler-uncached))
 
-(defn route-requires-auth? [app request]
-  (if (:route request)
-      (get-in request [:route :swagger :x-auth-required] true)
-      false))
-
 (defn prefixed-path [api-prefix path spec]
   (if (get spec :x-api-prefix true)
       (str api-prefix path)

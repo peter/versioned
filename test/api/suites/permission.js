@@ -18,22 +18,20 @@ module.exports = {
         description: "Users with read permission can read data but not write data",
         api_calls: [
           {
-            it: "can get a page document",
-            request: "GET /pages/{{pages.start.id}}",
-            headers: "{{headers.read}}",
-            assert: {
-              select: "body.data.attributes",
-              equal_keys: {
-                id: "{{pages.start.id}}",
-                title: "{{pages.start.title}}",
-              },
-              schema: "{{schema.pages}}"
-            }
+            it: "can get a published widget",
+            request: "GET /widgets/{{widgets.welcome.id}}?published=1",
+            headers: "{{headers.read}}"
           },
           {
-            it: "can list page documents",
+            it: "can list published page documents",
+            request: "GET /pages?published=1",
+            headers: "{{headers.read}}",
+          },
+          {
+            it: "can not list unpublished page documents",
             request: "GET /pages",
             headers: "{{headers.read}}",
+            status: 401
           },
           {
             it: "can not create a page document",
