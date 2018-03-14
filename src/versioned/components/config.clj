@@ -24,6 +24,7 @@
   :models {
     :users "versioned.models.users/spec"
     :changelog "versioned.models.changelog/spec"
+    :models "versioned.models.models/spec"
   }
   :api-prefix "/v1"
 })

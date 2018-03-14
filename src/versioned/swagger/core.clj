@@ -1,5 +1,7 @@
 (ns versioned.swagger.core
   (:require [versioned.util.core :as u]
+            [versioned.util.json :as json]
+            [versioned.util.resource :as resource]
             [versioned.model-attributes :refer [api-writable-schema
                                                 api-readable-schema
                                                 without-custom-keys]]
@@ -8,6 +10,9 @@
             [versioned.swagger.paths.import :as import-paths]
             [versioned.swagger.paths.model :as model-paths]
             [versioned.swagger.ref :refer [deep-resolve-ref]]))
+
+(defn schema []
+  (json/parse (resource/get "swagger-2.0-schema.json")))
 
 (defn- paths [app]
   (let [endpoints [(api-docs-paths/swagger app)

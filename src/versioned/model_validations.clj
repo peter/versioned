@@ -5,8 +5,10 @@
             [versioned.util.schema :refer [validate-schema]]))
 
 (defn with-model-errors [doc errors]
-  (let [new-meta (update-in (meta doc) [:errors] concat errors)]
-    (with-meta doc new-meta)))
+  (if (u/present? errors)
+    (let [new-meta (update-in (meta doc) [:errors] concat errors)]
+      (with-meta doc new-meta))
+    doc))
 
 (defn model-errors [doc]
   (:errors (meta doc)))
