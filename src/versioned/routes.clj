@@ -2,6 +2,7 @@
   (:require [versioned.util.core :as u]
             [clojure.string :as str]
             [versioned.types :refer [crud-actions]]
+            [versioned.model-init :refer [get-models]]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers
@@ -47,4 +48,4 @@
     (flatten (map (partial routes-for-path api-prefix) paths))))
 
 (defn routes-with-handlers [app]
-  (map #(assoc % :handler (lookup-handler (:models app) %)) (routes app)))
+  (map #(assoc % :handler (lookup-handler (get-models app) %)) (routes app)))

@@ -343,6 +343,15 @@ There are also two endpoints for syncing - `import_sync/delete` and `import_sync
 
 ## TODO
 
+### Dynamic Model Schemas
+
+* app/models needs to be an atom that we can update when the database changes
+* init-models needs to get all published schemas from the database and merge those into the models from the config
+  updated-schema (merge-schemas (:schema doc) schema)
+  updated-models (assoc-in models [(:type model) :schema] updated-schema)
+
+### Misc
+
 * Issue auth tokens with JWT and let each session have a unique token.
 
 * We should use an [id_sequences collection](https://www.tutorialspoint.com/mongodb/mongodb_autoincrement_sequence.htm) to ensure we don't reuse an id after a delete

@@ -134,6 +134,8 @@
 (def Doc Map) ; A model instance
 
 (def Models {s/Keyword Model})
+(def ModelsRef (s/pred #(and (instance? clojure.lang.Atom %)
+                             (s/validate Models (deref %))) 'atom-with-models?))
 
 (def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
 (def DB-Conn (s/pred #(instance? com.mongodb.MongoClient %) 'mongodb-conn?))
@@ -165,7 +167,7 @@
 
 (def App {
           :config Config
-          :models Models
+          :models ModelsRef
           :swagger Map
           :routes [Route]
           s/Keyword s/Any})

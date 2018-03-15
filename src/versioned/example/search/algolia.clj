@@ -1,6 +1,7 @@
 (ns versioned.example.search.algolia
   (:require [clj-http.client :as client]
             [versioned.model-support :refer [coll]]
+            [versioned.model-init :refer [get-models get-in-model]]
             [versioned.db-api :as db]))
 
 (defn base-url [application-id]
@@ -25,10 +26,10 @@
   (get-in app [:config :algoliasearch-index-name]))
 
 (defn searchable-model? [app model-spec]
-  (get-in app [:models (:type model-spec) :schema :x-meta :searchable]))
+  (get-in-model app [(:type model-spec) :schema :x-meta :searchable]))
 
 (defn colls [app]
-  (let [searchable-models (filter (partial searchable-model? app) (vals (:models app)))]
+  (let [searchable-models (filter (partial searchable-model? app) (vals (get-models app)))]
     (map coll searchable-models)))
 
 (defn search-doc [app doc]

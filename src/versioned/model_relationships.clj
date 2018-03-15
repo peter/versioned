@@ -2,6 +2,7 @@
   (:require [versioned.model-support :as model-support]
             [versioned.model-versions :refer [apply-version versioned-coll published-model?]]
             [versioned.db-api :as db]
+            [versioned.model-init :refer [get-model]]
             [schema.core :as s]
             [versioned.types :refer [RelationshipKey
                                      RelationshipField
@@ -58,7 +59,7 @@
           draft-docs (filter #(not= (:published_version %) (:version %)) docs)
           version-ids (map #(hash-map :id (:id %) :version (:published_version %)) draft-docs)
           versions-query {:$or version-ids}
-          versions-spec (get-in app [:models model])
+          versions-spec (get-model app model)
           versions-coll (versioned-coll versions-spec)
           versions (if (not-empty version-ids) (db/find (:database app) versions-coll versions-query))
           versions-by-id (reduce #(assoc %1 (:id %2) %2) {} versions)

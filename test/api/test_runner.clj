@@ -5,6 +5,7 @@
             [versioned.crud-api-attributes :refer [create-attributes read-attributes]]
             [versioned.model-api :as model-api]
             [versioned.model-validations :refer [model-errors]]
+            [versioned.model-init :refer [get-models get-model]]
             [me.raynes.conch :as sh]
             [versioned.util.file :as file]
             [versioned.util.core :as u]
@@ -65,14 +66,15 @@
 
 (defn save-model [context model data]
   (let [app (get-in context [:system :app])
-        model-spec (get-in app [:models model])
+        model-spec (get-model app model)
         admin-user (get-in context [:data :users :admin])
         request {:user admin-user}]
     (u/map-values (partial save-doc app model-spec request) data)))
 
 (defn save-db [context]
   (log "save-db")
-  (let [model? (set (keys (get-in context [:system :app :models])))
+  (let [app (get-in context [:system :app])
+        model? (set (keys (get-models app)))
         data (reduce
                 (fn [result [k v]]
                   (assoc result k (if (model? k)
@@ -107,7 +109,8 @@
     (reduce log-in-user context users)))
 
 (defn add-schemas [context]
-  (let [models (get-in context [:system :app :models])
+  (let [app (get-in context [:system :app])
+        models (get-models app)
         schemas (u/map-values :schema models)]
     (assoc-in context [:data :schema] schemas)))
 

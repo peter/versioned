@@ -7,6 +7,7 @@
                                                 without-custom-keys]]
             [versioned.swagger.paths.api-docs :as api-docs-paths]
             [versioned.swagger.paths.login :as login-paths]
+            [versioned.model-init :refer [get-models]]
             [versioned.swagger.paths.import :as import-paths]
             [versioned.swagger.paths.model :as model-paths]
             [versioned.swagger.ref :refer [deep-resolve-ref]]))
@@ -18,7 +19,7 @@
   (let [endpoints [(api-docs-paths/swagger app)
                    (login-paths/swagger app)
                    (import-paths/swagger app)]
-        models (map (partial model-paths/swagger app) (vals (:models app)))
+        models (map (partial model-paths/swagger app) (vals (get-models app)))
         all (concat endpoints models)]
     (apply merge all)))
 
@@ -31,7 +32,7 @@
               (assoc result write-key write-schema
                             read-key read-schema)))
           {}
-          (vals (:models app))))
+          (vals (get-models app))))
 
 (defn- parameters [app]
     {

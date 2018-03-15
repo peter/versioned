@@ -3,6 +3,7 @@
             [versioned.model-includes.content-base-model :refer [content-base-spec]]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
+            [versioned.model-init :refer [get-model get-models set-models]]
             [versioned.util.schema :refer [validate-schema]]
             [versioned.util.json :as json]))
 
@@ -10,12 +11,12 @@
 
 (defn validate-swagger-callback [doc options]
   (let [model-type (keyword (:model_type doc))
-        model (get-in options [:app :models (keyword (:model_type doc))])]
+        model (get-model (:app options) (keyword (:model_type doc)))]
     ; TODO: validate using versioned.types/Schema?
     ; TODO: need a try/catch here?
     (if (and model-type model)
-      (let [models (get-in options [:app :models])
-            schema (get-in options [:app :models model-type :schema])
+      (let [models (get-models (:app options))
+            schema (get-in models [model-type :schema])
             updated-schema (merge-schemas (:schema doc) schema)
             updated-models (assoc-in models [(:type model) :schema] updated-schema)
             swagger-spec (swagger/swagger {:config (:config options) :models updated-models})

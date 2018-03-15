@@ -3,6 +3,7 @@
             [versioned.util.date :as d]
             [versioned.model-api :as model-api]
             [versioned.model-changes :refer [model-changes]]
+            [versioned.model-init :refer [get-model]]
             [versioned.db-api :as db]
             [schema.core :as s]
             [versioned.types :refer [Map Model Request App Changelog Action Email]]))
@@ -24,7 +25,7 @@
   (let [errors (not-empty (model-errors doc))
         changes (if (= :update action) (model-changes model doc) nil)
         user (get-user request)
-        changelog-spec (get-in app [:models :changelog])
+        changelog-spec (get-model app :changelog)
         changelog-doc {
           :action action
           :doc doc

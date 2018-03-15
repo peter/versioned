@@ -4,7 +4,7 @@
             [versioned.swagger.core :refer [swagger]]
             [versioned.middleware.core :as middleware]
             [versioned.model-indexes :refer [ensure-indexes]]
-            [versioned.model-init :refer [init-models]]
+            [versioned.model-init :refer [init-models deref-models]]
             [versioned.router.core :as router]
             [versioned.routes :refer [routes-with-handlers]]))
 
@@ -20,7 +20,7 @@
           app (assoc app :routes routes)
           handler (-> (router/create-handler app)
                       (middleware/wrap app))]
-      (println "Starting Application config:" config "models:" (map :type (vals models)))
+      (println "Starting Application config:" config "models:" (map :type (vals (deref-models models))))
       (ensure-indexes app)
       (assoc component :config config
                        :models models

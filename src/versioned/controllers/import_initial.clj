@@ -4,6 +4,7 @@
             [versioned.json-api :refer [error-status]]
             [versioned.model-api :as model-api]
             [versioned.model-support :refer [coll]]
+            [versioned.model-init :refer [get-model]]
             [versioned.model-versions :refer [versioned-coll]]
             [versioned.crud-api-attributes :refer [create-attributes]]
             [versioned.model-validations :refer [model-errors with-model-errors]]
@@ -32,7 +33,7 @@
 (defn create [app request]
   (let [model-name (keyword (get-in request [:params :model]))
         batch-index (get-in request [:params :batch_index] 0)
-        model-spec (get-in app [:models model-name])
+        model-spec (get-model app model-name)
         data (get-in request [:params :data])
         _ (if (= batch-index 0) (clear app model-spec))
         result (map one-result (insert app model-spec request data))

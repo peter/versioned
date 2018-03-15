@@ -3,13 +3,14 @@
             [versioned.util.auth :as auth]
             [versioned.logger :as logger]
             [versioned.json-api :as json-api]
+            [versioned.model-init :refer [get-model]]
             [versioned.crud-api-attributes :refer [read-attributes]]))
 
 (defn create [app request]
   (let [email (get-in request [:params :email])
         password (get-in request [:params :password])
         user (users/find-one app {:email email})
-        model (get-in app [:models :users])]
+        model (get-model app :users)]
       (if (users/authenticate user password)
         (let [updated-user (if (or (nil? (:access_token user)) (users/token-expired? user (:config app)))
                            (users/store-token app user (auth/generate-token))

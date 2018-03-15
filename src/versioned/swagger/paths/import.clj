@@ -1,4 +1,5 @@
-(ns versioned.swagger.paths.import)
+(ns versioned.swagger.paths.import
+  (:require [versioned.model-init :refer [get-models]]))
 
 (defn swagger [app]
   {
@@ -18,7 +19,7 @@
                       :type "object"
                       :properties {
                         :model {
-                          :enum (keys (:models app))
+                          :enum (keys (get-models app))
                         }
                         :data {
                           :type "array"
@@ -58,7 +59,7 @@
                       :type "object"
                       :properties {
                         :model {
-                          :enum (keys (:models app))
+                          :enum (keys (get-models app))
                         }
                         :ids {
                           :type "array"
@@ -101,7 +102,7 @@
                       :type "object"
                       :properties {
                         :model {
-                          :enum (keys (:models app))
+                          :enum (keys (get-models app))
                         }
                         :data {
                           :type "array"

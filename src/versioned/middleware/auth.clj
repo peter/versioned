@@ -1,6 +1,7 @@
 (ns versioned.middleware.auth
   (:require [versioned.util.auth :refer [parse-token]]
             [versioned.logger :as logger]
+            [versioned.model-init :refer [get-model get-in-model]]
             [clojure.string :as str]
             [versioned.models.users :as users]))
 
@@ -18,7 +19,7 @@
 (defn read-auth-required? [app request]
   (let [app-read-auth (get-in app [:config :require-read-auth])
         model (get-in request [:route :swagger :x-model])
-        model-read-auth (get-in app [:models model :schema :x-meta :require-read-auth])]
+        model-read-auth (get-in-model app [model :schema :x-meta :require-read-auth])]
     (if (nil? model-read-auth) app-read-auth model-read-auth)))
 
 (defn write-auth-required? [request]
@@ -39,7 +40,7 @@
 
 (defn require-auth [request handler app]
   (let [access-token (parse-token (:headers request))
-        user-model (get-in app [:models :users])
+        user-model (get-model app :users)
         user (users/find-one app {:access_token access-token})]
     (if (and access-token
              user

@@ -1,5 +1,6 @@
 (ns versioned.model-indexes
   (:require [versioned.model-support :as model-support]
+            [versioned.model-init :refer [get-models]]
             [versioned.db-api :as db-api]
             [versioned.logger :as logger]
             [schema.core :as s]
@@ -7,7 +8,7 @@
 
 (s/defn ensure-indexes :- Nil
   [app :- App]
-  (doseq [spec (filter #(:indexes %) (vals (:models app)))]
+  (doseq [spec (filter #(:indexes %) (vals (get-models app)))]
     (doseq [options (:indexes spec)]
       (let [coll (or (:coll options) (model-support/coll spec))
             fields (:fields options)

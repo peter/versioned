@@ -1,6 +1,7 @@
 (ns versioned.model-versions
   (:require [versioned.util.core :as u]
             [clojure.set :refer [difference]]
+            [versioned.model-init :refer [get-in-model]]
             [versioned.model-support :as model-support]))
 
 (defn versioned-attribute? [attribute-schema]
@@ -34,4 +35,4 @@
     doc))
 
 (defn published-model? [app model]
-  (and model (get-in app [:models model :schema :properties :published_version])))
+  (and model (get-in-model app [model :schema :properties :published_version])))

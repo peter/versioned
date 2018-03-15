@@ -4,6 +4,7 @@
             [versioned.json-api :refer [error-status]]
             [versioned.model-api :as model-api]
             [versioned.crud-api :as crud-api]
+            [versioned.model-init :refer [get-model]]
             [versioned.model-support :refer [id-attribute]]
             [versioned.model-validations :refer [model-errors with-model-errors]]))
 
@@ -52,7 +53,7 @@
 
 (defn delete [app request]
   (let [model-name (keyword (get-in request [:params :model]))
-        model (get-in app [:models model-name])
+        model (get-model app model-name)
         user (:user request)
         api (crud-api/new-api :model-spec model)
         id-field (keyword (get-in request [:params :id_field]))
@@ -73,7 +74,7 @@
 
 (defn upsert [app request]
   (let [model-name (keyword (get-in request [:params :model]))
-        model (get-in app [:models model-name])
+        model (get-model app model-name)
         user (:user request)
         batch-index (get-in request [:params :batch_index] 0)
         api (crud-api/new-api :model-spec model)
