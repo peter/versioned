@@ -50,7 +50,7 @@
   (-> "project.clj" slurp read-string (nth 2)))
 
 ; NOTE: see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
-(defn swagger [app]
+(defn init-swagger [app]
   (deep-resolve-ref {
       :swagger "2.0"
       :info {
@@ -68,4 +68,4 @@
   }))
 
 (defn validate [app]
-  (validate-schema (schema) (swagger app)))
+  (validate-schema (schema) (init-swagger app)))

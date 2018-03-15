@@ -1,9 +1,8 @@
-(ns versioned.stubs
-  (:require [versioned.model-init :refer [ref-models]]))
+(ns versioned.stubs)
 
 (def app {
   :config {:models {:articles "versioned.example.models.articles/spec"}}
-  :models (ref-models {
+  :models (atom {
     :articles {
       :type :articles
       :schema {
@@ -11,6 +10,6 @@
       }
     }
   })
-  :swagger {}
-  :routes []
+  :swagger (atom {})
+  :routes (atom [])
 })

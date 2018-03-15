@@ -43,9 +43,10 @@
         methods))
 
 (defn routes [app]
-  (let [paths (get-in app [:swagger :paths])
+  (let [swagger (deref (:swagger app))
+        paths (:paths swagger)
         api-prefix (get-in app [:config :api-prefix])]
     (flatten (map (partial routes-for-path api-prefix) paths))))
 
-(defn routes-with-handlers [app]
+(defn init-routes [app]
   (map #(assoc % :handler (lookup-handler (get-models app) %)) (routes app)))

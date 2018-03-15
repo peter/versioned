@@ -3,6 +3,11 @@
             [clojure.set :refer [difference]]
             [versioned.util.core :as u]))
 
+(def Atom (s/pred #(instance? clojure.lang.Atom %) 'atom?))
+(defn Ref [ref-type]
+  (s/pred #(and (s/validate Atom %)
+                (s/validate ref-type (deref %))) 'ref-with-type?))
+
 (def Map {s/Keyword s/Any})
 (def Nil (s/pred nil? 'nil?))
 (def Function (s/pred fn? 'fn?))
@@ -139,8 +144,6 @@
 (def Doc Map) ; A model instance
 
 (def Models {s/Keyword Model})
-(def ModelsRef (s/pred #(and (instance? clojure.lang.Atom %)
-                             (s/validate Models (deref %))) 'atom-with-models?))
 
 (def DB-Schema (s/pred #(instance? com.mongodb.DB %) 'mongodb-database?))
 (def DB-Conn (s/pred #(instance? com.mongodb.MongoClient %) 'mongodb-conn?))
@@ -169,12 +172,11 @@
              :models ModelsConfig
              s/Keyword s/Any})
 
-
 (def App {
           :config Config
-          :models ModelsRef
-          :swagger Map
-          :routes [Route]
+          :models (Ref Models)
+          :swagger (Ref Map)
+          :routes (Ref [Route])
           s/Keyword s/Any})
 
 (def ModelWriteFnSchema (s/fn-schema (s/fn :- Doc [app :- App model :- Model doc :- Doc])))

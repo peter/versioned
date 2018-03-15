@@ -1,11 +1,13 @@
 (ns versioned.models.models
   (:require [schema.core :as s]
             [versioned.types :refer [Schema]]
+            [versioned.swagger.core :refer [init-swagger]]
+            [versioned.routes :refer [init-routes]]
             [versioned.model-spec :refer [generate-spec]]
             [versioned.model-includes.content-base-model :refer [content-base-spec]]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
-            [versioned.model-init :refer [get-model get-models set-models ref-models merge-schemas]]
+            [versioned.model-init :refer [get-model get-models init-models merge-schemas]]
             [versioned.util.schema :refer [validate-schema]]
             [versioned.util.json :as json]))
 
@@ -24,15 +26,22 @@
             schema (get-in models [model-type :schema])
             updated-schema (merge-schemas (:schema doc) schema)
             updated-models (assoc-in models [(:type model) :schema] updated-schema)
-            updated-app {:config (:config options) :models (ref-models updated-models)}
+            updated-app {:config (:config options) :models (atom updated-models)}
             errors (swagger/validate updated-app)]
         (with-model-errors doc errors))
       doc)))
 
 (defn update-app-callback [doc options]
-  ; TODO: update model schema in app
-  ; TODO: update swagger in app
-  doc)
+  (let [app (:app options)
+        database (:database options)
+        config (:config options)
+        models (:models app)
+        swagger (:swagger app)
+        routes (:routes app)]
+    (reset! models (init-models config database))
+    (reset! swagger (init-swagger {:config config :models models}))
+    (reset! routes (init-routes app))
+    doc))
 
 ; TODO: when app boots it needs to initialize models with schemas in the database
 

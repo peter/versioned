@@ -5,7 +5,7 @@
 ; but we only want to generate it once
 (defn wrap-route-match [handler app]
   (fn [request]
-    (let [route-match (find-match (:routes app) request)
+    (let [route-match (find-match (deref (:routes app)) request)
           route (:route route-match)
           path-params (:params route-match)]
       (handler (assoc request :route route

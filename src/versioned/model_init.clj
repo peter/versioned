@@ -2,19 +2,10 @@
   (:require [versioned.util.core :as u]
             [schema.core :as s]
             [versioned.db-api :as db]
-            [versioned.types :refer [Schema Models ModelsRef Model ModelOrPath Config Database DbModel]]))
-
-(defn ref-models [models]
-  (atom models))
-
-(defn deref-models [models]
-  (deref models))
+            [versioned.types :refer [Schema Ref Models Model ModelOrPath Config Database DbModel]]))
 
 (defn get-models [app]
-  (deref-models (:models app)))
-
-(defn set-models [app models]
-  (reset! (:models app) models))
+  (deref (:models app)))
 
 (defn get-model [app model]
   (get-in (get-models app) [model]))
@@ -58,10 +49,10 @@
                 {}
                 (:models config)))
 
-(s/defn init-models :- ModelsRef
+(s/defn init-models :- Models
   [config :- Config
    database :- Database]
   (let [src-models (init-src-models config)
         db-models (db/find database :models {})
         models (reduce apply-db-model src-models db-models)]
-    (ref-models models)))
+    models))
