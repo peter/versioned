@@ -1,26 +1,31 @@
 (ns versioned.models.models
-  (:require [versioned.model-spec :refer [generate-spec merge-schemas]]
+  (:require [schema.core :as s]
+            [versioned.types :refer [Schema]]
+            [versioned.model-spec :refer [generate-spec merge-schemas]]
             [versioned.model-includes.content-base-model :refer [content-base-spec]]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
-            [versioned.model-init :refer [get-model get-models set-models]]
+            [versioned.model-init :refer [get-model get-models set-models ref-models]]
             [versioned.util.schema :refer [validate-schema]]
             [versioned.util.json :as json]))
 
 (def model-type :models)
 
+(defn validate-schema-callback [doc options]
+  (if-let [errors (s/check Schema (:schema doc))]
+    (with-model-errors doc [{:type "invalid_schema" :message (str errors)}])
+    doc))
+
 (defn validate-swagger-callback [doc options]
   (let [model-type (keyword (:model_type doc))
         model (get-model (:app options) (keyword (:model_type doc)))]
-    ; TODO: validate using versioned.types/Schema?
-    ; TODO: need a try/catch here?
-    (if (and model-type model)
+    (if (and model-type model (:schema doc))
       (let [models (get-models (:app options))
             schema (get-in models [model-type :schema])
             updated-schema (merge-schemas (:schema doc) schema)
             updated-models (assoc-in models [(:type model) :schema] updated-schema)
-            swagger-spec (swagger/swagger {:config (:config options) :models updated-models})
-            errors (validate-schema (swagger/schema) swagger-spec)]
+            updated-app {:config (:config options) :models (ref-models updated-models)}
+            errors (swagger/validate updated-app)]
         (with-model-errors doc errors))
       doc)))
 
@@ -53,7 +58,7 @@
       }
       :callbacks {
         :save {
-          :before [validate-swagger-callback]
+          :before [validate-schema-callback validate-swagger-callback]
           :after [update-app-callback]
         }
       }

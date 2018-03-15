@@ -2,6 +2,7 @@
   (:require [versioned.util.core :as u]
             [versioned.util.json :as json]
             [versioned.util.resource :as resource]
+            [versioned.util.schema :refer [validate-schema]]
             [versioned.model-attributes :refer [api-writable-schema
                                                 api-readable-schema
                                                 without-custom-keys]]
@@ -65,3 +66,6 @@
       :definitions (definitions app)
       :parameters (parameters app)
   }))
+
+(defn validate [app]
+  (validate-schema (schema) (swagger app)))
