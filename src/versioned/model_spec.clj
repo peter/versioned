@@ -1,5 +1,6 @@
 (ns versioned.model-spec
   (:require [versioned.util.core :as u]
+            [versioned.model-init :refer [merge-schemas]]
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
             [versioned.util.schema :refer [validate-schema]]
@@ -8,15 +9,6 @@
                                      Coll
                                      Schema
                                      Model]]))
-
-; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
-(s/defn merge-schemas :- Schema
-  [& schemas :- [Schema]]
-  (let [properties (apply merge (map :properties schemas))
-        required (not-empty (apply concat (map :required schemas)))]
-    (u/compact (assoc (apply u/deep-merge schemas)
-                      :properties properties
-                      :required required))))
 
 (def empty-callback {:before [] :after []})
 

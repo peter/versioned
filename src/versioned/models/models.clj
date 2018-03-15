@@ -1,11 +1,11 @@
 (ns versioned.models.models
   (:require [schema.core :as s]
             [versioned.types :refer [Schema]]
-            [versioned.model-spec :refer [generate-spec merge-schemas]]
+            [versioned.model-spec :refer [generate-spec]]
             [versioned.model-includes.content-base-model :refer [content-base-spec]]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
-            [versioned.model-init :refer [get-model get-models set-models ref-models]]
+            [versioned.model-init :refer [get-model get-models set-models ref-models merge-schemas]]
             [versioned.util.schema :refer [validate-schema]]
             [versioned.util.json :as json]))
 

@@ -13,7 +13,7 @@
 
   (start [component]
     (let [config (:config config)
-          models (init-models config)
+          models (init-models config database)
           swagger-spec (swagger {:config config :models models})
           app {:config config :models models :swagger swagger-spec :database database}
           routes (routes-with-handlers app)

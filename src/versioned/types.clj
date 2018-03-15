@@ -129,6 +129,11 @@
             (s/optional-key :routes) Routes
             s/Keyword s/Any})
 
+(def DbModel {
+            :model_type s/Str
+            :schema Schema
+            s/Keyword s/Any})
+
 (def ModelChanges {s/Keyword {:from s/Any :to s/Any}})
 
 (def Doc Map) ; A model instance
