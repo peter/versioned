@@ -53,9 +53,9 @@ lein repl
 In a different terminal, log in:
 
 ```bash
-export BASE_URL=http://localhost:5000
+export BASE_URL=http://localhost:5000/v1
 
-curl -i -X POST -H 'Content-Type: application/json' -d '{"email": "admin@example.com", "password": "admin"}' $BASE_URL/v1/login
+curl -i -X POST -H 'Content-Type: application/json' -d '{"email": "admin@example.com", "password": "admin"}' $BASE_URL/login
 
 export TOKEN=<auth token in header response above>
 ```
@@ -67,32 +67,32 @@ Basic CRUD workflow:
 curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section"}, "slug": {"se": "my-section"}}}}' $BASE_URL/v1/sections
 
 # get
-curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/sections/1
+curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/sections/1
 
 # list
-curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/sections
+curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/sections
 
 # update
-curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section EDIT"}}}}' $BASE_URL/v1/sections/1
+curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "My Section EDIT"}}}}' $BASE_URL/sections/1
 
 # delete
-curl -i -X DELETE -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/sections/1
+curl -i -X DELETE -H "Authorization: Bearer $TOKEN" $BASE_URL/sections/1
 ```
 
 Now, let's look at versioning, associations, and publishing. Create two widgets and a page:
 
 ```bash
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Movies"}, "published_version": 1}}}' $BASE_URL/v1/widgets
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Movies"}, "published_version": 1}}}' $BASE_URL/widgets
 
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Series"}}}}' $BASE_URL/v1/widgets
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Latest Series"}}}}' $BASE_URL/widgets
 
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Start Page"}, "widgets_ids": [1, 2], "published_version": 1}}}' $BASE_URL/v1/pages
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"data": {"attributes": {"title": {"se": "Start Page"}, "widgets_ids": [1, 2], "published_version": 1}}}' $BASE_URL/pages
 ```
 
 The first widget and the page are published since the `published_version` is set but the second widget is not. Now we can fetch the page with its associations:
 
 ```bash
-curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/pages/1?relationships=1
+curl -i -H "Authorization: Bearer $TOKEN" $BASE_URL/pages/1?relationships=1
 ```
 
 The response looks something like:
@@ -177,7 +177,7 @@ Now, if we ask for the published version of the page (relevant to the end-user/p
 and we only get the first widget:
 
 ```bash
-curl -i -H "Authorization: Bearer $TOKEN" '$BASE_URL/v1/pages/1?relationships=1&published=1'
+curl -i -H "Authorization: Bearer $TOKEN" '$BASE_URL/pages/1?relationships=1&published=1'
 ```
 
 If the page hadn't been published we would have gotten a 404.
@@ -185,7 +185,7 @@ If the page hadn't been published we would have gotten a 404.
 In addition to the version history there is a `changelog` collection in Mongodb with a log of all write operations performed via the API:
 
 ```bash
-curl -i -H "Authorization: Bearer $TOKEN" '$BASE_URL/v1/changelog'
+curl -i -H "Authorization: Bearer $TOKEN" '$BASE_URL/changelog'
 ```
 
 Here is an example entry from the update above:
@@ -331,7 +331,7 @@ The API tests depend on the [jsonapitest test framework](https://github.com/pete
 There is a bulk import API that you can use if you need to load larger amounts of data (i.e. migrate from another CMS):
 
 ```
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": {"se": "Latest Movies"}, "published_version": 1}, {"title": {"se": "Latest Series"}}]}' $BASE_URL/v1/import_initial
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": {"se": "Latest Movies"}, "published_version": 1}, {"title": {"se": "Latest Series"}}]}' $BASE_URL/import_initial
 ```
 
 There are also two endpoints for syncing - `import_sync/delete` and `import_sync/upsert`.
