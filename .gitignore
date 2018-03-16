@@ -12,3 +12,5 @@ pom.xml.asc
 test/api/data.tmp.json
 test/api/log
 npm-debug.log
+.idea
+*.iml

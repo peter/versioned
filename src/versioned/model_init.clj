@@ -16,9 +16,11 @@
 ; NOTE: there is no official merge support for JSON schema AFAIK and we cannot use "allOf"
 (s/defn merge-schemas :- Schema
   [& schemas :- [Schema]]
-  (let [properties (apply merge (map :properties schemas))
+  (let [x-meta (apply merge (map :x-meta schemas))
+        properties (apply merge (map :properties schemas))
         required (not-empty (apply concat (map :required schemas)))]
     (u/compact (assoc (apply u/deep-merge schemas)
+                      :x-meta x-meta
                       :properties properties
                       :required required))))
 
@@ -33,13 +35,21 @@
         (assoc-in models [model-type :schema] updated-schema))
       models)))
 
+(s/defn with-source-path :- Model
+  [model :- Model
+   spec :- ModelOrPath]
+  (if (instance? String spec)
+    (assoc-in model [:schema :x-meta :source_path] spec)
+    model))
+
 (s/defn load-model-spec :- Model
   [config :- Config
    spec :- ModelOrPath]
   (if (string? spec)
     (let [spec-fn (u/load-var spec)
-          loaded-model (spec-fn config)]
-      loaded-model)
+          loaded-model (spec-fn config)
+          model-with-meta (with-source-path loaded-model spec)]
+      model-with-meta)
     spec))
 
 (s/defn init-src-models :- Models

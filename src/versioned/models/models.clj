@@ -8,14 +8,16 @@
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
             [versioned.model-init :refer [get-model get-models init-models merge-schemas]]
-            [versioned.util.schema :refer [validate-schema]]
-            [versioned.util.json :as json]))
+            [versioned.util.schema :refer [validate-schema]]))
 
 (def model-type :models)
 
 (defn validate-schema-callback [doc options]
-  (if-let [errors (s/check Schema (:schema doc))]
-    (with-model-errors doc [{:type "invalid_schema" :message (str errors)}])
+  (if-let [errors (and (:schema doc)
+                       (s/check Schema (:schema doc)))]
+    (do
+      (println "models/validate-schema-callback errors=" errors)
+      (with-model-errors doc [{:type "json_schema" :message "Not a valid JSON schema"}]))
     doc))
 
 (defn validate-swagger-callback [doc options]
@@ -42,8 +44,6 @@
     (reset! swagger (init-swagger {:config config :models models}))
     (reset! routes (init-routes app))
     doc))
-
-; TODO: when app boots it needs to initialize models with schemas in the database
 
 (defn spec [config]
   (generate-spec
