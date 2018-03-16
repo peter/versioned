@@ -12,6 +12,15 @@
 
 (def model-type :models)
 
+(defn validate-base-model [doc options]
+  (let [model-type (keyword (:model_type doc))
+        model (get-model (:app options) (keyword (:model_type doc)))
+        source-path (get-in model [:schema :x-meta :source_path])
+        message (str "You cannot select base model for model with source path " source-path)]
+    (if (and source-path (:base_model doc))
+      (with-model-errors doc [{:type "base_model" :message message}])
+      doc)))
+
 (defn validate-schema-callback [doc options]
   (if-let [errors (and (:schema doc)
                        (s/check Schema (:schema doc)))]
@@ -53,11 +62,12 @@
       :schema {
         :type "object"
         :x-meta {
-          :admin_properties [:model_type :schema]
+          :admin_properties [:model_type :base_model :schema]
           :require-read-auth true
         }
         :properties {
           :model_type {:type "string"}
+          :base_model {:enum ["content" "published"] :x-meta {:api_update false}}
           :schema {
             :type "object"
           }
@@ -67,7 +77,7 @@
       }
       :callbacks {
         :save {
-          :before [validate-schema-callback validate-swagger-callback]
+          :before [validate-base-model validate-schema-callback validate-swagger-callback]
           :after [update-app-callback]
         }
       }

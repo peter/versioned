@@ -7,4 +7,11 @@
   (base-model/spec type)
   (versioned-spec :type type)
   (published-spec)
+  {
+    :schema {
+      :x-meta {
+        :base_model "published"
+      }
+    }
+  }
 ])

@@ -40,6 +40,20 @@
   [schema :- Schema]
   (restricted-schema schema (api-writable-attribute-keys schema)))
 
+(s/defn api-update? :- s/Bool
+  [attribute-schema :- Schema]
+  (get-in attribute-schema [:x-meta :api_update] true))
+
+(s/defn api-update-attribute-keys :- AttributeSet
+  [schema :- Schema]
+  (let [schema-attrs (schema-attributes schema)]
+    (set (filter #(api-update? (% schema-attrs)) (keys schema-attrs)))))
+
+(s/defn api-update-attributes :- Attributes
+  [schema :- Schema
+   attributes :- Attributes]
+  (select-keys (api-writable-attributes schema attributes) (api-update-attribute-keys schema)))
+
 (s/defn api-readable? :- s/Bool
   [attribute-schema :- Schema]
   (get-in attribute-schema [:x-meta :api_readable] true))

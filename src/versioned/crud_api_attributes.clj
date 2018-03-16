@@ -1,7 +1,7 @@
 (ns versioned.crud-api-attributes
   (:require [versioned.model-support :as model-support]
             [versioned.json-api :as json-api]
-            [versioned.model-attributes :refer [api-writable-attributes api-readable-attributes]]
+            [versioned.model-attributes :refer [api-writable-attributes api-update-attributes api-readable-attributes]]
             [versioned.crud-api-audit :refer [updated-by created-by save-changelog]]
             [versioned.crud-api-types :refer [coerce-attribute-types]]
             [schema.core :as s]
@@ -26,7 +26,9 @@
 
 (s/defn update-attributes :- Attributes
   [model :- Model, request :- Request, attributes :- Attributes]
-  (merge (write-attributes model attributes)
+  (merge (->> attributes
+              (api-update-attributes (:schema model))
+              (coerce-attribute-types (:schema model)))
          (model-support/id-query model (json-api/id request))
          (updated-by request)))
 

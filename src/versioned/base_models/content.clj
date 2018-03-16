@@ -13,4 +13,11 @@
   (audited-spec)
   (validated-spec)
   (routed-spec)
+  {
+    :schema {
+      :x-meta {
+        :base_model "content"
+      }
+    }
+  }
 ])
