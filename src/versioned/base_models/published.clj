@@ -1,10 +1,10 @@
-(ns versioned.model-includes.published-base-model
-  (:require [versioned.model-includes.content-base-model :refer [content-base-spec]]
+(ns versioned.base-models.published
+  (:require [versioned.base-models.content :as base-model]
             [versioned.model-includes.versioned-model :refer [versioned-spec]]
             [versioned.model-includes.published-model :refer [published-spec]]))
 
-(defn published-base-spec [type] [
-  (content-base-spec type)
+(defn spec [type] [
+  (base-model/spec type)
   (versioned-spec :type type)
   (published-spec)
 ])

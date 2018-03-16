@@ -2,14 +2,14 @@
   (:require [versioned.example.models.shared :refer [set-sites-callback sites-schema translated-attribute]]
             [versioned.model-spec :refer [generate-spec]]
             [versioned.example.searchable-model :refer [searchable-model-spec]]
-            [versioned.model-includes.published-base-model :refer [published-base-spec]]))
+            [versioned.base-models.published :as base-model]))
 
 (def model-type :pages)
 
 (defn spec [config]
   (let [locales (:locales config)]
     (generate-spec
-      (published-base-spec model-type)
+      (base-model/spec model-type)
       (searchable-model-spec)
       {
       :type model-type

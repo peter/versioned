@@ -4,7 +4,7 @@
             [versioned.swagger.core :refer [init-swagger]]
             [versioned.routes :refer [init-routes]]
             [versioned.model-spec :refer [generate-spec]]
-            [versioned.model-includes.content-base-model :refer [content-base-spec]]
+            [versioned.base-models.content :as base-model]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
             [versioned.model-init :refer [get-model get-models init-models merge-schemas]]
@@ -47,7 +47,7 @@
 
 (defn spec [config]
   (generate-spec
-      (content-base-spec model-type)
+      (base-model/spec model-type)
       {
       :type model-type
       :schema {
