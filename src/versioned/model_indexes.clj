@@ -1,6 +1,6 @@
 (ns versioned.model-indexes
   (:require [versioned.model-support :as model-support]
-            [versioned.model-init :refer [get-models]]
+            [versioned.util.model :refer [get-models]]
             [versioned.db-api :as db-api]
             [versioned.logger :as logger]
             [schema.core :as s]

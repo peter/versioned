@@ -1,7 +1,7 @@
 (ns versioned.example.search.algolia
   (:require [clj-http.client :as client]
             [versioned.model-support :refer [coll]]
-            [versioned.model-init :refer [get-models get-in-model]]
+            [versioned.util.model :refer [get-models get-in-model]]
             [versioned.db-api :as db]))
 
 (defn base-url [application-id]

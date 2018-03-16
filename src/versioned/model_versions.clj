@@ -1,7 +1,7 @@
 (ns versioned.model-versions
   (:require [versioned.util.core :as u]
             [clojure.set :refer [difference]]
-            [versioned.model-init :refer [get-in-model]]
+            [versioned.util.model :refer [get-in-model]]
             [versioned.model-support :as model-support]))
 
 (defn versioned-attribute? [attribute-schema]

@@ -5,7 +5,7 @@
             [versioned.crud-api-attributes :refer [create-attributes read-attributes]]
             [versioned.model-api :as model-api]
             [versioned.model-validations :refer [model-errors]]
-            [versioned.model-init :refer [get-models get-model]]
+            [versioned.util.model :refer [get-models get-model]]
             [me.raynes.conch :as sh]
             [versioned.util.file :as file]
             [versioned.util.core :as u]

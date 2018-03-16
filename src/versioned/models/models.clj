@@ -7,7 +7,9 @@
             [versioned.base-models.content :as base-model]
             [versioned.swagger.core :as swagger]
             [versioned.model-validations :refer [with-model-errors]]
-            [versioned.model-init :refer [get-model get-models init-models merge-schemas]]
+            [versioned.util.schema :refer [merge-schemas]]
+            [versioned.util.model :refer [get-model get-models]]
+            [versioned.model-init :refer [init-models]]
             [versioned.util.schema :refer [validate-schema]]))
 
 (def model-type :models)
@@ -78,6 +80,9 @@
       :callbacks {
         :save {
           :before [validate-base-model validate-schema-callback validate-swagger-callback]
+          :after [update-app-callback]
+        }
+        :delete {
           :after [update-app-callback]
         }
       }

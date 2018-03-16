@@ -8,7 +8,7 @@
                                                 without-custom-keys]]
             [versioned.swagger.paths.api-docs :as api-docs-paths]
             [versioned.swagger.paths.login :as login-paths]
-            [versioned.model-init :refer [get-models]]
+            [versioned.util.model :refer [get-models]]
             [versioned.swagger.paths.import :as import-paths]
             [versioned.swagger.paths.model :as model-paths]
             [versioned.swagger.ref :refer [deep-resolve-ref]]))

@@ -345,8 +345,11 @@ There are also two endpoints for syncing - `import_sync/delete` and `import_sync
 
 ### Dynamic Model Schemas
 
-* app/models needs to be an atom that we can update when the database changes
-* init-models needs to get all published schemas from the database and merge those into the models from the config
+* OK! init-models needs to do two things:
+  * apply schemas to src-models
+  * create models with base_model (filter :base_model db-models)
+* OK! app/models needs to be an atom that we can update when the database changes
+* OK! init-models needs to get all published schemas from the database and merge those into the models from the config
   updated-schema (merge-schemas (:schema doc) schema)
   updated-models (assoc-in models [(:type model) :schema] updated-schema)
 

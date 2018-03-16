@@ -1,5 +1,5 @@
 (ns versioned.swagger.paths.import
-  (:require [versioned.model-init :refer [get-models]]))
+  (:require [versioned.util.model :refer [get-models]]))
 
 (defn swagger [app]
   {

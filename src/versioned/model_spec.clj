@@ -1,6 +1,6 @@
 (ns versioned.model-spec
   (:require [versioned.util.core :as u]
-            [versioned.model-init :refer [merge-schemas]]
+            [versioned.util.schema :refer [merge-schemas]]
             [versioned.model-callbacks :refer [normalize-callbacks merge-callbacks sort-callbacks]]
             [versioned.model-relationships :refer [normalized-relationships]]
             [versioned.util.schema :refer [validate-schema]]

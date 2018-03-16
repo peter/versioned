@@ -4,7 +4,7 @@
             [versioned.json-api :refer [error-status]]
             [versioned.model-api :as model-api]
             [versioned.crud-api :as crud-api]
-            [versioned.model-init :refer [get-model]]
+            [versioned.util.model :refer [get-model]]
             [versioned.model-support :refer [id-attribute]]
             [versioned.model-validations :refer [model-errors with-model-errors]]))
 

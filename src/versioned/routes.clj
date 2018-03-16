@@ -2,7 +2,7 @@
   (:require [versioned.util.core :as u]
             [clojure.string :as str]
             [versioned.types :refer [crud-actions]]
-            [versioned.model-init :refer [get-models]]
+            [versioned.util.model :refer [get-models]]
             [versioned.crud-api :as crud-api]))
 
 ; TODO: a cleaner syntax for specifying API endpoints and controller handlers

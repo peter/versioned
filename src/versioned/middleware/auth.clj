@@ -1,7 +1,7 @@
 (ns versioned.middleware.auth
   (:require [versioned.util.auth :refer [parse-token]]
             [versioned.logger :as logger]
-            [versioned.model-init :refer [get-model get-in-model]]
+            [versioned.util.model :refer [get-model get-in-model]]
             [clojure.string :as str]
             [versioned.models.users :as users]))
 

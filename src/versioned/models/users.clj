@@ -4,7 +4,7 @@
             [versioned.model-includes.typed-model :refer [typed-spec]]
             [versioned.model-api :as model-api]
             [versioned.util.core :as u]
-            [versioned.model-init :refer [get-model]]
+            [versioned.util.model :refer [get-model]]
             [versioned.util.encrypt :as encrypt]
             [versioned.util.date :as date]))
 

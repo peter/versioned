@@ -2,7 +2,7 @@
   (:require [versioned.model-support :as model-support]
             [versioned.model-versions :refer [apply-version versioned-coll published-model?]]
             [versioned.db-api :as db]
-            [versioned.model-init :refer [get-model]]
+            [versioned.util.model :refer [get-model]]
             [schema.core :as s]
             [versioned.types :refer [RelationshipKey
                                      RelationshipField

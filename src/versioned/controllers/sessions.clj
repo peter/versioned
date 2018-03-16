@@ -3,7 +3,7 @@
             [versioned.util.auth :as auth]
             [versioned.logger :as logger]
             [versioned.json-api :as json-api]
-            [versioned.model-init :refer [get-model]]
+            [versioned.util.model :refer [get-model]]
             [versioned.crud-api-attributes :refer [read-attributes]]))
 
 (defn create [app request]

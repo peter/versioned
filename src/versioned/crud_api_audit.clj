@@ -3,7 +3,7 @@
             [versioned.util.date :as d]
             [versioned.model-api :as model-api]
             [versioned.model-changes :refer [model-changes]]
-            [versioned.model-init :refer [get-model]]
+            [versioned.util.model :refer [get-model]]
             [versioned.db-api :as db]
             [schema.core :as s]
             [versioned.types :refer [Map Model Request App Changelog Action Email]]))
